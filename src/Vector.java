@@ -1,6 +1,9 @@
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+/**
+ * Vector with different operators. Allows to hide dimensionality.
+ */
 class Vector {
 
     double x;

@@ -6,11 +6,13 @@ public class SimulationPanel extends JPanel {
     Bodies bodies;
 
     public SimulationPanel(Bodies bodies) {
+
         this.bodies = bodies;
 
         setPreferredSize(new Dimension(
                 200, 200
         ));
+
     }
 
     public void paintComponent(Graphics g) {
@@ -21,7 +23,8 @@ public class SimulationPanel extends JPanel {
 
         turnAntialiasingOn(g);
 
-        bodies.iterate(.02);
+        // actual simulation happens here; time step picked empirically
+        bodies.iterate(.5);
 
         drawBodies(g);
 

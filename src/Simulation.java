@@ -7,6 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Simple n-body simulation based on finite differences and O(n^2) computation of forces between all bodies.
+ */
 class Simulation {
 
     /**
@@ -19,12 +22,17 @@ class Simulation {
 
     public static void main(String[] args) throws Exception {
 
+        // speeds up things on ubuntu significantly
+        // comment out if it does not work on windows / macos
+        System.setProperty("sun.java2d.opengl", "true");
+
         window = new JFrame();
 
         // exit after clicking close button
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-
+        // Initialize bodies for the simulation.
+        // I picked some random numbers that result in a planetary system.
         Set<Body> setOfBodies = new HashSet<Body>();
         setOfBodies.add(new Body(new Vector(100, 100), new Vector(0, 0), 2e13));
         setOfBodies.add(new Body(new Vector(30, 30), new Vector(2.3, -1.5), 1));
@@ -43,9 +51,12 @@ class Simulation {
 
     }
 
-    public static void simulate(Bodies bodies) throws InterruptedException {
+    /**
+     * Animate. Does repaint ~60 times a second.
+     */
+    private static void simulate(Bodies bodies) throws InterruptedException {
 
-        Timer timer = new Timer(1, new ActionListener() {
+        Timer timer = new Timer(16, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 window.getContentPane().repaint();
