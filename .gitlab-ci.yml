@@ -1,0 +1,9 @@
+image: openjdk:8-slim
+
+before_script:
+  - cd ./src
+  - javac *.java
+
+test:
+  script:
+    - java Test
