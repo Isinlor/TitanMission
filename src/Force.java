@@ -7,11 +7,15 @@ class Force extends Vector {
     }
 
     Force (Vector vector) {
-        this(vector.x, vector.y);
+        this(vector.x, vector.y, vector.z);
     }
 
     Force(double x, double y) {
         super(x, y);
+    }
+
+    Force(double x, double y, double z) {
+        super(x, y, z);
     }
 
     Force sum(Force force) {
@@ -25,7 +29,8 @@ class Force extends Vector {
     Vector computeAcceleration(double mass) {
         return new Vector(
           x / mass,
-          y / mass
+          y / mass,
+          z / mass
         );
     }
 

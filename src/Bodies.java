@@ -1,5 +1,6 @@
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Represents set of bodies that interact with each other.
@@ -14,6 +15,12 @@ class Bodies {
 
     public Set<Body> getBodies() {
         return bodies;
+    }
+
+    public Vectors getPositions() {
+        return new Vectors(
+            bodies.stream().map(Body::getPosition).collect(Collectors.toSet())
+        );
     }
 
     /**
