@@ -64,6 +64,13 @@ class Vector {
         );
     }
 
+    /**
+     * x' = x
+     * y' = y*cos q - z*sin q
+     * z' = y*sin q + z*cos q
+     *
+     * https://www.cs.helsinki.fi/group/goa/mallinnus/3dtransf/3drot.html
+     */
     Vector rotateAroundAxisX(Vector center, double theta) {
         double cosTheta = Math.cos(theta);
         double sinTheta = Math.sin(theta);
@@ -76,18 +83,32 @@ class Vector {
         return rotated.sum(center);
     }
 
+    /**
+     * x' = z*sin q + x*cos q
+     * y' = y
+     * z' = z*cos q - x*sin q
+     *
+     * https://www.cs.helsinki.fi/group/goa/mallinnus/3dtransf/3drot.html
+     */
     Vector rotateAroundAxisY(Vector center, double theta) {
         double cosTheta = Math.cos(theta);
         double sinTheta = Math.sin(theta);
         Vector centered = difference(center);
         Vector rotated = new Vector(
-            centered.x * cosTheta - centered.z * sinTheta,
+            centered.z * sinTheta - centered.x * cosTheta,
             centered.y,
-            - centered.x * sinTheta + centered.z * cosTheta
+            centered.z * cosTheta + centered.x * sinTheta
         );
         return rotated.sum(center);
     }
 
+    /**
+     * x' = x*cos q - y*sin q
+     * y' = x*sin q + y*cos q
+     * z' = z
+     *
+     * https://www.cs.helsinki.fi/group/goa/mallinnus/3dtransf/3drot.html
+     */
     Vector rotateAroundAxisZ(Vector center, double theta) {
         double cosTheta = Math.cos(theta);
         double sinTheta = Math.sin(theta);
