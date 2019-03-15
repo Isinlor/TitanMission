@@ -34,9 +34,10 @@ class Simulation {
         // Initialize bodies for the simulation.
         // I picked some random numbers that result in a planetary system.
         Set<Body> setOfBodies = new HashSet<Body>();
-        setOfBodies.add(new Body(new Vector(100, 100), new Vector(0, 0), 2e13));
-        setOfBodies.add(new Body(new Vector(30, 30), new Vector(2.3, -1.5), 1));
-        setOfBodies.add(new Body(new Vector(100, 150), new Vector(-5, 0), 1e10));
+        setOfBodies.add(new Body(new Vector(0, 0), new Vector(0, 0), 2e13));
+        setOfBodies.add(new Body(new Vector(0, 50), new Vector(5, 0), 1));
+        setOfBodies.add(new Body(new Vector(0, 80), new Vector(5, 0), 1));
+        setOfBodies.add(new Body(new Vector(0, 150), new Vector(-3, 0), 1e10));
 
         Bodies bodies = new Bodies(setOfBodies);
 

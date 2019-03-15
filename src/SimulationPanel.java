@@ -10,7 +10,7 @@ public class SimulationPanel extends JPanel {
         this.bodies = bodies;
 
         setPreferredSize(new Dimension(
-                200, 200
+                500, 500
         ));
 
     }
@@ -25,6 +25,8 @@ public class SimulationPanel extends JPanel {
 
         // actual simulation happens here; time step picked empirically
         bodies.iterate(.5);
+
+        g.translate(getWidth() / 2, getHeight() / 2);
 
         drawBodies(g);
 
