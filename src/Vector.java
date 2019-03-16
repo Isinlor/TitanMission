@@ -43,7 +43,7 @@ class Vector {
         return new Vector(
                 x + vector.x,
                 y + vector.y,
-                z * vector.z
+                z + vector.z
         );
     }
 
