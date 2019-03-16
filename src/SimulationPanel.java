@@ -48,10 +48,9 @@ public class SimulationPanel extends JPanel {
     private void drawBodies(Graphics g) {
 
         Vectors positions = bodies.getPositions();
-
-        // Rotation around axis y seems to be broken.
-//         positions = positions.rotateAroundAxisX(new Vector(), thetaY / 100);
-        // positions = positions.rotateAroundAxisY(new Vector(), thetaX / 100);
+        
+         positions = positions.rotateAroundAxisX(new Vector(), thetaY / 100);
+         positions = positions.rotateAroundAxisY(new Vector(), thetaX / 100);
 
         for(Vector vector: positions.getVectors()) {
 
@@ -64,12 +63,11 @@ public class SimulationPanel extends JPanel {
         }
 
         // Cube is here to help visualize 3D space.
-        // With only points it is hard to see it in 3D.
-//        Cube cube = new Cube(new Vector(-100, -100, -100), 200);
-//        cube.rotateAroundAxisX(new Vector(), thetaY / 100);
-//        cube.rotateAroundAxisY(new Vector(), thetaX / 100);
-//
-//        cube.draw(g);
+        Cube cube = new Cube(new Vector(-100, -100, -100), 200);
+        cube.rotateAroundAxisX(new Vector(), thetaY / 100);
+        cube.rotateAroundAxisY(new Vector(), thetaX / 100);
+
+        cube.draw(g);
 
     }
 
