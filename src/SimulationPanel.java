@@ -14,16 +14,25 @@ public class SimulationPanel extends JPanel {
         this.bodies = bodies;
 
         setPreferredSize(new Dimension(
-                500, 500
+                800, 800
         ));
 
-        MouseAdapter mouseRotation = new MouseAdapter() {
+        MouseAdapter mouseRotation = new MouseInputAdapter() {
+            int pressX;
+            int pressY;
+            public void mousePressed(MouseEvent mouseEvent) {
+                pressX = mouseEvent.getX() - (int)thetaX;
+                pressY = mouseEvent.getY() - (int)thetaY;
+                super.mousePressed(mouseEvent);
+            }
             public void mouseDragged(MouseEvent mouseEvent) {
-                thetaX = mouseEvent.getX();
-                thetaY = mouseEvent.getY();
+                thetaX = mouseEvent.getX() - pressX;
+                thetaY = mouseEvent.getY() - pressY;
+                super.mouseDragged(mouseEvent);
             }
         };
 
+        addMouseListener(mouseRotation);
         addMouseMotionListener(mouseRotation);
 
     }
@@ -48,9 +57,9 @@ public class SimulationPanel extends JPanel {
     private void drawBodies(Graphics g) {
 
         Vectors positions = bodies.getPositions();
-        
-         positions = positions.rotateAroundAxisX(new Vector(), thetaY / 100);
-         positions = positions.rotateAroundAxisY(new Vector(), thetaX / 100);
+
+         positions = positions.rotateAroundAxisX(new Vector(), thetaY / 200);
+         positions = positions.rotateAroundAxisY(new Vector(), thetaX / 200);
 
         for(Vector vector: positions.getVectors()) {
 
@@ -63,9 +72,9 @@ public class SimulationPanel extends JPanel {
         }
 
         // Cube is here to help visualize 3D space.
-        Cube cube = new Cube(new Vector(-100, -100, -100), 200);
-        cube.rotateAroundAxisX(new Vector(), thetaY / 100);
-        cube.rotateAroundAxisY(new Vector(), thetaX / 100);
+        Cube cube = new Cube(new Vector(-200, -200, -200), 400);
+        cube.rotateAroundAxisX(new Vector(), thetaY / 200);
+        cube.rotateAroundAxisY(new Vector(), thetaX / 200);
 
         cube.draw(g);
 
