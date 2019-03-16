@@ -53,10 +53,16 @@ class Cube {
     }
 
     void draw(Graphics g) {
-
+        
+        // Colors are added in order to allow keeping track of directions
+        Color oldColor = g.getColor();
+        g.setColor(Color.RED);
         drawLine(g, vertices.get(0), vertices.get(1));
+        g.setColor(Color.GREEN);
         drawLine(g, vertices.get(0), vertices.get(2));
+        g.setColor(Color.BLUE);
         drawLine(g, vertices.get(0), vertices.get(3));
+        g.setColor(oldColor);
         drawLine(g, vertices.get(1), vertices.get(4));
         drawLine(g, vertices.get(1), vertices.get(5));
         drawLine(g, vertices.get(2), vertices.get(4));
