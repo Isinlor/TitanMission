@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -47,7 +48,9 @@ public class SimulationPanel extends JPanel {
         turnAntialiasingOn(g);
 
         // actual simulation happens here; time step picked empirically
-        bodies.iterate(.5);
+        for (int i = 0; i < 1000; i++) {
+            bodies.iterate(100);
+        }
 
         g.translate(getWidth() / 2, getHeight() / 2);
 
@@ -59,14 +62,16 @@ public class SimulationPanel extends JPanel {
 
         Vectors positions = bodies.getPositions();
 
-         positions = positions.rotateAroundAxisX(new Vector(), thetaY / 200);
-         positions = positions.rotateAroundAxisY(new Vector(), thetaX / 200);
+        positions = positions.rotateAroundAxisX(new Vector(), thetaY / 200);
+        positions = positions.rotateAroundAxisY(new Vector(), thetaX / 200);
+
+        double scale = 5e9;
 
         for(Vector vector: positions.getVectors()) {
 
             g.fillOval(
-                (int)Math.round(vector.x),
-                (int)Math.round(vector.y),
+                (int)Math.round(vector.x / scale),
+                (int)Math.round(vector.y / scale),
                 4, 4
             );
 

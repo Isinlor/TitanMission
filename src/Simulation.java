@@ -31,28 +31,19 @@ class Simulation {
         // exit after clicking close button
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Initialize bodies for the simulation.
-        // I picked some random numbers that result in a planetary system.
-        Set<Body> setOfBodies = new HashSet<Body>();
-        setOfBodies.add(new Body(new Vector(0, 0), new Vector(0, 0), 2.1e13));
-        setOfBodies.add(new Body(new Vector(0, 150), new Vector(-3, 0, 0.01), 1e11));
-        setOfBodies.add(new Body(new Vector(6, 156), new Vector(-2.34, -0.5, 0.01), 1));
-        setOfBodies.add(new Body(new Vector(7, 156), new Vector(-2.341, -0.5), 1));
-        setOfBodies.add(new Body(new Vector(8, 156), new Vector(-2.34, -0.51), 1));
-        setOfBodies.add(new Body(new Vector(9, 156), new Vector(-2.341, -0.55, 0.2), 1));
-        setOfBodies.add(new Body(new Vector(0, 50), new Vector(-5, 0), 1e10));
-        setOfBodies.add(new Body(new Vector(0, 350), new Vector(2, 0, -1), 2e11));
-
-        Bodies bodies = new Bodies(setOfBodies);
-
-        window.setContentPane(new SimulationPanel(bodies));
+        SolarSystem solarSystem = new SolarSystem();
+        window.setContentPane(
+            new SimulationPanel(
+                 solarSystem
+            )
+        );
 
         window.pack();
 
         // make display visible
         window.setVisible(true);
 
-        simulate(bodies);
+        simulate(solarSystem);
 
     }
 
