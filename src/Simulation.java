@@ -31,19 +31,19 @@ class Simulation {
         // exit after clicking close button
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        SolarSystem solarSystem = new SolarSystem();
-        window.setContentPane(
-            new SimulationPanel(
-                 solarSystem
-            )
-        );
+//        SolarSystem solarSystem = new SolarSystem();
+//        window.setContentPane(
+//            new SimulationPanel(
+//                 solarSystem
+//            )
+//        );
 
         window.pack();
 
         // make display visible
         window.setVisible(true);
 
-        simulate(solarSystem);
+//        simulate(solarSystem);
 
     }
 

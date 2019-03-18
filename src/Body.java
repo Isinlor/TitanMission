@@ -37,6 +37,10 @@ class Body {
         position = position.sum(velocity.product(time));
     }
 
+    void addVelocity(Vector change) {
+        velocity = velocity.sum(change);
+    }
+
     /**
      * Computes force between this and the other body based on Newton's law of universal gravitation.
      * @link https://en.wikipedia.org/wiki/Newton's_law_of_universal_gravitation#Vector_form
@@ -55,12 +59,20 @@ class Body {
     /**
      * Compute simple euclidean distance.
      */
-    private double computeDistance(Body body) {
+    double computeDistance(Body body) {
         return position.euclideanDistance(body.position);
     }
 
     public String toString() {
         return "Position" + position + ", Velocity" + velocity + ", mass(" + Utils.round(mass) + ")";
+    }
+
+    Body copy() {
+        return new Body(
+            getPosition(),
+            getVelocity(),
+            getMass()
+        );
     }
 
 }
