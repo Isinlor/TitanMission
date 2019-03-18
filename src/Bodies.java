@@ -6,27 +6,45 @@ import java.util.stream.Collectors;
 
 /**
  * Represents set of bodies that interact with each other.
+ *
+ * Each body can be identified by unique name.
  */
 class Bodies {
 
-    private HashMap<String, Body> bodies;
+    private Map<String, Body> bodies;
 
-    Bodies(HashMap<String, Body> bodies) {
+    Bodies(Map<String, Body> bodies) {
         this.bodies = bodies;
     }
 
-    Body getBody(String string) {
-        return bodies.get(string);
+    /**
+     * Adds a body to the set.
+     *
+     * The body must have a unique name.
+     */
+    void addBody(Body body) {
+        if(bodies.containsValue(body)) throw new RuntimeException("Body [" + body.getName() + "] already added!");
+        if(bodies.containsKey(body.getName())) throw new RuntimeException("Duplicated name [" + body.getName() + "]!");
+        bodies.put(body.getName(), body);
     }
 
-    Set<Map.Entry<String, Body>> getEntries() {
-        return bodies.entrySet();
+    /**
+     * Returns body by a unique name.
+     */
+    Body getBody(String name) {
+        return bodies.get(name);
     }
 
+    /**
+     * Returns set of bodies.
+     */
     Set<Body> getBodies() {
         return new HashSet<>(bodies.values());
     }
 
+    /**
+     * Returns set of body vectors.
+     */
     Vectors getPositions() {
         return new Vectors(
             getBodies().stream().map(Body::getPosition).collect(Collectors.toSet())

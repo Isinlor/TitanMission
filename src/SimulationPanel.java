@@ -8,12 +8,14 @@ import java.util.Map;
 
 public class SimulationPanel extends JPanel {
 
+    double scale;
     Bodies bodies;
     double thetaX;
     double thetaY;
 
-    public SimulationPanel(Bodies bodies) {
+    public SimulationPanel(double scale, Bodies bodies) {
 
+        this.scale = scale;
         this.bodies = bodies;
 
         setPreferredSize(new Dimension(
@@ -52,6 +54,8 @@ public class SimulationPanel extends JPanel {
 
         drawBodies(g);
 
+        bodies.iterate(60*60);
+
     }
 
     private void drawBodies(Graphics g) {
@@ -61,15 +65,20 @@ public class SimulationPanel extends JPanel {
 //        positions = positions.rotateAroundAxisX(new Vector(), thetaY / 200);
 //        positions = positions.rotateAroundAxisY(new Vector(), thetaX / 200);
 
-        double scale = 0.8e9;
+        for(Body body: bodies.getBodies()) {
 
-        for(Map.Entry<String, Body> entry: bodies.getEntries()) {
-
-            Body body = entry.getValue();
             Vector vector = body.getPosition();
 
-            String bodyName = entry.getKey();
-            
+            String bodyName = body.getName().toLowerCase();
+
+            g.setColor(Color.BLACK);
+
+            g.fillOval(
+                (int)Math.round(vector.x / scale),
+                (int)Math.round(vector.y / scale),
+                7, 7
+            );
+
             Color color;
             if(bodyName.equals("sun")) {
                 color = Color.YELLOW;
@@ -81,14 +90,6 @@ public class SimulationPanel extends JPanel {
                 color = Color.BLACK;
             }
 
-            g.setColor(Color.BLACK);
-
-            g.fillOval(
-                (int)Math.round(vector.x / scale),
-                (int)Math.round(vector.y / scale),
-                7, 7
-            );
-
             g.setColor(color);
 
             g.fillOval(
@@ -96,8 +97,6 @@ public class SimulationPanel extends JPanel {
                 (int)Math.round(vector.y / scale),
                 6, 6
             );
-
-
 
         }
 

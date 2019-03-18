@@ -1,10 +1,10 @@
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,19 +31,20 @@ class Simulation {
         // exit after clicking close button
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-//        SolarSystem solarSystem = new SolarSystem();
-//        window.setContentPane(
-//            new SimulationPanel(
-//                 solarSystem
-//            )
-//        );
+        SolarSystem solarSystem = new SolarSystem();
+        window.setContentPane(
+            new SimulationPanel(
+                5e9,
+                solarSystem
+            )
+        );
 
         window.pack();
 
         // make display visible
         window.setVisible(true);
 
-//        simulate(solarSystem);
+        simulate(solarSystem);
 
     }
 

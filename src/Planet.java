@@ -7,14 +7,13 @@ import javafx.scene.shape.Sphere;
  * Representation of a body with position velocity and mass.
  */
 class Planet extends Body {
-    private String name;
+
     private String texturePath;
     private double radius;
     private Sphere sphere;
 
     Planet(String name, double mass, double radius, String texturePath, Vector position, Vector velocity) {
-        super(position, velocity, mass);
-        this.name = name;
+        super(name, position, velocity, mass);
         this.radius = radius;
         this.texturePath = texturePath;
 
@@ -31,8 +30,6 @@ class Planet extends Body {
     double getRadius() {
         return radius;
     }
-
-    String getName() { return name; }
 
     @Override
     void applyForce(Force force, double time) {

@@ -3,14 +3,20 @@
  */
 class Body {
 
+    private String name;
     private Vector position;
     private Vector velocity;
     private double mass;
 
-    Body(Vector position, Vector velocity, double mass) {
+    Body(String name, Vector position, Vector velocity, double mass) {
+        this.name = name;
         this.position = position;
         this.velocity = velocity;
         this.mass = mass;
+    }
+
+    String getName() {
+        return name;
     }
 
     Vector getPosition() {
@@ -64,11 +70,12 @@ class Body {
     }
 
     public String toString() {
-        return "Position" + position + ", Velocity" + velocity + ", mass(" + Utils.round(mass) + ")";
+        return "Name: " + getName() + ", Position" + position + ", Velocity" + velocity + ", mass(" + Utils.round(mass) + ")";
     }
 
     Body copy() {
         return new Body(
+            getName(),
             getPosition(),
             getVelocity(),
             getMass()
