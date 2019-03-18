@@ -7,9 +7,11 @@ import java.util.Set;
 @SuppressWarnings("Duplicates")
 public class MissionTest {
 
-    static JFrame window = new JFrame();
-    static final double timeStep = 60.0*10.0; // in s
-    static final long steps = (long)(300*24*60*60 / timeStep); // around 1 year
+    private static JFrame window = new JFrame();
+    private static final double timeStep = 60.0*10.0; // in s
+    private static final long steps = (long)(300*24*60*60 / timeStep); // around 1 year
+    private static final long stepsPerFrame = (long)(24*60*60 / timeStep); // around 1 day
+    private static long animatedSteps;
 
     /**
      * Some simple test.
@@ -76,20 +78,26 @@ public class MissionTest {
     }
 
     private static void animate(Bodies bodies) throws InterruptedException {
-//        double time = System.currentTimeMillis() - 1000;
-        for (int i = 0; i < steps; i++) {
-            bodies.iterate(timeStep);
 
-            if(i % 50 == 0) {
-                display(bodies);
-                Thread.sleep(2);
+        // exit after clicking close button
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        SimulationPanel simulationPanel = new SimulationPanel(5e9, bodies);
+        window.setContentPane(simulationPanel);
+        window.pack();
+        window.setVisible(true);
+        animatedSteps = 0;
+
+        simulationPanel.startAnimation(
+            (Bodies<BodyMetaSwing> bodies2) -> {
+                if(animatedSteps > steps) {
+                    simulationPanel.stopAnimation();
+                    window.dispose();
+                }
+                for (int i = 0; i < stepsPerFrame; i++) {
+                    bodies2.iterate(timeStep);
+                }
             }
-
-//            if(System.currentTimeMillis() - time > 1) {
-//                time = System.currentTimeMillis();
-//                Thread.sleep(2);
-//            }
-        }
+        );
     }
 
     private static void optimize(Bodies bodies) throws Exception {
@@ -184,22 +192,6 @@ public class MissionTest {
         }
 
         return minDistance;
-
-    }
-
-    static void display(Bodies bodies) {
-
-        // exit after clicking close button
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        window.setContentPane(
-            new SimulationPanel(
-                0.8e9,
-                 bodies
-            )
-        );
-
-        window.pack();
 
     }
 

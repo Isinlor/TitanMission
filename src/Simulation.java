@@ -32,34 +32,23 @@ class Simulation {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         SolarSystem solarSystem = new SolarSystem();
-        window.setContentPane(
-            new SimulationPanel(
-                5e9,
-                solarSystem
-            )
-        );
+
+        SimulationPanel simulationPanel = new SimulationPanel(5e9, solarSystem);
+
+        window.setContentPane(simulationPanel);
 
         window.pack();
 
         // make display visible
         window.setVisible(true);
 
-        simulate(solarSystem);
-
-    }
-
-    /**
-     * Animate. Does repaint ~60 times a second.
-     */
-    private static void simulate(Bodies bodies) throws InterruptedException {
-
-        Timer timer = new Timer(16, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                window.getContentPane().repaint();
+        simulationPanel.startAnimation(
+            (Bodies<BodyMetaSwing> bodies) -> {
+                for (int i = 0; i < 24; i++) {
+                    bodies.iterate(60*60);
+                }
             }
-        });
-        timer.start();
+        );
 
     }
 

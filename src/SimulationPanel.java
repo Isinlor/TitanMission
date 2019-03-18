@@ -2,16 +2,24 @@ import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.color.ColorSpace;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class SimulationPanel extends JPanel {
 
-    double scale;
-    Bodies<BodyMetaSwing> bodies;
-    double thetaX;
-    double thetaY;
+    private Bodies<BodyMetaSwing> bodies;
+
+    private double scale;
+    private double thetaX;
+    private double thetaY;
+
+    private Consumer<Bodies<BodyMetaSwing>> action;
+
+    private Timer timer;
 
     SimulationPanel(double scale, Bodies<BodyMetaSwing> bodies) {
 
@@ -42,6 +50,23 @@ public class SimulationPanel extends JPanel {
 
     }
 
+    Timer startAnimation(Consumer<Bodies<BodyMetaSwing>> action) {
+        // Animate. Does repaint ~60 times a second.
+        timer = new Timer(16, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(action != null) action.accept(bodies);
+                repaint();
+            }
+        });
+        timer.start();
+        return timer;
+    }
+
+    void stopAnimation() {
+        timer.stop();
+    }
+
     public void paintComponent(Graphics g) {
 
         // See: https://stackoverflow.com/a/13281121/893222
@@ -53,10 +78,6 @@ public class SimulationPanel extends JPanel {
         g.translate(getWidth() / 2, getHeight() / 2);
 
         drawBodies(g);
-
-        for (int i = 0; i < 24; i++) {
-            bodies.iterate(60*60);
-        }
 
     }
 
@@ -76,6 +97,7 @@ public class SimulationPanel extends JPanel {
             }
         );
 
+        Color oldColor = g.getColor();
         for(Body<BodyMetaSwing> body: displayBodies.getBodies()) {
 
             Vector vector = body.getPosition();
@@ -101,6 +123,7 @@ public class SimulationPanel extends JPanel {
             }
 
         }
+        g.setColor(oldColor);
 
         // Cube is here to help visualize 3D space.
         Cube cube = new Cube(new Vector(-200, -200, -200), 400);
