@@ -10,59 +10,55 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class SimulationGUI extends Application {
     private PerspectiveCamera camera;
-    //private Label label;
-    private Group labelGroup;
 
     public Parent createContent() throws Exception {
         double auToM = 1.496e11;
         double dayToSecond = 1.0 / 86400.0;
-        Planet earth = new Planet(new Vector(-9.918696803493554E-01 * auToM, 9.679454643549934E-02 * auToM, -4.277240997129137E-05 * auToM),
-                new Vector(-1.825836604899280E-03 * auToM * dayToSecond, -1.719621912926312E-02 * auToM * dayToSecond, 3.421794164900239E-07 * auToM * dayToSecond),
-                5.9721986e24,
-                6371008, // 6.957e9
-                "planettextures/8k_earth_daymap.jpg");
 
-        Planet sun = new Planet(new Vector(-1.351343105506232E-03 * auToM, 7.549817138203992E-03 * auToM, -4.200718115315673E-05 * auToM),
-                new Vector(-8.222950279730839E-06 * auToM * dayToSecond, 1.252598675779703E-06 * auToM * dayToSecond, 2.140020605610505E-07 * auToM * dayToSecond),
-                1.988435e30,
-                6.957e8,
-                "planettextures/8k_sun.jpg");
+        LinkedList<Planet> planets = CSVReader.readPlanets();
 
         Set<Body> setOfBodies = new HashSet<>();
-        setOfBodies.add(earth);
-        setOfBodies.add(sun);
+        for (Planet planet: planets) setOfBodies.add(planet);
         Bodies bodies = new Bodies(setOfBodies);
 
+        List<Sphere> planetSpheres = new LinkedList<>();
+        for (Planet planet: planets) planetSpheres.add(planet.getSphere());
+
+        for (Sphere planetSphere: planetSpheres) planetSphere.setRadius(planetSphere.getRadius()*1000);
         System.out.println(bodies);
 
-        Sphere earthSphere = earth.getSphere();
-        Sphere sunSphere = sun.getSphere();
+
+
+        /*
+        earthSphere.setRadius(earthSphere.getRadius()*2000);
+        sunSphere.setRadius(sunSphere.getRadius()*50);
+        */
 
         // Create and position camera
         camera = new PerspectiveCamera(true);
-        camera.getTransforms().addAll(new Translate(earthSphere.getTranslateX(), earthSphere.getTranslateY(), earthSphere.getTranslateZ() - earthSphere.getRadius() * 5));
-        // camera.getTransforms().addAll(new Translate(sunSphere.getTranslateX(), sunSphere.getTranslateY(), sunSphere.getTranslateZ() - sunSphere.getRadius() - 1.489e11));
+        camera.getTransforms().addAll(new Translate(0, 0, -1.489e12));
         camera.setFarClip(1e100);
         camera.setNearClip(1);
 
         // Build the Scene Graph
         Group root = new Group();
         root.getChildren().add(camera);
-        root.getChildren().add(earthSphere);
-        root.getChildren().add(sunSphere);
+        for (Sphere planetSphere: planetSpheres) root.getChildren().add(planetSphere);
 
         final Timeline timeline = new Timeline(
                 new KeyFrame(
                         Duration.millis( 5 ),
                         event -> {
-                            bodies.iterate(100*100);
+                            bodies.iterate(100*25);
                             // camera.getTransforms().addAll(new Translate(camera.getTranslateX(), camera.getTranslateY(), camera.getTranslateZ() - sunSphere.getRadius() ));
 
-                            // System.out.println(bodies);
+                            System.out.println(bodies);
                         }
                 )
         );
