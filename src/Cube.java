@@ -30,10 +30,6 @@ class Cube {
 
     }
 
-    Vectors getVectors() {
-        return new Vectors(new HashSet<Vector>(vertices.values()));
-    }
-
     void rotateAroundAxisX(Vector center, double theta) {
         for (int i = 0; i < vertices.size(); i++) {
             vertices.replace(i, vertices.get(i).rotateAroundAxisX(center, theta));

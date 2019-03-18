@@ -48,15 +48,6 @@ class Bodies<M extends BodyMeta> {
     }
 
     /**
-     * Returns set of body vectors.
-     */
-    Vectors getPositions() {
-        return new Vectors(
-            getBodies().stream().map(Body::getPosition).collect(Collectors.toSet())
-        );
-    }
-
-    /**
      * Computes next time step in simulation.
      *
      * A force working on each body is computed and applied for specified time.
