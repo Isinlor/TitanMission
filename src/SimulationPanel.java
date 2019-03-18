@@ -54,18 +54,29 @@ public class SimulationPanel extends JPanel {
 
         drawBodies(g);
 
-        bodies.iterate(60*60);
+        for (int i = 0; i < 24; i++) {
+            bodies.iterate(60*60);
+        }
 
     }
 
     private void drawBodies(Graphics g) {
 
-//        Vectors positions = bodies.getPositions();
-//
-//        positions = positions.rotateAroundAxisX(new Vector(), thetaY / 200);
-//        positions = positions.rotateAroundAxisY(new Vector(), thetaX / 200);
+        Bodies<BodyMetaSwing> displayBodies = bodies.copy();
 
-        for(Body<BodyMetaSwing> body: bodies.getBodies()) {
+        displayBodies.apply(
+            (Body<BodyMetaSwing> body) -> {
+                body.setPosition(body.getPosition().rotateAroundAxisX(new Vector(), thetaY / 200));
+            }
+        );
+
+        displayBodies.apply(
+            (Body<BodyMetaSwing> body) -> {
+                body.setPosition(body.getPosition().rotateAroundAxisY(new Vector(), thetaX / 200));
+            }
+        );
+
+        for(Body<BodyMetaSwing> body: displayBodies.getBodies()) {
 
             Vector vector = body.getPosition();
 
@@ -91,12 +102,12 @@ public class SimulationPanel extends JPanel {
 
         }
 
-//        // Cube is here to help visualize 3D space.
-//        Cube cube = new Cube(new Vector(-200, -200, -200), 400);
-//        cube.rotateAroundAxisX(new Vector(), thetaY / 200);
-//        cube.rotateAroundAxisY(new Vector(), thetaX / 200);
-//
-//        cube.draw(g);
+        // Cube is here to help visualize 3D space.
+        Cube cube = new Cube(new Vector(-200, -200, -200), 400);
+        cube.rotateAroundAxisX(new Vector(), thetaY / 200);
+        cube.rotateAroundAxisY(new Vector(), thetaX / 200);
+
+        cube.draw(g);
 
     }
 

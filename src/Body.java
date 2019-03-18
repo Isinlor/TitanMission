@@ -60,6 +60,10 @@ class Body<M extends BodyMeta> {
         position = position.sum(velocity.product(time));
     }
 
+    void setPosition(Vector position) {
+        this.position = position;
+    }
+
     void addVelocity(Vector change) {
         velocity = velocity.sum(change);
     }

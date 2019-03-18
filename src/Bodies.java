@@ -2,6 +2,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -63,6 +64,15 @@ class Bodies<M extends BodyMeta> {
     void iterate(double time) {
         for (Body body: getBodies()) {
             body.applyForce(computeForce(body), time);
+        }
+    }
+
+    /**
+     * Allows to apply arbitrary operation on all bodies.
+     */
+    void apply(Consumer<Body<M>> fn) {
+        for(Body<M> body: getBodies()) {
+            fn.accept(body);
         }
     }
 
