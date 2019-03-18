@@ -69,25 +69,35 @@ public class SimulationPanel extends JPanel {
             Vector vector = body.getPosition();
 
             String bodyName = entry.getKey();
-//            System.out.println(bodyName);
-
+            
             Color color;
-
-
-            switch (bodyName.toLowerCase()) {
-                case "sun": color = Color.YELLOW;
-                case "mars": color = Color.RED;
-                case "earth": color = Color.BLUE;
-                default: color = Color.BLACK;
+            if(bodyName.equals("sun")) {
+                color = Color.YELLOW;
+            } else if(bodyName.equals("mars")) {
+                color = Color.RED;
+            } else if(bodyName.equals("earth")) {
+                color = Color.BLUE;
+            } else {
+                color = Color.BLACK;
             }
+
+            g.setColor(Color.BLACK);
+
+            g.fillOval(
+                (int)Math.round(vector.x / scale),
+                (int)Math.round(vector.y / scale),
+                7, 7
+            );
 
             g.setColor(color);
 
             g.fillOval(
                 (int)Math.round(vector.x / scale),
                 (int)Math.round(vector.y / scale),
-                4, 4
+                6, 6
             );
+
+
 
         }
 
