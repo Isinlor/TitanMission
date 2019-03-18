@@ -13,6 +13,10 @@ class Bodies {
 
     private Map<String, Body> bodies;
 
+    Bodies() {
+        this.bodies = new HashMap<>();
+    }
+
     Bodies(Map<String, Body> bodies) {
         this.bodies = bodies;
     }
