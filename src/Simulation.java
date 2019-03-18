@@ -1,10 +1,10 @@
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,7 +34,8 @@ class Simulation {
         SolarSystem solarSystem = new SolarSystem();
         window.setContentPane(
             new SimulationPanel(
-                 solarSystem
+                5e9,
+                solarSystem
             )
         );
 

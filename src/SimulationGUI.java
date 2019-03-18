@@ -9,10 +9,7 @@ import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class SimulationGUI extends Application {
     private PerspectiveCamera camera;
@@ -23,9 +20,9 @@ public class SimulationGUI extends Application {
 
         LinkedList<Planet> planets = CSVReader.readPlanets();
 
-        Set<Body> setOfBodies = new HashSet<>();
-        for (Planet planet: planets) setOfBodies.add(planet);
-        Bodies bodies = new Bodies(setOfBodies);
+        Map<String, Body> mapOfBodies = new HashMap<>();
+        for (Planet planet: planets) mapOfBodies.put(planet.getName(), planet);
+        Bodies bodies = new Bodies(mapOfBodies);
 
         List<Sphere> planetSpheres = new LinkedList<>();
         for (Planet planet: planets) planetSpheres.add(planet.getSphere());

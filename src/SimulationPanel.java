@@ -4,19 +4,22 @@ import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Map;
 
 public class SimulationPanel extends JPanel {
 
+    double scale;
     Bodies bodies;
     double thetaX;
     double thetaY;
 
-    public SimulationPanel(Bodies bodies) {
+    public SimulationPanel(double scale, Bodies bodies) {
 
+        this.scale = scale;
         this.bodies = bodies;
 
         setPreferredSize(new Dimension(
-                800, 800
+            800, 800
         ));
 
         MouseAdapter mouseRotation = new MouseInputAdapter() {
@@ -47,42 +50,62 @@ public class SimulationPanel extends JPanel {
 
         turnAntialiasingOn(g);
 
-        // actual simulation happens here; time step picked empirically
-        for (int i = 0; i < 1000; i++) {
-            bodies.iterate(100);
-        }
-
         g.translate(getWidth() / 2, getHeight() / 2);
 
         drawBodies(g);
+
+        bodies.iterate(60*60);
 
     }
 
     private void drawBodies(Graphics g) {
 
-        Vectors positions = bodies.getPositions();
+//        Vectors positions = bodies.getPositions();
+//
+//        positions = positions.rotateAroundAxisX(new Vector(), thetaY / 200);
+//        positions = positions.rotateAroundAxisY(new Vector(), thetaX / 200);
 
-        positions = positions.rotateAroundAxisX(new Vector(), thetaY / 200);
-        positions = positions.rotateAroundAxisY(new Vector(), thetaX / 200);
+        for(Body body: bodies.getBodies()) {
 
-        double scale = 5e9;
+            Vector vector = body.getPosition();
 
-        for(Vector vector: positions.getVectors()) {
+            String bodyName = body.getName().toLowerCase();
+
+            g.setColor(Color.BLACK);
 
             g.fillOval(
                 (int)Math.round(vector.x / scale),
                 (int)Math.round(vector.y / scale),
-                4, 4
+                7, 7
+            );
+
+            Color color;
+            if(bodyName.equals("sun")) {
+                color = Color.YELLOW;
+            } else if(bodyName.equals("mars")) {
+                color = Color.RED;
+            } else if(bodyName.equals("earth")) {
+                color = Color.BLUE;
+            } else {
+                color = Color.BLACK;
+            }
+
+            g.setColor(color);
+
+            g.fillOval(
+                (int)Math.round(vector.x / scale),
+                (int)Math.round(vector.y / scale),
+                6, 6
             );
 
         }
 
-        // Cube is here to help visualize 3D space.
-        Cube cube = new Cube(new Vector(-200, -200, -200), 400);
-        cube.rotateAroundAxisX(new Vector(), thetaY / 200);
-        cube.rotateAroundAxisY(new Vector(), thetaX / 200);
-
-        cube.draw(g);
+//        // Cube is here to help visualize 3D space.
+//        Cube cube = new Cube(new Vector(-200, -200, -200), 400);
+//        cube.rotateAroundAxisX(new Vector(), thetaY / 200);
+//        cube.rotateAroundAxisY(new Vector(), thetaX / 200);
+//
+//        cube.draw(g);
 
     }
 
