@@ -1,18 +1,31 @@
 /**
  * Representation of a body with position velocity and mass.
+ *
+ * Each body is identified by name.
+ *
+ * You can use an instance of BodyMeta to store metadata.
  */
-class Body {
+class Body<M extends BodyMeta> {
 
     private String name;
     private Vector position;
     private Vector velocity;
     private double mass;
+    private M meta;
 
     Body(String name, Vector position, Vector velocity, double mass) {
         this.name = name;
         this.position = position;
         this.velocity = velocity;
         this.mass = mass;
+    }
+
+    Body(String name, Vector position, Vector velocity, double mass, M meta) {
+        this.name = name;
+        this.position = position;
+        this.velocity = velocity;
+        this.mass = mass;
+        this.meta = meta;
     }
 
     String getName() {
@@ -29,6 +42,10 @@ class Body {
 
     double getMass() {
         return mass;
+    }
+
+    M getMeta() {
+        return meta;
     }
 
     /**
@@ -73,12 +90,13 @@ class Body {
         return "Name: " + getName() + ", Position" + position + ", Velocity" + velocity + ", mass(" + Utils.round(mass) + ")";
     }
 
-    Body copy() {
-        return new Body(
+    Body<M> copy() {
+        return new Body<M>(
             getName(),
             getPosition(),
             getVelocity(),
-            getMass()
+            getMass(),
+            getMeta()
         );
     }
 

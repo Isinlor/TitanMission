@@ -6,8 +6,6 @@ class SolarSystem extends Bodies {
 
     SolarSystem() {
 
-        super(new HashMap<>());
-
         double auToM = 149597870.700 * 1000;
         double invDayToSecond = 1 / 86400.0;
 

@@ -9,11 +9,11 @@ import java.util.Map;
 public class SimulationPanel extends JPanel {
 
     double scale;
-    Bodies bodies;
+    Bodies<BodyMetaSwing> bodies;
     double thetaX;
     double thetaY;
 
-    public SimulationPanel(double scale, Bodies bodies) {
+    SimulationPanel(double scale, Bodies<BodyMetaSwing> bodies) {
 
         this.scale = scale;
         this.bodies = bodies;
@@ -65,11 +65,9 @@ public class SimulationPanel extends JPanel {
 //        positions = positions.rotateAroundAxisX(new Vector(), thetaY / 200);
 //        positions = positions.rotateAroundAxisY(new Vector(), thetaX / 200);
 
-        for(Body body: bodies.getBodies()) {
+        for(Body<BodyMetaSwing> body: bodies.getBodies()) {
 
             Vector vector = body.getPosition();
-
-            String bodyName = body.getName().toLowerCase();
 
             g.setColor(Color.BLACK);
 
@@ -79,24 +77,17 @@ public class SimulationPanel extends JPanel {
                 7, 7
             );
 
-            Color color;
-            if(bodyName.equals("sun")) {
-                color = Color.YELLOW;
-            } else if(bodyName.equals("mars")) {
-                color = Color.RED;
-            } else if(bodyName.equals("earth")) {
-                color = Color.BLUE;
-            } else {
-                color = Color.BLACK;
+            if(body.getMeta() instanceof BodyMetaSwing) {
+
+                g.setColor(body.getMeta().getColor());
+
+                g.fillOval(
+                    (int)Math.round(vector.x / scale),
+                    (int)Math.round(vector.y / scale),
+                    6, 6
+                );
+
             }
-
-            g.setColor(color);
-
-            g.fillOval(
-                (int)Math.round(vector.x / scale),
-                (int)Math.round(vector.y / scale),
-                6, 6
-            );
 
         }
 

@@ -9,15 +9,15 @@ import java.util.stream.Collectors;
  *
  * Each body can be identified by unique name.
  */
-class Bodies {
+class Bodies<M extends BodyMeta> {
 
-    private Map<String, Body> bodies;
+    private Map<String, Body<M>> bodies;
 
     Bodies() {
         this.bodies = new HashMap<>();
     }
 
-    Bodies(Map<String, Body> bodies) {
+    Bodies(Map<String, Body<M>> bodies) {
         this.bodies = bodies;
     }
 
@@ -26,7 +26,7 @@ class Bodies {
      *
      * The body must have a unique name.
      */
-    void addBody(Body body) {
+    void addBody(Body<M> body) {
         if(bodies.containsValue(body)) throw new RuntimeException("Body [" + body.getName() + "] already added!");
         if(bodies.containsKey(body.getName())) throw new RuntimeException("Duplicated name [" + body.getName() + "]!");
         bodies.put(body.getName(), body);
@@ -35,15 +35,15 @@ class Bodies {
     /**
      * Returns body by a unique name.
      */
-    Body getBody(String name) {
+    Body<M> getBody(String name) {
         return bodies.get(name);
     }
 
     /**
      * Returns set of bodies.
      */
-    Set<Body> getBodies() {
-        return new HashSet<>(bodies.values());
+    Set<Body<M>> getBodies() {
+        return new HashSet<Body<M>>(bodies.values());
     }
 
     /**
@@ -86,15 +86,14 @@ class Bodies {
         return stringBuilder.toString();
     }
 
-    Bodies copy() {
-        HashMap<String, Body> setOfBodies = getCopyBodies();
-        return new Bodies(setOfBodies);
+    Bodies<M> copy() {
+        return new Bodies<M>(getCopyBodies());
     }
 
-    protected HashMap<String, Body> getCopyBodies() {
-        HashMap<String, Body> setOfBodies = new HashMap<>();
-        for (Map.Entry<String, Body> body: bodies.entrySet()) {
-            setOfBodies.put(body.getKey(), body.getValue().copy());
+    private HashMap<String, Body<M>> getCopyBodies() {
+        HashMap<String, Body<M>> setOfBodies = new HashMap<>();
+        for (Body<M> body: getBodies()) {
+            setOfBodies.put(body.getName(), body.copy());
         }
         return setOfBodies;
     }
