@@ -20,9 +20,8 @@ public class SimulationGUI extends Application {
 
         LinkedList<Planet> planets = CSVReader.readPlanets();
 
-        Map<String, Body> mapOfBodies = new HashMap<>();
-        for (Planet planet: planets) mapOfBodies.put(planet.getName(), planet);
-        Bodies bodies = new Bodies(mapOfBodies);
+        Bodies bodies = new Bodies();
+        for (Planet planet: planets) bodies.addBody(planet);
 
         List<Sphere> planetSpheres = new LinkedList<>();
         for (Planet planet: planets) planetSpheres.add(planet.getSphere());

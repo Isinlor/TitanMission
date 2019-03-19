@@ -1,7 +1,4 @@
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -12,14 +9,16 @@ import java.util.stream.Collectors;
  */
 class Bodies<M extends BodyMeta> {
 
-    private Map<String, Body<M>> bodies;
+    /**
+     * Notice! Linked version of HashMap is used purposefully!
+     * Order of floating point operations matters. (a+b != b+c)
+     * Random order removes determinism that an optimization may relay on.
+     * Linked version of HashMap assures consistent order.
+     */
+    private LinkedHashMap<String, Body<M>> bodies;
 
     Bodies() {
-        this.bodies = new HashMap<>();
-    }
-
-    Bodies(Map<String, Body<M>> bodies) {
-        this.bodies = bodies;
+        this.bodies = new LinkedHashMap<>();
     }
 
     /**
@@ -42,9 +41,12 @@ class Bodies<M extends BodyMeta> {
 
     /**
      * Returns set of bodies.
+     *
+     * Notice! Linked version of HashSet is used purposefully.
+     * @see bodies documentation for more details.
      */
     Set<Body<M>> getBodies() {
-        return new HashSet<Body<M>>(bodies.values());
+        return new LinkedHashSet<>(bodies.values());
     }
 
     /**
@@ -88,15 +90,11 @@ class Bodies<M extends BodyMeta> {
     }
 
     Bodies<M> copy() {
-        return new Bodies<M>(getCopyBodies());
-    }
-
-    private HashMap<String, Body<M>> getCopyBodies() {
-        HashMap<String, Body<M>> setOfBodies = new HashMap<>();
+        Bodies<M> copy = new Bodies<M>();
         for (Body<M> body: getBodies()) {
-            setOfBodies.put(body.getName(), body.copy());
+            copy.addBody(body.copy());
         }
-        return setOfBodies;
+        return copy;
     }
 
 }
