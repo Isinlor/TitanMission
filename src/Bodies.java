@@ -17,6 +17,8 @@ class Bodies<M extends BodyMeta> {
      */
     private LinkedHashMap<String, Body<M>> bodies;
 
+    private double time;
+
     Bodies() {
         this.bodies = new LinkedHashMap<>();
     }
@@ -50,6 +52,13 @@ class Bodies<M extends BodyMeta> {
     }
 
     /**
+     * Total time of simulation.
+     */
+    double getTime() {
+        return time;
+    }
+
+    /**
      * Computes next time step in simulation.
      *
      * A force working on each body is computed and applied for specified time.
@@ -58,6 +67,7 @@ class Bodies<M extends BodyMeta> {
         for (Body body: getBodies()) {
             body.applyForce(computeForce(body), time);
         }
+        this.time += time;
     }
 
     /**
@@ -94,6 +104,7 @@ class Bodies<M extends BodyMeta> {
         for (Body<M> body: getBodies()) {
             copy.addBody(body.copy());
         }
+        copy.time = time;
         return copy;
     }
 

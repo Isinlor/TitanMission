@@ -102,23 +102,20 @@ public class SimulationPanel extends JPanel {
 
             Vector vector = body.getPosition();
 
+            int x = (int)Math.round(vector.x / scale);
+            int y = (int)Math.round(vector.y / scale);
+
             g.setColor(Color.BLACK);
 
-            g.fillOval(
-                (int)Math.round(vector.x / scale),
-                (int)Math.round(vector.y / scale),
-                7, 7
-            );
+            g.fillOval(x, y, 7, 7);
+
+            g.drawString(body.getName(), x + 15, y + 7);
 
             if(body.getMeta() instanceof BodyMetaSwing) {
 
                 g.setColor(body.getMeta().getColor());
 
-                g.fillOval(
-                    (int)Math.round(vector.x / scale),
-                    (int)Math.round(vector.y / scale),
-                    6, 6
-                );
+                g.fillOval(x, y, 6, 6);
 
             }
 
@@ -131,6 +128,8 @@ public class SimulationPanel extends JPanel {
         cube.rotateAroundAxisY(new Vector(), thetaX / 200);
 
         cube.draw(g);
+
+        g.drawString("Day: " + Double.toString(bodies.getTime() / (60 * 60 * 24)), getWidth() / 2 - 100, getHeight() / 2 - 20);
 
     }
 
