@@ -69,16 +69,6 @@ class SolarSystem extends Bodies {
             )
         );
 
-        // Space
-        addBody(
-                new Body(
-                        "Spaceshuttle",
-                        new Vector( -9.118696803493554E-01,9.279454643549934E-02,-4.477240997129137E-05).product(auToM),
-                        new Vector(58389.77142673674, 66691.9949975113,0.0),
-                        1000
-                )
-        );
-
     }
 
 }
