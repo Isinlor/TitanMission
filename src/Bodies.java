@@ -35,6 +35,13 @@ class Bodies<M extends BodyMeta> {
     }
 
     /**
+     * Add all given bodies.
+     */
+    void addBodies(Bodies<M> bodies) {
+        bodies.apply(this::addBody);
+    }
+
+    /**
      * Returns body by a unique name.
      */
     Body<M> getBody(String name) {
