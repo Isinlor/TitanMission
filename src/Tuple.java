@@ -3,12 +3,12 @@
  *
  * Allows to return two outputs from a function.
  */
-public class Topple<X, Y> {
+class Tuple<X, Y> {
 
     private X x;
     private Y y;
 
-    Topple(X x, Y y) {
+    Tuple(X x, Y y) {
         this.x = x;
         this.y = y;
     }

@@ -77,7 +77,7 @@ public class MissionTest {
         Vector position = earth.getPosition().sum(new Vector(1.0, 0.0, 0.0).product(distanceFromCenter));
         Vector velocity = new Vector(0.0, 1.0, 0.0).product(orbitalSpeed).sum(earth.getVelocity());
 
-        Body probePrototype = new Body<BodyMetaSwing>(
+        Body<BodyMetaSwing> probePrototype = new Body<BodyMetaSwing>(
             "probe",
             position,
             velocity,
@@ -85,18 +85,24 @@ public class MissionTest {
             new BodyMetaSwing(Color.gray)
         );
 
+        Body minProbe = probePrototype;
+
+        int noProgress = 0;
         while(true) {
 
+            double range = 10000;
             // try random steps from high range
-            double step = 10000 / Math.pow(10, 3*Math.random());
+            double step = range / Math.pow(10, 3*Math.random());
 
             Bodies testBodies = bodies.copy();
             earth = testBodies.getBody("earth");
 
+            Bodies probes = new Bodies<BodyMetaSwing>();
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
 
                     probe = probePrototype.copy();
+                    probe.rename("Probe (" + i + " " + j + ")");
 
                     Vector stepUpdate = new Vector(
                         i * step,
@@ -111,10 +117,19 @@ public class MissionTest {
                         continue;
                     }
 
+                    probes.addBody(probe);
+
                 }
             }
 
-            minDistance = getMinDistance(testBodies, targetName);
+            Bodies initProbes = probes.copy();
+            testBodies.addBodies(probes);
+
+            Bodies animateBodies = testBodies.copy();
+            Tuple<Double, Body> tuple = getMinDistance(testBodies, targetName, probes);
+
+            minDistance = tuple.getX();
+            minProbe = initProbes.getBody(tuple.getY().getName());
 
             double astronomicalUnits = 1.496e11;
             double marsRadius = 3389.5 * 1000;
@@ -128,33 +143,37 @@ public class MissionTest {
 
             if(minDistance < bestDistance) {
                 bestDistance = minDistance;
+                probePrototype = minProbe;
 
                 System.out.print("Updated! ");
-                System.out.println(distanceInMarsRadii + "\t" + Math.round(step) + " " + bestInitVelocity.getLength());
+                System.out.println(distanceInMarsRadii + "\t" + Math.round(step));
 
-                Bodies animateBodies = bodies.copy();
-                animateBodies.getBody("probe").addVelocity(bestInitVelocity);
+                noProgress = 0;
+
                 animate(animateBodies);
             } else {
                 System.out.print("         ");
-                System.out.println(distanceInMarsRadii + "\t" + Math.round(step) + " " + bestInitVelocity.getLength());
+                System.out.println(distanceInMarsRadii + "\t" + Math.round(step));
+                noProgress++;
+            }
+
+            if(noProgress > 5) {
+                range = range / 10;
             }
 
         }
     }
 
-    private static double getMinDistance(Bodies testBodies, String targetName) {
+    private static Tuple<Double, Body> getMinDistance(Bodies testBodies, String targetName, Bodies<BodyMeta> probes) {
 
-        Body probe;
         Body target;
-        Body bestProbe;
+        Tuple<Double, Body> bestTuple = new Tuple<Double, Body>(Double.MAX_VALUE, null);
 
         double minDistance = Double.MAX_VALUE;
         for (int i = 0; i < steps; i++) {
 
             testBodies.iterate(timeStep);
 
-            probe = testBodies.getBody("probe");
             target = testBodies.getBody(targetName);
 
             // adding speed limit makes probe fly further away from sun
@@ -163,16 +182,20 @@ public class MissionTest {
 //                return Double.MAX_VALUE;
 //            }
 
-            double distance = probe.computeDistance(target);
+            for(Body probe: probes.getBodies()) {
 
-            if(distance < minDistance) {
-                minDistance = distance;
-                bestProbe = probe;
+                double distance = probe.computeDistance(target);
+
+                if(distance < minDistance) {
+                    minDistance = distance;
+                    bestTuple = new Tuple<Double, Body>(minDistance, probe);
+                }
+
             }
 
         }
 
-        return new Topple<Double, Body>(minDistance, bestProbe);
+        return bestTuple;
 
     }
 
@@ -190,10 +213,11 @@ public class MissionTest {
             (Bodies<BodyMetaSwing> bodies2) -> {
                 if(animatedSteps > steps) {
                     simulationPanel.stopAnimation();
-                    window.dispose();
+//                    window.dispose();
                 }
                 for (int i = 0; i < stepsPerFrame; i++) {
                     bodies2.iterate(timeStep);
+                    animatedSteps++;
                 }
             }
         );
