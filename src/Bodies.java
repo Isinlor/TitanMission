@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -23,6 +26,13 @@ class Bodies<M extends BodyMeta> {
         this.bodies = new LinkedHashMap<>();
     }
 
+    Bodies(Collection<Body<M>> bodies) {
+        this();
+        for(Body<M> body: bodies) {
+            addBody(body);
+        }
+    }
+
     /**
      * Adds a body to the set.
      *
@@ -39,6 +49,13 @@ class Bodies<M extends BodyMeta> {
      */
     void addBodies(Bodies<M> bodies) {
         bodies.apply(this::addBody);
+    }
+
+    /**
+     * Remove body from the list of bodies.
+     */
+    void removeBody(Body body) {
+        bodies.remove(body.getName());
     }
 
     /**
@@ -118,6 +135,41 @@ class Bodies<M extends BodyMeta> {
         }
         copy.time = time;
         return copy;
+    }
+
+    void saveToResource(String string) {
+        try {
+            Files.write(Paths.get(Bodies.class.getClassLoader().getResource(string).getFile()), serialize().getBytes());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize bodies to resource " + string, e);
+        }
+    }
+
+    static Bodies readFromResource(String string) {
+        try {
+            return unserialize(
+                new String(Files.readAllBytes(Paths.get(Bodies.class.getResource(string).getFile())))
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to unserialize bodies from resource " + string, e);
+        }
+    }
+
+    private String serialize() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Body body: getBodies()) {
+            stringBuilder.append(body.serialize()).append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
+    private static Bodies unserialize(String string) {
+        Bodies bodies = new Bodies();
+        String[] serializedBodies = string.split("\n");
+        for(String serializedBody: serializedBodies) {
+            bodies.addBody(Body.unserialize(serializedBody));
+        }
+        return bodies;
     }
 
 }

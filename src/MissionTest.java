@@ -4,23 +4,14 @@ import java.awt.*;
 @SuppressWarnings("Duplicates")
 public class MissionTest {
 
-    private static JFrame window = new JFrame();
     private static final double timeStep = 60.0; // in s
-    private static final long steps = (long)(150*24*60*60 / timeStep); // around 1 year
+    private static final long steps = (long)(180*24*60*60 / timeStep); // around 1 year
     private static final long stepsPerFrame = (long)(24*60*60 / timeStep); // around 1 day
-    private static long animatedSteps;
 
     /**
      * Some simple test.
      */
     public static void main(String[] args) throws Exception {
-
-        // speeds up things on ubuntu significantly
-        // comment out if it does not work on windows / macos
-        System.setProperty("sun.java2d.opengl", "true");
-
-        // make display visible
-        window.setVisible(true);
 
         Bodies<BodyMetaSwing> bodies = new Bodies<>();
 
@@ -62,34 +53,24 @@ public class MissionTest {
     }
 
     private static void optimize(Bodies bodies) throws Exception {
-        Body probe;
         Body target;
         String targetName = "mars";
         double minDistance = Double.MAX_VALUE;
         double bestDistance = Double.MAX_VALUE;
-        Vector bestInitVelocity = new Vector();
-        Body earth;
+        Body source;
 
         for (int i = 0; i < (long)(500*24*60*60 / timeStep); i++) {
             bodies.iterate(timeStep);
         }
 
         // make probe orbit the earth; notice that time step must be sufficiently small
-        earth = bodies.getBody("earth");
-        Double distanceFromCenter = 6371 * 1000.0 + 100.0 * 1000.0;
-        Double orbitalSpeed = Math.sqrt(Simulation.G * earth.getMass() / distanceFromCenter);
-        Vector position = earth.getPosition().sum(new Vector(1.0, 0.0, 0.0).product(distanceFromCenter));
-        Vector velocity = new Vector(0.0, 1.0, 0.0).product(orbitalSpeed).sum(earth.getVelocity());
-
-        Body<BodyMetaSwing> probePrototype = new Body<BodyMetaSwing>(
-            "probe",
-            position,
-            velocity,
-            1,
-            new BodyMetaSwing(Color.gray)
-        );
-
+        source = bodies.getBody("earth");
+        double sourceRadius = 6371 * 1000.0;
+        Double distanceFromCenter = sourceRadius + 100.0 * 1000.0;
+        Body<BodyMetaSwing> probePrototype = getProbeInOrbit(source, distanceFromCenter);
         Body minProbe = probePrototype;
+
+        long additionalSteps = 0;
 
         int noProgress = 0;
         double range = 10000;
@@ -99,37 +80,15 @@ public class MissionTest {
             double step = range / Math.pow(10, 3*Math.random());
 
             Bodies testBodies = bodies.copy();
-            earth = testBodies.getBody("earth");
+            source = testBodies.getBody("earth");
 
-            Bodies probes = new Bodies<BodyMetaSwing>();
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-
-                    probe = probePrototype.copy();
-                    probe.rename("Probe (" + i + " " + j + ")");
-
-                    Vector stepUpdate = new Vector(
-                        i * step,
-                        j * step
-                    );
-
-                    Vector initVelocity = bestInitVelocity.sum(stepUpdate);
-                    probe.addVelocity(initVelocity);
-
-                    // avoid crazy high probe velocities in relation to Earth
-                    if(probe.getVelocity().sum(earth.getVelocity().product(-1)).getLength() > 100000) {
-                        continue;
-                    }
-
-                    probes.addBody(probe);
-
-                }
-            }
+            Bodies probes = getProbePrototypes(source, probePrototype, step);
 
             Bodies initProbes = probes.copy();
             testBodies.addBodies(probes);
 
             Bodies animateBodies = testBodies.copy();
+            Bodies saveBodies = testBodies.copy();
             Tuple<Double, Body> tuple = getMinDistance(testBodies, targetName, probes);
 
             minDistance = tuple.getX();
@@ -170,6 +129,48 @@ public class MissionTest {
         }
     }
 
+    private static Bodies getProbePrototypes(Body source, Body<BodyMetaSwing> probePrototype, double step) {
+        Body probe;
+        Bodies probes = new Bodies<BodyMetaSwing>();
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+
+                probe = probePrototype.copy();
+                probe.rename("Probe (" + i + " " + j + ")");
+
+                Vector stepUpdate = new Vector(
+                    i * step,
+                    j * step
+                );
+
+                probe.addVelocity(stepUpdate);
+
+                // avoid crazy high probe velocities in relation to Earth
+                if(probe.getRelativeVelocity(source).getLength() > 600000) {
+                    continue;
+                }
+
+                probes.addBody(probe);
+
+            }
+        }
+        return probes;
+    }
+
+    private static Body<BodyMetaSwing> getProbeInOrbit(Body body, Double distance) {
+        Double orbitalSpeed = Math.sqrt(SimulationSolarSystem.G * body.getMass() / distance);
+        Vector position = body.getPosition().sum(new Vector(1.0, 0.0, 0.0).product(distance));
+        Vector velocity = new Vector(0.0, 1.0, 0.0).product(orbitalSpeed).sum(body.getVelocity());
+
+        return new Body<BodyMetaSwing>(
+            "probe",
+            position,
+            velocity,
+            1,
+            new BodyMetaSwing(Color.gray)
+        );
+    }
+
     private static Tuple<Double, Body> getMinDistance(Bodies testBodies, String targetName, Bodies<BodyMeta> probes) {
 
         Body target;
@@ -182,13 +183,14 @@ public class MissionTest {
 
             target = testBodies.getBody(targetName);
 
-            // adding speed limit makes probe fly further away from sun
-//            double probeSpeed = probe.getVelocity().getLength();
-//            if(probeSpeed > 100000) {
-//                return Double.MAX_VALUE;
-//            }
-
             for(Body probe: probes.getBodies()) {
+
+                // adding speed limit makes probe fly further away from sun
+                double probeSpeed = probe.getVelocity().getLength();
+                if(probeSpeed > 300000) {
+                    testBodies.removeBody(probe);
+                    probes.removeBody(probe);
+                }
 
                 double distance = probe.computeDistance(target);
 
@@ -205,28 +207,8 @@ public class MissionTest {
 
     }
 
-    private static void animate(Bodies bodies) throws InterruptedException {
-
-        // exit after clicking close button
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        SimulationPanel simulationPanel = new SimulationPanel(0.7e9, bodies);
-        window.setContentPane(simulationPanel);
-        window.pack();
-        window.setVisible(true);
-        animatedSteps = 0;
-
-        simulationPanel.startAnimation(
-            (Bodies<BodyMetaSwing> bodies2) -> {
-                if(animatedSteps > steps) {
-                    simulationPanel.stopAnimation();
-//                    window.dispose();
-                }
-                for (int i = 0; i < stepsPerFrame; i++) {
-                    bodies2.iterate(timeStep);
-                    animatedSteps++;
-                }
-            }
-        );
+    private static void animate(Bodies bodies) {
+        new Simulation(bodies, steps, timeStep, stepsPerFrame, 0.7e9).start();
     }
 
 }

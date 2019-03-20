@@ -1,3 +1,6 @@
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Representation of a body with position velocity and mass.
  *
@@ -48,6 +51,10 @@ class Body<M extends BodyMeta> {
 
     Vector getVelocity() {
         return velocity;
+    }
+
+    Vector getRelativeVelocity(Body body) {
+        return getVelocity().sum(body.getVelocity().product(-1));
     }
 
     double getMass() {
@@ -102,7 +109,7 @@ class Body<M extends BodyMeta> {
     Force computeAttraction(Body body) {
         double distance = computeDistance(body);
         // strength of attraction = -(G*m1*m2)/(d^2)
-        double strength = -(Simulation.G * mass * body.mass) / (distance * distance);
+        double strength = -(SimulationSolarSystem.G * mass * body.mass) / (distance * distance);
         // we need to go from scalar to vector, therefore we compute direction
         Vector direction = position.difference(body.position).unitVector();
         return new Force(
@@ -128,6 +135,39 @@ class Body<M extends BodyMeta> {
             getVelocity(),
             getMass(),
             getMeta()
+        );
+    }
+
+    /**
+     * Serialize body so that it can be saved.
+     */
+    String serialize() {
+        return "" +
+            "name(" + name + ") " +
+            "position(" + position.serialize() + ") " +
+            "velocity(" + velocity.serialize() + ") " +
+            "mass(" + mass + ")";
+    }
+
+    /**
+     * Unserialize saved body.
+     */
+    static Body unserialize(String string) {
+
+        Pattern pattern = Pattern.compile("" +
+            "name\\((?<name>.+)\\) " +
+            "position\\((?<position>.+)\\) " +
+            "velocity\\((?<velocity>.+)\\) " +
+            "mass\\((?<mass>.+)\\)"
+        );
+        Matcher matcher = pattern.matcher(string);
+        matcher.matches();
+
+        return new Body(
+            matcher.group("name"),
+            Vector.unserialize(matcher.group("position")),
+            Vector.unserialize(matcher.group("velocity")),
+            Double.parseDouble(matcher.group("mass"))
         );
     }
 

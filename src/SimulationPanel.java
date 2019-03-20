@@ -21,10 +21,7 @@ public class SimulationPanel extends JPanel {
 
     private Timer timer;
 
-    SimulationPanel(double scale, Bodies<BodyMetaSwing> bodies) {
-
-        this.scale = scale;
-        this.bodies = bodies;
+    SimulationPanel() {
 
         setPreferredSize(new Dimension(
             800, 800
@@ -50,7 +47,25 @@ public class SimulationPanel extends JPanel {
 
     }
 
+    SimulationPanel(double scale, Bodies<BodyMetaSwing> bodies) {
+
+        this();
+
+        this.scale = scale;
+        this.bodies = bodies;
+
+    }
+
+    void setBodies(Bodies<BodyMetaSwing> bodies) {
+        this.bodies = bodies;
+    }
+
+    void setScale(double scale) {
+        this.scale = scale;
+    }
+
     Timer startAnimation(Consumer<Bodies<BodyMetaSwing>> action) {
+        if(timer != null) timer.stop();
         // Animate. Does repaint ~60 times a second.
         timer = new Timer(16, new ActionListener() {
             @Override

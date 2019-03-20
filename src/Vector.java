@@ -1,5 +1,7 @@
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Vector with different operators. Allows to hide dimensionality.
@@ -131,6 +133,31 @@ class Vector {
 
     public String toString() {
         return "(x:" + Utils.round(x) + " y:" + Utils.round(y) + " z:" + Utils.round(z) + ")";
+    }
+
+    /**
+     * Serialize vector so that it can be saved.
+     */
+    String serialize() {
+        return x + ", " + y + ", " + z;
+    }
+
+    /**
+     * Unserialize saved vector.
+     */
+    static Vector unserialize(String string) {
+
+        Pattern pattern = Pattern.compile("" +
+            "(?<x>[^,]+),\\s+(?<y>[^,]+),\\s+(?<z>[^,]+)"
+        );
+        Matcher matcher = pattern.matcher(string);
+        matcher.matches();
+
+        return new Vector(
+            Double.parseDouble(matcher.group("x")),
+            Double.parseDouble(matcher.group("y")),
+            Double.parseDouble(matcher.group("z"))
+        );
     }
 
 }
