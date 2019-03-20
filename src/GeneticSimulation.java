@@ -1,33 +1,12 @@
 import javax.swing.*;
 import java.util.*;
 
-/**
- * Some very basic stuff to get you started. It shows basically how each
- * chromosome is built.
- *
- * @author Jo Stevens
- * @author Alard Roebroeck
- * @author Frederick van der Windt
- * @author Moritz Gehlhaar
- * @version 18.12.2018
- */
-
 public class GeneticSimulation {
-    static final double MUTATIONPROB = 0.2;
     static final int ELITENUM = 2;
     static final int POPSIZE = 3;
     static final Random generator = new Random(System.currentTimeMillis());
 
-    /**
-     * @param args
-     */
-
-
     public static void main(String[] args) throws InterruptedException {
-        GA();
-    }
-
-    public static int GA() throws InterruptedException {
         Spacecraft[] population = new Spacecraft[POPSIZE];
 
         Random randomGenerator = new Random();
@@ -97,7 +76,6 @@ public class GeneticSimulation {
             }
             generation++;
         }
-        return generation;
     }
 
     // first crossover method
@@ -106,50 +84,6 @@ public class GeneticSimulation {
         Spacecraft child = new Spacecraft("Child " + randomGenerator.nextInt(9999999),  p1.getMass(), p1.getStartingPosition(), p1.getStartingVelocity().sum(p2.getStartingVelocity()).product(0.5), p1.getGoal());
         return child;
     }
-
-    /* // first crossover method
-    public static Spacecraft crossoverSplitting(Spacecraft p1, Spacecraft p2) {
-        int splittingPoint = generator.nextInt(TARGET.length());
-        Individual child = new Individual(new char[TARGET.length()]);
-        for (int i = 0; i < TARGET.length(); i++)
-            if (i < splittingPoint)
-                child.chromosome[i] = p1.chromosome[i];
-            else
-                child.chromosome[i] = p2.chromosome[i];
-
-        return child;
-    }
-
-    //second crossover method
-    public static Spacecraft crossoverRandom(Spacecraft p1, Spacecraft p2) {
-        char[] childChromosome = new char[TARGET.length()];
-        char[] motherChromosome = p1.getChromosome();
-        char[] fatherChromosome = p2.getChromosome();
-        for (int j = 0; j < childChromosome.length; j++) {
-            if (generator.nextBoolean()) {
-                childChromosome[j] = motherChromosome[j];
-            } else {
-                childChromosome[j] = fatherChromosome[j];
-            }
-        }
-        return new Individual(childChromosome);
-    }
-
-    // mutation of every chromosome with a certain probability
-    public static void mutation(Spacecraft p) {
-        for (int i = 0; i < p.chromosome.length; i++) {
-            if (generator.nextDouble() <= MUTATIONPROB) {
-                p.chromosome[i] = alphabet[generator.nextInt(alphabet.length)];
-            }
-        }
-    }*/
-
-    /*
-    // one random mutation per individual in chance of a certain probability
-    public static void mutation2(Individual p) {
-        if (generator.nextDouble() <= MUTATIONPROB)
-            p.chromosome[generator.nextInt(TARGET.length())] = alphabet[generator.nextInt(alphabet.length)];
-    }*/
 
     // one random mutation per individual in chance of a certain probability
     public static void  mutation(Spacecraft p) {
@@ -169,25 +103,4 @@ public class GeneticSimulation {
         }
         return parents;
     }
-/*
-    // roulette selection method
-    public static Spacecraft[] rouletteSelection(Spacecraft[] population) {
-        // get overall fitness
-        double sumOfFitness = 0;
-        for (Spacecraft i : population)
-            sumOfFitness += i.getSm() * i.getFitness();
-
-        Individual[] parents = new Individual[ELITENUM];
-        for (int i = 0; i < ELITENUM; i++) {
-            do {
-                Individual individual = population[generator.nextInt(population.length)];
-                if (generator.nextFloat() < ((individual.getFitness() * individual.getFitness()) / sumOfFitness)) {
-                    parents[i] = individual.clone();
-                    break;
-                }
-            } while (parents[i] == null);
-        }
-
-        return parents;
-    }*/
 }
