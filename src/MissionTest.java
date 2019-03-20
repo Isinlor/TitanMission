@@ -6,7 +6,7 @@ public class MissionTest {
 
     private static JFrame window = new JFrame();
     private static final double timeStep = 60.0; // in s
-    private static final long steps = (long)(100*24*60*60 / timeStep); // around 1 year
+    private static final long steps = (long)(150*24*60*60 / timeStep); // around 1 year
     private static final long stepsPerFrame = (long)(24*60*60 / timeStep); // around 1 day
     private static long animatedSteps;
 
