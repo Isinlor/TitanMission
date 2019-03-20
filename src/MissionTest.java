@@ -70,6 +70,10 @@ public class MissionTest {
         Vector bestInitVelocity = new Vector();
         Body earth;
 
+        for (int i = 0; i < (long)(500*24*60*60 / timeStep); i++) {
+            bodies.iterate(timeStep);
+        }
+
         // make probe orbit the earth; notice that time step must be sufficiently small
         earth = bodies.getBody("earth");
         Double distanceFromCenter = 6371 * 1000.0 + 100.0 * 1000.0;
