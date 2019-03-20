@@ -2,6 +2,13 @@ import javax.swing.*;
 import java.util.*;
 
 public class GeneticSimulation {
+
+    private static JFrame window = new JFrame();
+    private static final double timeStep = 60; // in s
+    private static final long steps = (long)(365*2*24*60*60 / timeStep);
+    private static final long stepsPerFrame = (long)(12*60*60 / timeStep);
+    private static long animatedSteps;
+
     static final int ELITENUM = 2;
     static final int POPSIZE = 3;
     static final Random generator = new Random(System.currentTimeMillis());
@@ -13,68 +20,60 @@ public class GeneticSimulation {
 
         LinkedList<Planet> planets = CSVReader.readPlanets();
 
-        //
+        Planet goal = planets.get(2); // 2 is Mars, 8 is Neptune (seeing Neptune requires changing scale in animate to 10e9)
         for (int i = 0; i < POPSIZE; i++) {
             Vector velocity = new Vector(randomGenerator.nextDouble() * 200000 - 100000, randomGenerator.nextDouble() * 200000 - 100000, 0);
-            population[i] = new Spacecraft("First try " + i, 1, planets.get(1).getPosition().sum(new Vector(planets.get(1).getRadius(), planets.get(1).getRadius(), planets.get(1).getRadius())), velocity, planets.get(8));
+            population[i] = new Spacecraft("First try " + i, 1, planets.get(1).getPosition().sum(new Vector(planets.get(1).getRadius(), planets.get(1).getRadius(), planets.get(1).getRadius())), velocity, goal);
         }
 
         int generation = 0;
-        while (generation < 100) {
+        double minDistance = Double.MAX_VALUE;
+        System.out.println("Generation #: min dist in goal radii; this population dist in goal radii");
+        while (generation < 1000) {
             planets = CSVReader.readPlanets();
 
             Bodies bodies = new Bodies();
             for (Planet planet: planets) bodies.addBody(planet);
             for (Spacecraft spacecraft: population) {
-                spacecraft.setGoal(planets.get(8));
+                spacecraft.setGoal(goal);
                 bodies.addBody(spacecraft);
             }
 
             System.setProperty("sun.java2d.opengl", "true");
 
-            JFrame window = new JFrame();
-
-            // exit after clicking close button
-            window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-            SimulationPanel simulationPanel = new SimulationPanel(5e9, bodies);
-
-            window.setContentPane(simulationPanel);
-
-            window.pack();
-
-            // make display visible
-            window.setVisible(true);
-
-            /*simulationPanel.startAnimation(
-                    (Bodies<BodyMetaSwing> bodies1) -> {
-                        for (int i = 0; i < 24; i++) {
-                            bodies1.iterate(60*60);
-                        }
-                    }
-            );*/
-
-            System.out.println(bodies);
+            Bodies bodiesToAnimate = bodies.copy();
 
             // simulate time span of 1 year
             for (int i = 0; i < 365*2; i++) {
                 bodies.iterate(60*60*24);
             }
 
-            System.out.println(bodies);
-
-            Thread.sleep(5000);
-            window.setVisible(false);
-
+//            System.out.println(bodies);
 
             Spacecraft[] parents = topSelection(population);
+
+            Arrays.sort(population);
+            Double distance = population[0].getShortestDistance();
 
             //create new generation
             for (int i = 0; i < population.length; i++) {
                 population[i] = crossoverAverage(parents[generator.nextInt(parents.length)], parents[generator.nextInt(parents.length)]);
                 mutation(population[i]);
             }
+
             generation++;
+
+            double radius = goal.getRadius();
+            long distanceInGoalRadii = Math.round(distance / radius);
+            long minDistanceInGoalRadii = Math.round(minDistance / radius);
+            if(distance < minDistance) {
+                minDistance = distance;
+                System.out.println("\nBetter spacecraft found! " + distanceInGoalRadii + "\n");
+                animate(bodiesToAnimate);
+            } else {
+                System.out.println("Generation " + generation + ": " + minDistanceInGoalRadii + "\t" + distanceInGoalRadii);
+            }
+
         }
     }
 
@@ -95,12 +94,36 @@ public class GeneticSimulation {
     // elitist selection method
     public static Spacecraft[] topSelection(Spacecraft[] population) {
         Arrays.sort(population);
-        System.out.println(population[0].getShortestDistance());
-        System.out.println(population[0].getStartingVelocity());
+//        System.out.println(population[0].getShortestDistance());
+//        System.out.println(population[0].getStartingVelocity());
         Spacecraft[] parents = new Spacecraft[ELITENUM];
         for (int i = 0; i < ELITENUM; i++) {
             parents[i] = population[i].clone();
         }
         return parents;
     }
+
+    private static void animate(Bodies bodies) throws InterruptedException {
+
+        // exit after clicking close button
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        SimulationPanel simulationPanel = new SimulationPanel(1e9, bodies);
+        window.setContentPane(simulationPanel);
+        window.pack();
+        window.setVisible(true);
+        animatedSteps = 0;
+
+        simulationPanel.startAnimation(
+            (Bodies<BodyMetaSwing> bodies2) -> {
+                if(animatedSteps > steps) {
+                    simulationPanel.stopAnimation();
+                    window.dispose();
+                }
+                for (int i = 0; i < stepsPerFrame; i++) {
+                    bodies2.iterate(timeStep);
+                }
+            }
+        );
+    }
+
 }
