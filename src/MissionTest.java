@@ -77,27 +77,26 @@ public class MissionTest {
         Vector position = earth.getPosition().sum(new Vector(1.0, 0.0, 0.0).product(distanceFromCenter));
         Vector velocity = new Vector(0.0, 1.0, 0.0).product(orbitalSpeed).sum(earth.getVelocity());
 
-        bodies.addBody(new Body<BodyMetaSwing>(
+        Body probePrototype = new Body<BodyMetaSwing>(
             "probe",
             position,
             velocity,
             1,
             new BodyMetaSwing(Color.gray)
-        ));
+        );
 
         while(true) {
 
             // try random steps from high range
             double step = 10000 / Math.pow(10, 3*Math.random());
 
-            Vector bestStepUpdate = new Vector();
-            double bestStepDistance = Double.MAX_VALUE;
+            Bodies testBodies = bodies.copy();
+            earth = testBodies.getBody("earth");
+
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
 
-                    Bodies testBodies = bodies.copy();
-                    probe = testBodies.getBody("probe");
-                    earth = testBodies.getBody("earth");
+                    probe = probePrototype.copy();
 
                     Vector stepUpdate = new Vector(
                         i * step,
@@ -112,43 +111,33 @@ public class MissionTest {
                         continue;
                     }
 
-                    minDistance = getMinDistance(testBodies, targetName);
-
-                    // if we flyby closer than mars radius, then we have a direct hit
-                    if(minDistance < 3389*1000) {
-                        System.out.println(
-                            initVelocity.x + ", " +
-                            initVelocity.y + ", " +
-                            initVelocity.z
-                        );
-                        System.exit(1);
-                    }
-
-                    if(bestStepDistance > minDistance) {
-                        bestStepDistance = minDistance;
-                        bestStepUpdate = stepUpdate;
-                    }
-
                 }
             }
 
+            minDistance = getMinDistance(testBodies, targetName);
+
             double astronomicalUnits = 1.496e11;
             double marsRadius = 3389.5 * 1000;
-            long bestDistanceInMarsRadii = Math.round(bestDistance / marsRadius);
+            long distanceInMarsRadii = Math.round(minDistance / marsRadius);
 
-            if(bestStepDistance < bestDistance) {
-                bestInitVelocity = bestInitVelocity.sum(bestStepUpdate);
-                bestDistance = bestStepDistance;
+            // if we flyby closer than mars radius, then we have a direct hit
+            if(minDistance < 3389*1000) {
+                System.out.println("Hit!");
+                System.exit(1);
+            }
+
+            if(minDistance < bestDistance) {
+                bestDistance = minDistance;
 
                 System.out.print("Updated! ");
-                System.out.println(bestDistanceInMarsRadii + "\t" + Math.round(step) + " " + bestInitVelocity.getLength());
+                System.out.println(distanceInMarsRadii + "\t" + Math.round(step) + " " + bestInitVelocity.getLength());
 
                 Bodies animateBodies = bodies.copy();
                 animateBodies.getBody("probe").addVelocity(bestInitVelocity);
                 animate(animateBodies);
             } else {
                 System.out.print("         ");
-                System.out.println(bestDistanceInMarsRadii + "\t" + Math.round(step) + " " + bestInitVelocity.getLength());
+                System.out.println(distanceInMarsRadii + "\t" + Math.round(step) + " " + bestInitVelocity.getLength());
             }
 
         }
@@ -158,8 +147,9 @@ public class MissionTest {
 
         Body probe;
         Body target;
+        Body bestProbe;
 
-        double minDistance = Double.POSITIVE_INFINITY;
+        double minDistance = Double.MAX_VALUE;
         for (int i = 0; i < steps; i++) {
 
             testBodies.iterate(timeStep);
@@ -174,11 +164,15 @@ public class MissionTest {
 //            }
 
             double distance = probe.computeDistance(target);
-            minDistance = Math.min(minDistance, distance);
+
+            if(distance < minDistance) {
+                minDistance = distance;
+                bestProbe = probe;
+            }
 
         }
 
-        return minDistance;
+        return new Topple<Double, Body>(minDistance, bestProbe);
 
     }
 
