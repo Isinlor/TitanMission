@@ -88,9 +88,9 @@ public class MissionTest {
         Body minProbe = probePrototype;
 
         int noProgress = 0;
+        double range = 10000;
         while(true) {
 
-            double range = 10000;
             // try random steps from high range
             double step = range / Math.pow(10, 3*Math.random());
 
@@ -153,12 +153,14 @@ public class MissionTest {
                 animate(animateBodies);
             } else {
                 System.out.print("         ");
-                System.out.println(distanceInMarsRadii + "\t" + Math.round(step));
+                System.out.println(distanceInMarsRadii + "\t" + Math.round(step) + "\t" + noProgress);
                 noProgress++;
             }
 
-            if(noProgress > 5) {
-                range = range / 10;
+            if(noProgress > 3) {
+                range = range / 1.5;
+                noProgress = 0;
+                System.out.println("Range updated to " + range);
             }
 
         }
