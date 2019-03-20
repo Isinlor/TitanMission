@@ -4,8 +4,8 @@ import java.util.*;
 public class GeneticSimulation {
 
     private static JFrame window = new JFrame();
-    private static final double timeStep = 60; // in s
-    private static final long steps = (long)(365*2*24*60*60 / timeStep);
+    private static final double timeStep = 60*60; // in s
+    private static final long steps = (long)(365*24*60*60 / timeStep);
     private static final long stepsPerFrame = (long)(12*60*60 / timeStep);
     private static long animatedSteps;
 
@@ -20,10 +20,11 @@ public class GeneticSimulation {
 
         LinkedList<Planet> planets = CSVReader.readPlanets();
 
+        Planet earth = planets.get(1);
         Planet goal = planets.get(2); // 2 is Mars, 8 is Neptune (seeing Neptune requires changing scale in animate to 10e9)
         for (int i = 0; i < POPSIZE; i++) {
             Vector velocity = new Vector(randomGenerator.nextDouble() * 200000 - 100000, randomGenerator.nextDouble() * 200000 - 100000, 0);
-            population[i] = new Spacecraft("First try " + i, 1, planets.get(1).getPosition().sum(new Vector(planets.get(1).getRadius(), planets.get(1).getRadius(), planets.get(1).getRadius())), velocity, goal);
+            population[i] = new Spacecraft("First try " + i, 1, earth.getPosition().sum(new Vector(earth.getRadius(), earth.getRadius(), earth.getRadius())), velocity, goal);
         }
 
         int generation = 0;
@@ -43,9 +44,8 @@ public class GeneticSimulation {
 
             Bodies bodiesToAnimate = bodies.copy();
 
-            // simulate time span of 1 year
-            for (int i = 0; i < 365*2; i++) {
-                bodies.iterate(60*60*24);
+            for (int i = 0; i < steps; i++) {
+                bodies.iterate(timeStep);
             }
 
 //            System.out.println(bodies);
