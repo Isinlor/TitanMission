@@ -86,6 +86,7 @@ class Bodies<M extends BodyMeta> {
         Force force = new Force();
         for (Body bodyB: getBodies()) {
             if(bodyA == bodyB) continue;
+            if(bodyB.getMass() < 2) continue; // negligible
             force = force.sum(bodyA.computeAttraction(bodyB));
         }
         return force;
