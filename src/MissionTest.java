@@ -1,15 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 @SuppressWarnings("Duplicates")
 public class MissionTest {
 
     private static JFrame window = new JFrame();
-    private static final double timeStep = 60.0*10.0; // in s
-    private static final long steps = (long)(300*24*60*60 / timeStep); // around 1 year
+    private static final double timeStep = 60.0; // in s
+    private static final long steps = (long)(100*24*60*60 / timeStep); // around 1 year
     private static final long stepsPerFrame = (long)(24*60*60 / timeStep); // around 1 day
     private static long animatedSteps;
 
@@ -55,21 +52,8 @@ public class MissionTest {
             new BodyMetaSwing(Color.red)
         ));
 
-        bodies.addBody(new Body<BodyMetaSwing>(
-            "probe",
-            bodies.getBody("earth").getPosition().sum(new Vector(10, 10, 0).product(1000.0*1000.0)),
-            bodies.getBody("earth").getVelocity(),
-            1,
-            new BodyMetaSwing(Color.gray)
-        ));
-
-//        bodies.getBody("probe").addVelocity(
-//            new Vector(11000, 11000)
-//        );
-//        animate(bodies);
-
-//        System.out.println(isHit(bodies, "mars", 24*1000, 60*60));
-
+//        System.out.println(getMinDistance(bodies.copy(), "mars"));
+//        animate(bodies.copy());
 
 //        display(bodies);
 
@@ -77,47 +61,43 @@ public class MissionTest {
 
     }
 
-    private static void animate(Bodies bodies) throws InterruptedException {
-
-        // exit after clicking close button
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        SimulationPanel simulationPanel = new SimulationPanel(5e9, bodies);
-        window.setContentPane(simulationPanel);
-        window.pack();
-        window.setVisible(true);
-        animatedSteps = 0;
-
-        simulationPanel.startAnimation(
-            (Bodies<BodyMetaSwing> bodies2) -> {
-                if(animatedSteps > steps) {
-                    simulationPanel.stopAnimation();
-                    window.dispose();
-                }
-                for (int i = 0; i < stepsPerFrame; i++) {
-                    bodies2.iterate(timeStep);
-                }
-            }
-        );
-    }
-
     private static void optimize(Bodies bodies) throws Exception {
         Body probe;
         Body target;
         String targetName = "mars";
+        double minDistance = Double.MAX_VALUE;
         double bestDistance = Double.MAX_VALUE;
         Vector bestInitVelocity = new Vector();
+        Body earth;
 
-        double step = 10000; // * Math.random();
+        // make probe orbit the earth; notice that time step must be sufficiently small
+        earth = bodies.getBody("earth");
+        Double distanceFromCenter = 6371 * 1000.0 + 100.0 * 1000.0;
+        Double orbitalSpeed = Math.sqrt(Simulation.G * earth.getMass() / distanceFromCenter);
+        Vector position = earth.getPosition().sum(new Vector(1.0, 0.0, 0.0).product(distanceFromCenter));
+        Vector velocity = new Vector(0.0, 1.0, 0.0).product(orbitalSpeed).sum(earth.getVelocity());
+
+        bodies.addBody(new Body<BodyMetaSwing>(
+            "probe",
+            position,
+            velocity,
+            1,
+            new BodyMetaSwing(Color.gray)
+        ));
+
         while(true) {
+
+            // try random steps from high range
+            double step = 10000 / Math.pow(10, 3*Math.random());
 
             Vector bestStepUpdate = new Vector();
             double bestStepDistance = Double.MAX_VALUE;
-            for (int i = -10; i < 10; i = i + 5) {
-                for (int j = -10; j < 10; j = j + 5) {
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
 
                     Bodies testBodies = bodies.copy();
                     probe = testBodies.getBody("probe");
-                    Body earth = testBodies.getBody("earth");
+                    earth = testBodies.getBody("earth");
 
                     Vector stepUpdate = new Vector(
                         i * step,
@@ -128,11 +108,11 @@ public class MissionTest {
                     probe.addVelocity(initVelocity);
 
                     // avoid crazy high probe velocities in relation to Earth
-                    if(probe.getVelocity().sum(earth.getVelocity().product(-1)).getLength() > 30000) {
+                    if(probe.getVelocity().sum(earth.getVelocity().product(-1)).getLength() > 100000) {
                         continue;
                     }
 
-                    double minDistance = isHit(testBodies, targetName);
+                    minDistance = getMinDistance(testBodies, targetName);
 
                     // if we flyby closer than mars radius, then we have a direct hit
                     if(minDistance < 3389*1000) {
@@ -152,24 +132,29 @@ public class MissionTest {
                 }
             }
 
+            double astronomicalUnits = 1.496e11;
+            double marsRadius = 3389.5 * 1000;
+            long bestDistanceInMarsRadii = Math.round(bestDistance / marsRadius);
+
             if(bestStepDistance < bestDistance) {
                 bestInitVelocity = bestInitVelocity.sum(bestStepUpdate);
                 bestDistance = bestStepDistance;
-                System.out.println("Updated!");
+
+                System.out.print("Updated! ");
+                System.out.println(bestDistanceInMarsRadii + "\t" + Math.round(step) + " " + bestInitVelocity.getLength());
 
                 Bodies animateBodies = bodies.copy();
                 animateBodies.getBody("probe").addVelocity(bestInitVelocity);
                 animate(animateBodies);
+            } else {
+                System.out.print("         ");
+                System.out.println(bestDistanceInMarsRadii + "\t" + Math.round(step) + " " + bestInitVelocity.getLength());
             }
-
-            step = step / 1.1;
-
-            System.out.println(bestDistance / 1.496e11 + " " + step);
 
         }
     }
 
-    private static double isHit(Bodies testBodies, String targetName) {
+    private static double getMinDistance(Bodies testBodies, String targetName) {
 
         Body probe;
         Body target;
@@ -182,9 +167,11 @@ public class MissionTest {
             probe = testBodies.getBody("probe");
             target = testBodies.getBody(targetName);
 
-            if(probe.getVelocity().getLength() > 60000) {
-                return Double.MAX_VALUE;
-            }
+            // adding speed limit makes probe fly further away from sun
+//            double probeSpeed = probe.getVelocity().getLength();
+//            if(probeSpeed > 100000) {
+//                return Double.MAX_VALUE;
+//            }
 
             double distance = probe.computeDistance(target);
             minDistance = Math.min(minDistance, distance);
@@ -193,6 +180,29 @@ public class MissionTest {
 
         return minDistance;
 
+    }
+
+    private static void animate(Bodies bodies) throws InterruptedException {
+
+        // exit after clicking close button
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        SimulationPanel simulationPanel = new SimulationPanel(0.7e9, bodies);
+        window.setContentPane(simulationPanel);
+        window.pack();
+        window.setVisible(true);
+        animatedSteps = 0;
+
+        simulationPanel.startAnimation(
+            (Bodies<BodyMetaSwing> bodies2) -> {
+                if(animatedSteps > steps) {
+                    simulationPanel.stopAnimation();
+                    window.dispose();
+                }
+                for (int i = 0; i < stepsPerFrame; i++) {
+                    bodies2.iterate(timeStep);
+                }
+            }
+        );
     }
 
 }
