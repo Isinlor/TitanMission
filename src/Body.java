@@ -10,6 +10,10 @@ class Body<M extends BodyMeta> {
     private String name;
     private Vector position;
     private Vector velocity;
+
+    private Vector startingPosition;
+    private Vector startingVelocity;
+
     private double mass;
     private M meta;
 
@@ -18,6 +22,9 @@ class Body<M extends BodyMeta> {
         this.position = position;
         this.velocity = velocity;
         this.mass = mass;
+
+        startingPosition = position;
+        startingVelocity = velocity;
     }
 
     Body(String name, Vector position, Vector velocity, double mass, M meta) {
@@ -26,6 +33,9 @@ class Body<M extends BodyMeta> {
         this.velocity = velocity;
         this.mass = mass;
         this.meta = meta;
+
+        startingPosition = position;
+        startingVelocity = velocity;
     }
 
     String getName() {
@@ -46,6 +56,19 @@ class Body<M extends BodyMeta> {
 
     M getMeta() {
         return meta;
+    }
+
+    Vector getStartingPosition() {
+        return  startingPosition;
+    }
+
+    Vector getStartingVelocity() {
+        return  startingVelocity;
+    }
+
+    void reset() {
+        position = startingPosition;
+        velocity = startingVelocity;
     }
 
     /**

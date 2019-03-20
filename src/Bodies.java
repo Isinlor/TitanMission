@@ -52,7 +52,7 @@ class Bodies<M extends BodyMeta> {
      * Returns set of bodies.
      *
      * Notice! Linked version of HashSet is used purposefully.
-     * @see bodies documentation for more details.
+     * @see Bodies documentation for more details.
      */
     Set<Body<M>> getBodies() {
         return new LinkedHashSet<>(bodies.values());
@@ -84,6 +84,10 @@ class Bodies<M extends BodyMeta> {
         for(Body<M> body: getBodies()) {
             fn.accept(body);
         }
+    }
+
+    void resetAll() {
+        apply(Body::reset);
     }
 
     /**
