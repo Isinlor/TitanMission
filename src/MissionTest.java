@@ -137,24 +137,25 @@ public class MissionTest {
         Bodies probes = new Bodies<BodyMetaSwing>();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
+                for (int k = -1; k <= 1; k++) {
+                    probe = probePrototype.copy();
+                    probe.rename("Probe (" + i + " " + j + " " + k + ")");
 
-                probe = probePrototype.copy();
-                probe.rename("Probe (" + i + " " + j + ")");
+                    Vector stepUpdate = new Vector(
+                            i * step,
+                            j * step,
+                            k * step
+                    );
 
-                Vector stepUpdate = new Vector(
-                    i * step,
-                    j * step
-                );
+                    probe.addVelocity(stepUpdate);
 
-                probe.addVelocity(stepUpdate);
+                    // avoid crazy high probe velocities in relation to Earth
+                    if (probe.getRelativeVelocity(source).getLength() > 600000) {
+                        continue;
+                    }
 
-                // avoid crazy high probe velocities in relation to Earth
-                if(probe.getRelativeVelocity(source).getLength() > 600000) {
-                    continue;
+                    probes.addBody(probe);
                 }
-
-                probes.addBody(probe);
-
             }
         }
         return probes;
