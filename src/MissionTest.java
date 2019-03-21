@@ -4,7 +4,7 @@ import java.awt.*;
 public class MissionTest {
 
     private static final double timeStep = 60.0; // in s
-    private static final long steps = (long)(180*24*60*60 / timeStep); // around 1 year
+    private static final long steps = (long)(300*24*60*60 / timeStep); // around 1 year
     private static final long stepsPerFrame = (long)(24*60*60 / timeStep); // around 1 day
 
     /**
@@ -54,14 +54,14 @@ public class MissionTest {
     private static void optimize(Bodies bodies) throws Exception {
         Body target;
         String sourceName = "Earth";
-        String targetName = "Mars";
+        String targetName = "Titan";
         double minDistance = Double.MAX_VALUE;
         double bestDistance = Double.MAX_VALUE;
         Body source;
 
-        for (int i = 0; i < (long)(500*24*60*60 / timeStep); i++) {
-            bodies.iterate(timeStep);
-        }
+//        for (int i = 0; i < (long)(500*24*60*60 / timeStep); i++) {
+//            bodies.iterate(timeStep);
+//        }
 
         // make probe orbit the earth; notice that time step must be sufficiently small
         source = bodies.getBody(sourceName);
@@ -73,7 +73,7 @@ public class MissionTest {
         long additionalSteps = 0;
 
         int noProgress = 0;
-        double range = 10000;
+        double range = 100000;
         while(true) {
 
             // try random steps from high range
@@ -190,7 +190,7 @@ public class MissionTest {
 
                 // adding speed limit makes probe fly further away from sun
                 double probeSpeed = probe.getVelocity().getLength();
-                if(probeSpeed > 300000) {
+                if(probeSpeed > 1000000) {
                     testBodies.removeBody(probe);
                     probes.removeBody(probe);
                 }
@@ -215,7 +215,7 @@ public class MissionTest {
     }
 
     private static Simulation getSimulation(Bodies bodies) {
-        return new Simulation(bodies, steps, timeStep, stepsPerFrame, 0.7e9);
+        return new Simulation(bodies, steps, timeStep, stepsPerFrame, 10e9);
     }
 
 }
