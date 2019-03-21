@@ -1,9 +1,8 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Represents set of bodies that interact with each other.
@@ -137,25 +136,23 @@ class Bodies<M extends BodyMeta> {
         return copy;
     }
 
-    void saveToResource(String string) {
+    void save(String location) {
         try {
-            Files.write(Paths.get(Bodies.class.getClassLoader().getResource(string).getFile()), serialize().getBytes());
+            FileSystem.write(location, serialize());
         } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize bodies to resource " + string, e);
+            throw new RuntimeException("Failed to serialize bodies to location " + location, e);
         }
     }
 
-    static Bodies readFromResource(String string) {
+    static Bodies load(String location) {
         try {
-            return unserialize(
-                new String(Files.readAllBytes(Paths.get(Bodies.class.getResource(string).getFile())))
-            );
+            return unserialize(FileSystem.read(location));
         } catch (Exception e) {
-            throw new RuntimeException("Failed to unserialize bodies from resource " + string, e);
+            throw new RuntimeException("Failed to unserialize bodies from location " + location, e);
         }
     }
 
-    private String serialize() {
+    String serialize() {
         StringBuilder stringBuilder = new StringBuilder();
         for (Body body: getBodies()) {
             stringBuilder.append(body.serialize()).append("\n");
@@ -163,7 +160,7 @@ class Bodies<M extends BodyMeta> {
         return stringBuilder.toString();
     }
 
-    private static Bodies unserialize(String string) {
+    static Bodies unserialize(String string) {
         Bodies bodies = new Bodies();
         String[] serializedBodies = string.split("\n");
         for(String serializedBody: serializedBodies) {

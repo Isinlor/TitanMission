@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class Simulation {
 
@@ -18,7 +20,13 @@ class Simulation {
     private long stepsPerFrame;
     private double scale;
 
+    private String metadata;
+
     private long replied;
+
+    public static void main(String[] args) {
+        load(args[0]).start();
+    }
 
     Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale) {
         this.bodies = bodies.copy();
@@ -26,6 +34,11 @@ class Simulation {
         this.timeStep = timeStep;
         this.stepsPerFrame = stepsPerFrame;
         this.scale = scale;
+    }
+
+    Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale, String metadata) {
+        this(bodies, steps, timeStep, stepsPerFrame, scale);
+        this.metadata = metadata;
     }
 
     void start() {
@@ -40,7 +53,7 @@ class Simulation {
             (Bodies<BodyMetaSwing> bodies) -> {
 
                 if(replied > steps) {
-                    simulationPanel.stopAnimation();
+                    return;
                 }
 
                 for (int i = 0; i < stepsPerFrame; i++) {
@@ -50,6 +63,11 @@ class Simulation {
 
             }
         );
+
+    }
+
+    Bodies getBodies() {
+        return bodies;
     }
 
     long getSteps() {
@@ -62,6 +80,59 @@ class Simulation {
 
     long getStepsPerFrame() {
         return stepsPerFrame;
+    }
+
+    double getScale() {
+        return scale;
+    }
+
+    String getMetadata() {
+        return metadata;
+    }
+
+    Simulation withNewBodies(Bodies bodies) {
+        return new Simulation(bodies, steps, timeStep, stepsPerFrame, scale, metadata);
+    }
+
+    void save(String resource) {
+        FileSystem.write(resource, serialize());
+    }
+
+    static Simulation load(String resource) {
+        return unserialize(FileSystem.read(resource));
+    }
+
+    String serialize() {
+        return "" +
+            "steps(" + steps + ") " +
+            "timeStep(" + timeStep + ") " +
+            "stepsPerFrame(" + stepsPerFrame + ") " +
+            "scale(" + scale + ") " +
+            "metadata(" + metadata + ")\n" +
+            bodies.serialize();
+    }
+
+    static Simulation unserialize(String string) {
+
+        Pattern pattern = Pattern.compile("" +
+            "steps\\((?<steps>.+)\\) " +
+            "timeStep\\((?<timeStep>.+)\\) " +
+            "stepsPerFrame\\((?<stepsPerFrame>.+)\\) " +
+            "scale\\((?<scale>.+)\\) " +
+            "metadata\\((?<metadata>.+)\\)"
+        );
+        Matcher matcher = pattern.matcher(string.split("\n")[0]);
+        matcher.matches();
+
+        return new Simulation(
+            Bodies.unserialize(string.split("\n", 2)[1]),
+            Long.parseLong(matcher.group("steps")),
+            Double.parseDouble(matcher.group("timeStep")),
+            Long.parseLong(matcher.group("stepsPerFrame")),
+            Double.parseDouble(matcher.group("scale")),
+            matcher.group("metadata")
+        );
+
     }
 
 }

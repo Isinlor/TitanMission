@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.awt.*;
 
 @SuppressWarnings("Duplicates")
@@ -13,48 +12,49 @@ public class MissionTest {
      */
     public static void main(String[] args) throws Exception {
 
-        Bodies<BodyMetaSwing> bodies = new Bodies<>();
+//        Bodies<BodyMetaSwing> bodies = new Bodies<>();
+//
+//        double auToM = 1.496e11;
+//        double dayToSecond = 1.0 / 86400.0;
+//
+//        // HORIZONS data for the 16th of March 2019 00:00 with SSB as origin
+//        bodies.addBody(new Body<BodyMetaSwing>(
+//            "sun",
+//            new Vector(-1.351343105506232E-03*auToM, 7.549817138203992E-03*auToM, -4.200718115315673E-05*auToM),
+//            new Vector(-8.222950279730839E-06*auToM*dayToSecond, 1.252598675779703E-06*auToM*dayToSecond, 2.140020605610505E-07*auToM*dayToSecond),
+//            1.988435e30,
+//            new BodyMetaSwing(Color.yellow)
+//        ));
+//
+//        bodies.addBody(new Body<BodyMetaSwing>(
+//            "earth",
+//            new Vector(-9.918696803493554E-01*auToM, 9.679454643549934E-02*auToM, -4.277240997129137E-05*auToM),
+//            new Vector(-1.825836604899280E-03*auToM*dayToSecond, -1.719621912926312E-02*auToM*dayToSecond, 3.421794164900239E-07*auToM*dayToSecond),
+//            5.9721986e24,
+//            new BodyMetaSwing(Color.blue)
+//        ));
+//
+//        bodies.addBody(new Body<BodyMetaSwing>(
+//            "mars",
+//            new Vector(2.341284054032922E-01*auToM,  1.537313782783677E+00*auToM, 2.623394307816976E-02*auToM),
+//            new Vector(-1.331027418143195E-02*auToM*dayToSecond,  3.319493802125395E-03*auToM*dayToSecond, 3.961351541925593E-04*auToM*dayToSecond),
+//            6.41693e23,
+//            new BodyMetaSwing(Color.red)
+//        ));
+//
+////        System.out.println(getMinDistance(bodies.copy(), "mars"));
+////        animate(bodies.copy());
+//
+////        display(bodies);
 
-        double auToM = 1.496e11;
-        double dayToSecond = 1.0 / 86400.0;
-
-        // HORIZONS data for the 16th of March 2019 00:00 with SSB as origin
-        bodies.addBody(new Body<BodyMetaSwing>(
-            "sun",
-            new Vector(-1.351343105506232E-03*auToM, 7.549817138203992E-03*auToM, -4.200718115315673E-05*auToM),
-            new Vector(-8.222950279730839E-06*auToM*dayToSecond, 1.252598675779703E-06*auToM*dayToSecond, 2.140020605610505E-07*auToM*dayToSecond),
-            1.988435e30,
-            new BodyMetaSwing(Color.yellow)
-        ));
-
-        bodies.addBody(new Body<BodyMetaSwing>(
-            "earth",
-            new Vector(-9.918696803493554E-01*auToM, 9.679454643549934E-02*auToM, -4.277240997129137E-05*auToM),
-            new Vector(-1.825836604899280E-03*auToM*dayToSecond, -1.719621912926312E-02*auToM*dayToSecond, 3.421794164900239E-07*auToM*dayToSecond),
-            5.9721986e24,
-            new BodyMetaSwing(Color.blue)
-        ));
-
-        bodies.addBody(new Body<BodyMetaSwing>(
-            "mars",
-            new Vector(2.341284054032922E-01*auToM,  1.537313782783677E+00*auToM, 2.623394307816976E-02*auToM),
-            new Vector(-1.331027418143195E-02*auToM*dayToSecond,  3.319493802125395E-03*auToM*dayToSecond, 3.961351541925593E-04*auToM*dayToSecond),
-            6.41693e23,
-            new BodyMetaSwing(Color.red)
-        ));
-
-//        System.out.println(getMinDistance(bodies.copy(), "mars"));
-//        animate(bodies.copy());
-
-//        display(bodies);
-
-        optimize(bodies);
+        optimize(new Bodies(CSVReader.readPlanets()));
 
     }
 
     private static void optimize(Bodies bodies) throws Exception {
         Body target;
-        String targetName = "mars";
+        String sourceName = "Earth";
+        String targetName = "Mars";
         double minDistance = Double.MAX_VALUE;
         double bestDistance = Double.MAX_VALUE;
         Body source;
@@ -64,7 +64,7 @@ public class MissionTest {
         }
 
         // make probe orbit the earth; notice that time step must be sufficiently small
-        source = bodies.getBody("earth");
+        source = bodies.getBody(sourceName);
         double sourceRadius = 6371 * 1000.0;
         Double distanceFromCenter = sourceRadius + 100.0 * 1000.0;
         Body<BodyMetaSwing> probePrototype = getProbeInOrbit(source, distanceFromCenter);
@@ -80,7 +80,7 @@ public class MissionTest {
             double step = range / Math.pow(10, 3*Math.random());
 
             Bodies testBodies = bodies.copy();
-            source = testBodies.getBody("earth");
+            source = testBodies.getBody(sourceName);
 
             Bodies probes = getProbePrototypes(source, probePrototype, step);
 
@@ -101,6 +101,9 @@ public class MissionTest {
             // if we flyby closer than mars radius, then we have a direct hit
             if(minDistance < 3389*1000) {
                 System.out.println("Hit!");
+                getSimulation(saveBodies).save(
+                    "/home/isinlor/Projects/TitanMission/resources/simulation-" + targetName + ".txt"
+                );
                 System.exit(1);
             }
 
@@ -208,7 +211,11 @@ public class MissionTest {
     }
 
     private static void animate(Bodies bodies) {
-        new Simulation(bodies, steps, timeStep, stepsPerFrame, 0.7e9).start();
+        getSimulation(bodies).start();
+    }
+
+    private static Simulation getSimulation(Bodies bodies) {
+        return new Simulation(bodies, steps, timeStep, stepsPerFrame, 0.7e9);
     }
 
 }
