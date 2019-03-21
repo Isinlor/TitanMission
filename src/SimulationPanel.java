@@ -26,6 +26,8 @@ public class SimulationPanel extends JPanel {
             800, 800
         ));
 
+        setBackground(Color.WHITE);
+
 //        translationX = (int)getPreferredSize().getWidth() / 2;
 //        translationY = (int)getPreferredSize().getHeight() / 2;
 
