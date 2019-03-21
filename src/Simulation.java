@@ -1,8 +1,13 @@
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class Simulation {
+
+    static private Simulation simulation;
 
     static private JFrame window = new JFrame();
     static private SimulationPanel  simulationPanel = new SimulationPanel();
@@ -10,6 +15,14 @@ class Simulation {
         System.setProperty("sun.java2d.opengl", "true");
         window.setContentPane(simulationPanel);
         window.pack();
+
+        Button button = new Button("Restart simulation");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                simulation.start();
+            }
+        });
+        simulationPanel.add(button);
     }
 
     private Bodies bodies;
@@ -34,6 +47,7 @@ class Simulation {
         this.timeStep = timeStep;
         this.stepsPerFrame = stepsPerFrame;
         this.scale = scale;
+        simulation = this;
     }
 
     Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale, String metadata) {
