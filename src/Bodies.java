@@ -1,6 +1,8 @@
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Represents set of bodies that interact with each other.
@@ -23,6 +25,13 @@ class Bodies<M extends BodyMeta> {
         this.bodies = new LinkedHashMap<>();
     }
 
+    Bodies(Collection<Body<M>> bodies) {
+        this();
+        for(Body<M> body: bodies) {
+            addBody(body);
+        }
+    }
+
     /**
      * Adds a body to the set.
      *
@@ -39,6 +48,13 @@ class Bodies<M extends BodyMeta> {
      */
     void addBodies(Bodies<M> bodies) {
         bodies.apply(this::addBody);
+    }
+
+    /**
+     * Remove body from the list of bodies.
+     */
+    void removeBody(Body body) {
+        bodies.remove(body.getName());
     }
 
     /**
@@ -118,6 +134,39 @@ class Bodies<M extends BodyMeta> {
         }
         copy.time = time;
         return copy;
+    }
+
+    void save(String location) {
+        try {
+            FileSystem.write(location, serialize());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize bodies to location " + location, e);
+        }
+    }
+
+    static Bodies load(String location) {
+        try {
+            return unserialize(FileSystem.read(location));
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to unserialize bodies from location " + location, e);
+        }
+    }
+
+    String serialize() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Body body: getBodies()) {
+            stringBuilder.append(body.serialize()).append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
+    static Bodies unserialize(String string) {
+        Bodies bodies = new Bodies();
+        String[] serializedBodies = string.split("\n");
+        for(String serializedBody: serializedBodies) {
+            bodies.addBody(Body.unserialize(serializedBody));
+        }
+        return bodies;
     }
 
 }

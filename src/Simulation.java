@@ -1,56 +1,138 @@
 import javax.swing.*;
-import javax.swing.Timer;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-/**
- * Simple n-body simulation based on finite differences and O(n^2) computation of forces between all bodies.
- */
 class Simulation {
 
-    /**
-     * Gravitational constant; m^3*kg^−1*s^−2
-     * From "CODATA recommended values of the fundamental physical constants: 2014"
-     */
-    static final double G = 6.67408e-11;
-
-    static JFrame window;
-
-    public static void main(String[] args) throws Exception {
-
-        // speeds up things on ubuntu significantly
-        // comment out if it does not work on windows / macos
+    static private JFrame window = new JFrame();
+    static private SimulationPanel  simulationPanel = new SimulationPanel();
+    static {
         System.setProperty("sun.java2d.opengl", "true");
-
-        window = new JFrame();
-
-        // exit after clicking close button
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        SolarSystem solarSystem = new SolarSystem();
-
-        SimulationPanel simulationPanel = new SimulationPanel(5e9, solarSystem);
-
         window.setContentPane(simulationPanel);
-
         window.pack();
+    }
 
-        // make display visible
+    private Bodies bodies;
+
+    private long steps;
+    private double timeStep;
+
+    private long stepsPerFrame;
+    private double scale;
+
+    private String metadata;
+
+    private long replied;
+
+    public static void main(String[] args) {
+        load(args[0]).start();
+    }
+
+    Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale) {
+        this.bodies = bodies.copy();
+        this.steps = steps;
+        this.timeStep = timeStep;
+        this.stepsPerFrame = stepsPerFrame;
+        this.scale = scale;
+    }
+
+    Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale, String metadata) {
+        this(bodies, steps, timeStep, stepsPerFrame, scale);
+        this.metadata = metadata;
+    }
+
+    void start() {
+
+        simulationPanel.setBodies(bodies.copy());
+        simulationPanel.setScale(scale);
+
         window.setVisible(true);
 
+        replied = 0;
         simulationPanel.startAnimation(
             (Bodies<BodyMetaSwing> bodies) -> {
-                for (int i = 0; i < 24; i++) {
-                    bodies.iterate(60*60);
+
+                if(replied > steps) {
+                    return;
                 }
+
+                for (int i = 0; i < stepsPerFrame; i++) {
+                    bodies.iterate(timeStep);
+                    replied++;
+                }
+
             }
         );
 
     }
 
-}
+    Bodies getBodies() {
+        return bodies;
+    }
 
+    long getSteps() {
+        return steps;
+    }
+
+    double getTimeStep() {
+        return timeStep;
+    }
+
+    long getStepsPerFrame() {
+        return stepsPerFrame;
+    }
+
+    double getScale() {
+        return scale;
+    }
+
+    String getMetadata() {
+        return metadata;
+    }
+
+    Simulation withNewBodies(Bodies bodies) {
+        return new Simulation(bodies, steps, timeStep, stepsPerFrame, scale, metadata);
+    }
+
+    void save(String resource) {
+        FileSystem.write(resource, serialize());
+    }
+
+    static Simulation load(String resource) {
+        return unserialize(FileSystem.read(resource));
+    }
+
+    String serialize() {
+        return "" +
+            "steps(" + steps + ") " +
+            "timeStep(" + timeStep + ") " +
+            "stepsPerFrame(" + stepsPerFrame + ") " +
+            "scale(" + scale + ") " +
+            "metadata(" + metadata + ")\n" +
+            bodies.serialize();
+    }
+
+    static Simulation unserialize(String string) {
+
+        Pattern pattern = Pattern.compile("" +
+            "steps\\((?<steps>.+)\\) " +
+            "timeStep\\((?<timeStep>.+)\\) " +
+            "stepsPerFrame\\((?<stepsPerFrame>.+)\\) " +
+            "scale\\((?<scale>.+)\\) " +
+            "metadata\\((?<metadata>.+)\\)"
+        );
+        Matcher matcher = pattern.matcher(string.split("\n")[0]);
+        matcher.matches();
+
+        return new Simulation(
+            Bodies.unserialize(string.split("\n", 2)[1]),
+            Long.parseLong(matcher.group("steps")),
+            Double.parseDouble(matcher.group("timeStep")),
+            Long.parseLong(matcher.group("stepsPerFrame")),
+            Double.parseDouble(matcher.group("scale")),
+            matcher.group("metadata")
+        );
+
+    }
+
+}
