@@ -135,11 +135,11 @@ class Simulation {
             "scale\\((?<scale>.+)\\) " +
             "metadata\\((?<metadata>.+)\\)"
         );
-        Matcher matcher = pattern.matcher(string.split("\n")[0]);
+        Matcher matcher = pattern.matcher(string.split("(\\r\\n|\\r|\\n)")[0].trim());
         matcher.matches();
 
         return new Simulation(
-            Bodies.unserialize(string.split("\n", 2)[1]),
+            Bodies.unserialize(string.split("(\\r\\n|\\r|\\n)", 2)[1].trim()),
             Long.parseLong(matcher.group("steps")),
             Double.parseDouble(matcher.group("timeStep")),
             Long.parseLong(matcher.group("stepsPerFrame")),

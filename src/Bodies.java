@@ -162,7 +162,7 @@ class Bodies<M extends BodyMeta> {
 
     static Bodies unserialize(String string) {
         Bodies bodies = new Bodies();
-        String[] serializedBodies = string.split("\n");
+        String[] serializedBodies = string.trim().split("(\\r\\n|\\r|\\n)");
         for(String serializedBody: serializedBodies) {
             bodies.addBody(Body.unserialize(serializedBody));
         }

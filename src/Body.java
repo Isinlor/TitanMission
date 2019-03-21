@@ -160,7 +160,7 @@ class Body<M extends BodyMeta> {
             "velocity\\((?<velocity>.+)\\) " +
             "mass\\((?<mass>.+)\\)"
         );
-        Matcher matcher = pattern.matcher(string);
+        Matcher matcher = pattern.matcher(string.trim());
         matcher.matches();
 
         return new Body(
