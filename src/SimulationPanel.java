@@ -2,10 +2,7 @@ import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -16,6 +13,8 @@ public class SimulationPanel extends JPanel {
     private double scale;
     private double thetaX;
     private double thetaY;
+    private int translationX;
+    private int translationY;
 
     private Consumer<Bodies<BodyMetaSwing>> action;
 
@@ -27,23 +26,62 @@ public class SimulationPanel extends JPanel {
             800, 800
         ));
 
-        MouseAdapter mouseRotation = new MouseInputAdapter() {
+//        translationX = (int)getPreferredSize().getWidth() / 2;
+//        translationY = (int)getPreferredSize().getHeight() / 2;
+
+        MouseAdapter mouseAdapter = new MouseInputAdapter() {
             int pressX;
             int pressY;
             public void mousePressed(MouseEvent mouseEvent) {
                 pressX = mouseEvent.getX() - (int)thetaX;
                 pressY = mouseEvent.getY() - (int)thetaY;
-                super.mousePressed(mouseEvent);
             }
             public void mouseDragged(MouseEvent mouseEvent) {
                 thetaX = mouseEvent.getX() - pressX;
                 thetaY = mouseEvent.getY() - pressY;
-                super.mouseDragged(mouseEvent);
+            }
+            public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
+                scale = scale * Math.pow(1.08, mouseWheelEvent.getWheelRotation());
             }
         };
 
-        addMouseListener(mouseRotation);
-        addMouseMotionListener(mouseRotation);
+        addMouseListener(mouseAdapter);
+        addMouseMotionListener(mouseAdapter);
+        addMouseWheelListener(mouseAdapter);
+
+        KeyAdapter keyAdapter = new KeyAdapter() {
+            public void keyPressed(KeyEvent keyEvent) {
+                int step = -3;
+                switch (keyEvent.getKeyCode()) {
+                    case KeyEvent.VK_UP:
+                    case KeyEvent.VK_W:
+                        translationY += step;
+                        break;
+                    case KeyEvent.VK_DOWN:
+                    case KeyEvent.VK_S:
+                        translationY -= step;
+                        break;
+                    case KeyEvent.VK_LEFT:
+                    case KeyEvent.VK_A:
+                        translationX += step;
+                        break;
+                    case KeyEvent.VK_RIGHT:
+                    case KeyEvent.VK_D:
+                        translationX -= step;
+                        break;
+                }
+            }
+        };
+
+        addKeyListener(keyAdapter);
+
+        Action keyAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                translationY =+ 1;
+            }
+        };
+
+        getInputMap().put(KeyStroke.getKeyStroke("A"), "doNothing");
 
     }
 
@@ -102,13 +140,17 @@ public class SimulationPanel extends JPanel {
 
         displayBodies.apply(
             (Body<BodyMetaSwing> body) -> {
-                body.setPosition(body.getPosition().rotateAroundAxisX(new Vector(), thetaY / 200));
-            }
-        );
 
-        displayBodies.apply(
-            (Body<BodyMetaSwing> body) -> {
-                body.setPosition(body.getPosition().rotateAroundAxisY(new Vector(), thetaX / 200));
+                Vector translation = new Vector(translationX, translationY);
+
+                body.setPosition(body.getPosition().product(1 / scale));
+
+                body.setPosition(body.getPosition().rotateAroundAxisX(translation, thetaY / 200));
+
+                body.setPosition(body.getPosition().rotateAroundAxisY(translation, thetaX / 200));
+
+                body.setPosition(body.getPosition().sum(translation));
+
             }
         );
 
@@ -117,8 +159,8 @@ public class SimulationPanel extends JPanel {
 
             Vector vector = body.getPosition();
 
-            int x = (int)Math.round(vector.x / scale);
-            int y = (int)Math.round(vector.y / scale);
+            int x = (int)Math.round(vector.x);
+            int y = (int)Math.round(vector.y);
 
             g.setColor(Color.BLACK);
 
