@@ -55,11 +55,12 @@ public class MissionTest {
         Body target;
         String sourceName = "Earth";
         String targetName = "Titan";
+        double targetRadius = 2574.7 * 1000;
         double minDistance = Double.MAX_VALUE;
         double bestDistance = Double.MAX_VALUE;
         Body source;
 
-//        for (int i = 0; i < (long)(500*24*60*60 / timeStep); i++) {
+//        for (int i = 0; i < (long)(100*24*60*60 / timeStep); i++) {
 //            bodies.iterate(timeStep);
 //        }
 
@@ -95,12 +96,12 @@ public class MissionTest {
             minProbe = initProbes.getBody(tuple.getY().getName());
 
             double astronomicalUnits = 1.496e11;
-            double marsRadius = 3389.5 * 1000;
-            long distanceInMarsRadii = Math.round(minDistance / marsRadius);
+            long distanceInMarsRadii = Math.round(minDistance / targetRadius);
 
             // if we flyby closer than mars radius, then we have a direct hit
-            if(minDistance < 3389*1000) {
+            if(minDistance < targetRadius) {
                 System.out.println("Hit!");
+                saveBodies.getBody(minProbe.getName()).rename(probePrototype.getName() + " HIT!");
                 getSimulation(saveBodies).save(
                     "/home/isinlor/Projects/TitanMission/resources/simulation-" + targetName + ".txt"
                 );
@@ -112,7 +113,13 @@ public class MissionTest {
                 probePrototype = minProbe;
 
                 System.out.print("Updated! ");
-                System.out.println(distanceInMarsRadii + "\t" + Math.round(step));
+                System.out.print(distanceInMarsRadii + "\t" + Math.round(step));
+
+                System.out.println("  relative speed: " + Math.round(probePrototype.getRelativeVelocity(bodies.getBody(sourceName)).getLength() / 1000) + " km/s");
+
+                getSimulation(saveBodies).save(
+                    "/home/isinlor/Projects/TitanMission/resources/simulation-" + targetName + ".txt"
+                );
 
                 noProgress = 0;
 
@@ -123,8 +130,8 @@ public class MissionTest {
                 noProgress++;
             }
 
-            if(noProgress > 3) {
-                range = range / 1.5;
+            if(noProgress > 1) {
+                range = range / 2;
                 noProgress = 0;
                 System.out.println("Range updated to " + range);
             }
@@ -150,11 +157,17 @@ public class MissionTest {
                     probe.addVelocity(stepUpdate);
 
                     // avoid crazy high probe velocities in relation to Earth
-                    if (probe.getRelativeVelocity(source).getLength() > 600000) {
+                    if(probe.getRelativeVelocity(source).getLength() > 50000) {
+                        continue;
+                    }
+
+                    // not enough to escape Earth
+                    if(probe.getRelativeVelocity(source).getLength() < 10000) {
                         continue;
                     }
 
                     probes.addBody(probe);
+
                 }
             }
         }
@@ -216,7 +229,7 @@ public class MissionTest {
     }
 
     private static Simulation getSimulation(Bodies bodies) {
-        return new Simulation(bodies, steps, timeStep, stepsPerFrame, 10e9);
+        return new Simulation(bodies, steps, timeStep, stepsPerFrame, 0.4e10);
     }
 
 }

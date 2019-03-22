@@ -186,7 +186,7 @@ public class SimulationPanel extends JPanel {
         cube.rotateAroundAxisX(new Vector(), thetaY / 200);
         cube.rotateAroundAxisY(new Vector(), thetaX / 200);
 
-        cube.draw(g);
+//        cube.draw(g);
 
         g.drawString("Day: " + Double.toString(bodies.getTime() / (60 * 60 * 24)), getWidth() / 2 - 100, getHeight() / 2 - 20);
 
