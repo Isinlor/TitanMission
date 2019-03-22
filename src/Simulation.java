@@ -11,19 +11,6 @@ class Simulation {
 
     static private JFrame window = new JFrame();
     static private SimulationPanel  simulationPanel = new SimulationPanel();
-    static {
-        System.setProperty("sun.java2d.opengl", "true");
-        window.setContentPane(simulationPanel);
-        window.pack();
-
-        Button button = new Button("Restart simulation");
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                simulation.start();
-            }
-        });
-        simulationPanel.add(button);
-    }
 
     private Bodies bodies;
 
@@ -36,6 +23,32 @@ class Simulation {
     private String metadata;
 
     private long replied;
+
+    private static boolean pause = false;
+
+    static {
+        System.setProperty("sun.java2d.opengl", "true");
+        window.setContentPane(simulationPanel);
+        window.pack();
+
+        Button reset = new Button("Restart simulation");
+        reset.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                simulation.start();
+            }
+        });
+        simulationPanel.add(reset);
+
+        Button pauseButton = new Button("Pause simulation");
+        pauseButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                pause = !pause;
+                if(pause) pauseButton.setLabel("Resume simulation");
+                if(!pause) pauseButton.setLabel("Pause simulation");
+            }
+        });
+        simulationPanel.add(pauseButton);
+    }
 
     public static void main(String[] args) {
         load(args[0]).start();
@@ -66,7 +79,7 @@ class Simulation {
         simulationPanel.startAnimation(
             (Bodies<BodyMetaSwing> bodies) -> {
 
-                if(replied > steps) {
+                if(pause || replied > steps) {
                     return;
                 }
 
