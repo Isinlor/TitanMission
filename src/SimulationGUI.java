@@ -18,13 +18,13 @@ public class SimulationGUI extends Application {
         double auToM = 1.496e11;
         double dayToSecond = 1.0 / 86400.0;
 
-        LinkedList<Planet> planets = CSVReader.readPlanets();
+        LinkedList<Planet3D> planets = CSVReader.readPlanets3D();
 
         Bodies bodies = new Bodies();
         for (Planet planet: planets) bodies.addBody(planet);
 
         List<Sphere> planetSpheres = new LinkedList<>();
-        for (Planet planet: planets) planetSpheres.add(planet.getSphere());
+        for (Planet3D planet: planets) planetSpheres.add(planet.getSphere());
 
         for (Sphere planetSphere: planetSpheres) planetSphere.setRadius(planetSphere.getRadius()*1000);
         System.out.println(bodies);
