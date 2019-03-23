@@ -77,13 +77,8 @@ public class SimulationPanel extends JPanel {
 
         addKeyListener(keyAdapter);
 
-        Action keyAction = new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                translationY =+ 1;
-            }
-        };
-
-        getInputMap().put(KeyStroke.getKeyStroke("A"), "doNothing");
+        // for some reason it makes keyAdapter above work ...
+        getInputMap().put(KeyStroke.getKeyStroke("A"), "");
 
     }
 
