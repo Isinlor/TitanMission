@@ -15,21 +15,22 @@ public class MissionTest {
     }
 
     private static void optimize(Bodies bodies) throws Exception {
+        Body source;
         Body target;
         String sourceName = "Earth";
-        String targetName = "Jupiter";
-        double targetRadius = 70000 * 1000; // 2574.7 * 1000;
+        String targetName = "Sun";
+        source = bodies.getBody(sourceName);
+        target = bodies.getBody(targetName);
+        double sourceRadius = source.getRadius();
+        double targetRadius = target.getRadius();
+
         double minDistance = Double.MAX_VALUE;
         double bestDistance = Double.MAX_VALUE;
-        Body source;
 
 //        for (int i = 0; i < (long)(100*24*60*60 / timeStep); i++) {
 //            bodies.iterate(timeStep);
 //        }
 
-        // make probe orbit the earth; notice that time step must be sufficiently small
-        source = bodies.getBody(sourceName);
-        double sourceRadius = 6371 * 1000.0;
         Double distanceFromCenter = sourceRadius + 100.0 * 1000.0;
         Body probePrototype = getProbeInOrbit(source, distanceFromCenter);
         Body minProbe = probePrototype;
@@ -59,7 +60,7 @@ public class MissionTest {
             minProbe = initProbes.getBody(tuple.getY().getName());
 
             double astronomicalUnits = 1.496e11;
-            long distanceInMarsRadii = Math.round(minDistance / targetRadius);
+            long distanceInTargetRadii = Math.round(minDistance / targetRadius);
 
             // if we flyby closer than mars radius, then we have a direct hit
             if(minDistance < targetRadius) {
@@ -76,7 +77,7 @@ public class MissionTest {
                 probePrototype = minProbe;
 
                 System.out.print("Updated! ");
-                System.out.print(distanceInMarsRadii + "\t" + Math.round(step));
+                System.out.print(distanceInTargetRadii + "\t" + Math.round(step));
 
                 System.out.println("  relative speed: " + Math.round(probePrototype.getRelativeVelocity(bodies.getBody(sourceName)).getLength() / 1000) + " km/s");
 
@@ -89,7 +90,7 @@ public class MissionTest {
                 animate(animateBodies);
             } else {
                 System.out.print("         ");
-                System.out.println(distanceInMarsRadii + "\t" + Math.round(step) + "\t" + noProgress);
+                System.out.println(distanceInTargetRadii + "\t" + Math.round(step) + "\t" + noProgress);
                 noProgress++;
             }
 
@@ -119,13 +120,13 @@ public class MissionTest {
 
                     probe.addVelocity(stepUpdate);
 
-                    // avoid crazy high probe velocities in relation to Earth
-                    if(probe.getRelativeVelocity(source).getLength() > 20000) {
+                    // avoid crazy high probe velocities in relation to source
+                    if(probe.getRelativeVelocity(source).getLength() > source.computeSecondEscapeVelocity(probe) * 2) {
                         continue;
                     }
 
-                    // not enough to escape Earth
-                    if(probe.getRelativeVelocity(source).getLength() < 10000) {
+                    // not enough to escape source
+                    if(probe.getRelativeVelocity(source).getLength() < source.computeSecondEscapeVelocity(probe)) {
                         continue;
                     }
 
