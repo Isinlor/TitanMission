@@ -94,7 +94,7 @@ public class MissionTest {
                 noProgress++;
             }
 
-            if(noProgress > 1) {
+            if(noProgress > 1 && range > 1) {
                 range = range / 2;
                 noProgress = 0;
                 System.out.println("Range updated to " + range);
