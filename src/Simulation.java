@@ -26,6 +26,7 @@ class Simulation {
         window.getContentPane().setLayout(new BorderLayout());
         window.getContentPane().add(simulationPanel, BorderLayout.CENTER);
         window.getContentPane().add(simulationPanelControls, BorderLayout.NORTH);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public static void main(String[] args) {
@@ -33,11 +34,13 @@ class Simulation {
     }
 
     Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale) {
-        this.bodies = bodies.copy();
+        setBodies(bodies);
         this.steps = steps;
         this.timeStep = timeStep;
         this.stepsPerFrame = stepsPerFrame;
         this.scale = scale;
+        simulationPanel.setScale(scale);
+        start();
     }
 
     Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale, String metadata) {
@@ -45,21 +48,16 @@ class Simulation {
         this.metadata = metadata;
     }
 
-    void start() {
-
-        simulationPanel.setBodies(bodies.copy());
-        simulationPanelControls.updateBodySelector();
-        simulationPanel.setScale(scale);
+    private void start() {
 
         window.pack();
         window.setVisible(true);
 
-        replied = 0;
         simulationPanel.startSimulation(
             (Bodies bodies) -> {
 
                 if(replied == steps) {
-                    simulationPanelControls.pauseSimulation();
+                    pause();
                 }
 
                 for (int i = 0; i < stepsPerFrame; i++) {
@@ -70,6 +68,22 @@ class Simulation {
             }
         );
 
+    }
+
+    private void pause() {
+        simulationPanelControls.pauseSimulation();
+    }
+
+    private void resume() {
+        simulationPanelControls.resumeSimulation();
+    }
+
+    void setBodies(Bodies bodies) {
+        this.replied = 0;
+        this.bodies = bodies.copy();
+        simulationPanel.setBodies(this.bodies.copy());
+        simulationPanelControls.updateBodySelector();
+        resume();
     }
 
     Bodies getBodies() {
@@ -94,10 +108,6 @@ class Simulation {
 
     String getMetadata() {
         return metadata;
-    }
-
-    Simulation withNewBodies(Bodies bodies) {
-        return new Simulation(bodies, steps, timeStep, stepsPerFrame, scale, metadata);
     }
 
     void save(String resource) {

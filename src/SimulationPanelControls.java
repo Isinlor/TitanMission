@@ -45,6 +45,7 @@ class SimulationPanelControls extends JPanel {
         restartSimulation.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 simulationPanel.restartSimulation();
+                updateBodySelector();
             }
         });
         add(restartSimulation);
@@ -62,7 +63,12 @@ class SimulationPanelControls extends JPanel {
 
         bodySelector.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
-                simulationPanel.selectedBody = simulationPanel.bodies.getBody((String)bodySelector.getSelectedItem());
+                String selectedItem = (String) bodySelector.getSelectedItem();
+                if(simulationPanel.bodies.hasBody(selectedItem)) {
+                    simulationPanel.selectedBody = simulationPanel.bodies.getBody(selectedItem);
+                } else {
+                    updateBodySelector();
+                }
             }
         });
         add(bodySelector);

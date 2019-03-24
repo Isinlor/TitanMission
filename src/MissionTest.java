@@ -1,16 +1,23 @@
 @SuppressWarnings("Duplicates")
 public class MissionTest {
 
+    private static Simulation simulation;
+
     private static final double timeStep = 60.0; // in s
-    private static final long steps = (long)(1200*24*60*60 / timeStep); // around 1 year
+    private static final long steps = (long)(100*24*60*60 / timeStep); // around 1 year
     private static final long stepsPerFrame = (long)(24*60*60 / timeStep); // around 1 day
+
+    private static String resourcesPath;
 
     /**
      * Some simple test.
      */
     public static void main(String[] args) throws Exception {
 
-        optimize(Bodies.unserialize(FileSystem.tryLoadResource("planets.txt")));
+        resourcesPath = args[0];
+        Bodies bodies = Bodies.unserialize(FileSystem.tryLoadResource("planets.txt"));
+        simulation = new Simulation(bodies, steps, timeStep, stepsPerFrame, 0.4e10);
+        optimize(bodies);
 
     }
 
@@ -18,7 +25,7 @@ public class MissionTest {
         Body source;
         Body target;
         String sourceName = "Earth";
-        String targetName = "Sun";
+        String targetName = "Mars";
         source = bodies.getBody(sourceName);
         target = bodies.getBody(targetName);
         double sourceRadius = source.getRadius();
@@ -66,9 +73,11 @@ public class MissionTest {
             if(minDistance < targetRadius) {
                 System.out.println("Hit!");
                 saveBodies.getBody(minProbe.getName()).rename(probePrototype.getName() + " HIT!");
-                getSimulation(saveBodies).save(
-                    "/home/isinlor/Projects/TitanMission/resources/simulation-" + targetName + ".txt"
-                );
+                try {
+                    simulation.save(resourcesPath + "/simulation-" + targetName + ".txt");
+                } catch (Exception e) {
+                    System.out.println(simulation.serialize());
+                }
                 System.exit(1);
             }
 
@@ -81,9 +90,7 @@ public class MissionTest {
 
                 System.out.println("  relative speed: " + Math.round(probePrototype.getRelativeVelocity(bodies.getBody(sourceName)).getLength() / 1000) + " km/s");
 
-                getSimulation(saveBodies).save(
-                    "/home/isinlor/Projects/TitanMission/resources/simulation-" + targetName + ".txt"
-                );
+                simulation.save(resourcesPath + "/simulation-" + targetName + ".txt");
 
                 noProgress = 0;
 
@@ -94,7 +101,7 @@ public class MissionTest {
                 noProgress++;
             }
 
-            if(noProgress > 1 && range > 1) {
+            if(noProgress > 3 && range > 1) {
                 range = range / 2;
                 noProgress = 0;
                 System.out.println("Range updated to " + range);
@@ -189,11 +196,7 @@ public class MissionTest {
     }
 
     private static void animate(Bodies bodies) {
-        getSimulation(bodies).start();
-    }
-
-    private static Simulation getSimulation(Bodies bodies) {
-        return new Simulation(bodies, steps, timeStep, stepsPerFrame, 0.4e10);
+        simulation.setBodies(bodies);
     }
 
 }
