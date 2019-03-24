@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -6,6 +7,7 @@ class Simulation {
 
     static private JFrame window = new JFrame();
     static private SimulationPanel simulationPanel = new SimulationPanel();
+    static private SimulationPanelControls simulationPanelControls = new SimulationPanelControls(simulationPanel);
 
     private Bodies bodies;
 
@@ -21,7 +23,9 @@ class Simulation {
 
     static {
         System.setProperty("sun.java2d.opengl", "true");
-        window.setContentPane(simulationPanel);
+        window.getContentPane().setLayout(new BorderLayout());
+        window.getContentPane().add(simulationPanel, BorderLayout.CENTER);
+        window.getContentPane().add(simulationPanelControls, BorderLayout.NORTH);
     }
 
     public static void main(String[] args) {
@@ -44,6 +48,7 @@ class Simulation {
     void start() {
 
         simulationPanel.setBodies(bodies.copy());
+        simulationPanelControls.updateBodySelector();
         simulationPanel.setScale(scale);
 
         window.pack();
@@ -54,7 +59,7 @@ class Simulation {
             (Bodies bodies) -> {
 
                 if(replied == steps) {
-                    simulationPanel.pauseSimulation();
+                    simulationPanelControls.pauseSimulation();
                 }
 
                 for (int i = 0; i < stepsPerFrame; i++) {

@@ -6,24 +6,20 @@ import java.util.function.Consumer;
 
 public class SimulationPanel extends JPanel {
 
-    private Bodies bodies;
+    Bodies bodies;
     private Bodies originalBodies;
 
-    private double scale;
-    private double dragX;
-    private double dragY;
-    private int translationX;
-    private int translationY;
+    double scale;
+    double dragX;
+    double dragY;
+    int translationX;
+    int translationY;
 
-    private Consumer<Bodies> action;
+    Consumer<Bodies> action;
 
-    private Timer timer;
-
-    boolean isSimulating = false;
-    Button animationButton = new Button("Pause simulation");
+    private boolean isSimulating = false;
 
     Body selectedBody;
-    JComboBox<String> bodySelector = new JComboBox<>();
 
     SimulationPanel() {
 
@@ -35,85 +31,6 @@ public class SimulationPanel extends JPanel {
         translationY = getHeight() / 2;
 
         setBackground(Color.WHITE);
-
-        MouseAdapter mouseAdapter = new MouseInputAdapter() {
-            int currentX;
-            int currentY;
-            public void mousePressed(MouseEvent mouseEvent) {
-                currentX = mouseEvent.getX();
-                currentY = mouseEvent.getY();
-            }
-            public void mouseDragged(MouseEvent mouseEvent) {
-                double changeX = ((double)(mouseEvent.getX() - currentX) * Math.pow(scale, 0.5)) / 5000000.0;
-                double changeY = ((double)(mouseEvent.getY() - currentY) * Math.pow(scale, 0.5)) / 5000000.0;
-                dragX = dragX + changeX;
-                dragY = dragY + changeY;
-                currentX = mouseEvent.getX();
-                currentY = mouseEvent.getY();
-            }
-            public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
-                scale = scale * Math.pow(1.08, mouseWheelEvent.getWheelRotation());
-            }
-        };
-
-        addMouseListener(mouseAdapter);
-        addMouseMotionListener(mouseAdapter);
-        addMouseWheelListener(mouseAdapter);
-
-        KeyAdapter keyAdapter = new KeyAdapter() {
-            public void keyPressed(KeyEvent keyEvent) {
-                int step = -3;
-                switch (keyEvent.getKeyCode()) {
-                    case KeyEvent.VK_UP:
-                    case KeyEvent.VK_W:
-                        translationY += step;
-                        break;
-                    case KeyEvent.VK_DOWN:
-                    case KeyEvent.VK_S:
-                        translationY -= step;
-                        break;
-                    case KeyEvent.VK_LEFT:
-                    case KeyEvent.VK_A:
-                        translationX += step;
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                    case KeyEvent.VK_D:
-                        translationX -= step;
-                        break;
-                }
-            }
-        };
-
-        addKeyListener(keyAdapter);
-
-        // for some reason it makes keyAdapter above work ...
-        getInputMap().put(KeyStroke.getKeyStroke("A"), "");
-
-        Button restartSimulation = new Button("Restart simulation");
-        restartSimulation.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                restartSimulation();
-            }
-        });
-        add(restartSimulation);
-
-        animationButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                if (isSimulating()) {
-                    pauseSimulation();
-                } else {
-                    resumeSimulation();
-                }
-            }
-        });
-        add(animationButton);
-
-        bodySelector.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                selectedBody = bodies.getBody((String)bodySelector.getSelectedItem());
-            }
-        });
-        add(bodySelector);
 
     }
 
@@ -129,18 +46,8 @@ public class SimulationPanel extends JPanel {
     void setBodies(Bodies bodies) {
         this.bodies = bodies.copy();
         this.originalBodies = bodies.copy();
-        updateBodySelector(bodies);
-    }
-
-    private void updateBodySelector(Bodies bodies) {
-        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
-        bodies.apply((Body body) -> model.addElement(body.getName()));
-        bodySelector.setModel(model);
-        if(selectedBody != null && bodies.hasBody(selectedBody.getName())) {
-            // keep selected body if exists
-            bodySelector.setSelectedItem(selectedBody.getName());
-        } else {
-            bodySelector.setSelectedItem(bodies.getHeaviestBody().getName());
+        if(selectedBody == null || !bodies.hasBody(selectedBody.getName())) {
+            selectedBody = bodies.getHeaviestBody();
         }
     }
 
@@ -155,10 +62,10 @@ public class SimulationPanel extends JPanel {
     void startSimulation(Consumer<Bodies> frameUpdate) {
         pauseSimulation();
         // Animate. Does repaint ~60 times a second.
-        timer = new Timer(16, new ActionListener() {
+        Timer timer = new Timer(16, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(frameUpdate != null && isSimulating()) frameUpdate.accept(bodies);
+                if (frameUpdate != null && isSimulating()) frameUpdate.accept(bodies);
                 repaint();
             }
         });
@@ -172,12 +79,10 @@ public class SimulationPanel extends JPanel {
 
     void resumeSimulation() {
         isSimulating = true;
-        animationButton.setLabel("Pause simulation");
     }
 
     void pauseSimulation() {
         isSimulating = false;
-        animationButton.setLabel("Resume simulation");
     }
 
     public void paintComponent(Graphics g) {
