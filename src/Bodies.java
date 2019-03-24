@@ -132,6 +132,12 @@ class Bodies {
         for (Body bodyB: getBodies()) {
             if(bodyA == bodyB) continue;
             if(bodyB.getMass() < 2) continue; // negligible
+            if(bodyA.computeDistance(bodyB) < bodyA.getRadius() + bodyB.getRadius()) {
+                Body crashedBody = bodyA.getMass() < bodyB.getMass() ? bodyA : bodyB;
+                removeBody(crashedBody);
+                if(crashedBody == bodyA) return new Force();
+                continue;
+            }
             force = force.sum(bodyA.computeAttraction(bodyB));
         }
         return force;

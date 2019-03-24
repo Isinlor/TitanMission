@@ -141,6 +141,14 @@ class Body {
         return position.euclideanDistance(body.position);
     }
 
+    /**
+     * Second escape velocity is the minimum speed needed for an object to escape from the gravitational influence of a massive body.
+     * It is slower the further away from the body an object is, and slower for less massive bodies.
+     */
+    double computeSecondEscapeVelocity(Body body) {
+        return Math.sqrt(2*SimulationSolarSystem.G*getMass() / computeDistance(body));
+    }
+
     public String toString() {
         return "Name: " + getName() + ", Position" + position + ", Velocity" + velocity + ", mass(" + Utils.round(mass) + ")";
     }
