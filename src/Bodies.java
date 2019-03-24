@@ -65,6 +65,13 @@ class Bodies<M extends BodyMeta> {
     }
 
     /**
+     * Check whether a specific body is in the list.
+     */
+    boolean hasBody(String name) {
+        return bodies.containsKey(name);
+    }
+
+    /**
      * Returns body with the heaviest mass.
      */
     Body<M> getHeaviestBody() {

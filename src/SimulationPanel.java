@@ -136,7 +136,12 @@ public class SimulationPanel extends JPanel {
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
         bodies.apply((Body<BodyMetaSwing> body) -> model.addElement(body.getName()));
         bodySelector.setModel(model);
-        bodySelector.setSelectedItem(bodies.getHeaviestBody().getName());
+        if(selectedBody != null && bodies.hasBody(selectedBody.getName())) {
+            // keep selected body if exists
+            bodySelector.setSelectedItem(selectedBody.getName());
+        } else {
+            bodySelector.setSelectedItem(bodies.getHeaviestBody().getName());
+        }
     }
 
     void setScale(double scale) {
