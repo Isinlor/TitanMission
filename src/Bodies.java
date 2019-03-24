@@ -65,6 +65,17 @@ class Bodies<M extends BodyMeta> {
     }
 
     /**
+     * Returns body with the heaviest mass.
+     */
+    Body<M> getHeaviestBody() {
+        Body<M> heaviestBody = getBodies().iterator().next();
+        for (Body<M> body: getBodies()) {
+            if(heaviestBody.getMass() < body.getMass()) heaviestBody = body;
+        }
+        return heaviestBody;
+    }
+
+    /**
      * Returns set of bodies.
      *
      * Notice! Linked version of HashSet is used purposefully.

@@ -1,18 +1,17 @@
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.awt.event.*;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class SimulationPanel extends JPanel {
 
     private Bodies<BodyMetaSwing> bodies;
+    private Bodies<BodyMetaSwing> originalBodies;
 
     private double scale;
-    private double thetaX;
-    private double thetaY;
+    private double dragX;
+    private double dragY;
     private int translationX;
     private int translationY;
 
@@ -20,27 +19,37 @@ public class SimulationPanel extends JPanel {
 
     private Timer timer;
 
+    boolean isSimulating = false;
+    Button animationButton = new Button("Pause simulation");
+
+    Body selectedBody;
+    JComboBox<String> bodySelector = new JComboBox<>();
+
     SimulationPanel() {
 
         setPreferredSize(new Dimension(
-            800, 800
+            1800, 800
         ));
+
+        translationX = getWidth() / 2;
+        translationY = getHeight() / 2;
 
         setBackground(Color.WHITE);
 
-//        translationX = (int)getPreferredSize().getWidth() / 2;
-//        translationY = (int)getPreferredSize().getHeight() / 2;
-
         MouseAdapter mouseAdapter = new MouseInputAdapter() {
-            int pressX;
-            int pressY;
+            int currentX;
+            int currentY;
             public void mousePressed(MouseEvent mouseEvent) {
-                pressX = mouseEvent.getX() - (int)thetaX;
-                pressY = mouseEvent.getY() - (int)thetaY;
+                currentX = mouseEvent.getX();
+                currentY = mouseEvent.getY();
             }
             public void mouseDragged(MouseEvent mouseEvent) {
-                thetaX = mouseEvent.getX() - pressX;
-                thetaY = mouseEvent.getY() - pressY;
+                double changeX = ((double)(mouseEvent.getX() - currentX) * Math.pow(scale, 0.5)) / 5000000.0;
+                double changeY = ((double)(mouseEvent.getY() - currentY) * Math.pow(scale, 0.5)) / 5000000.0;
+                dragX = dragX + changeX;
+                dragY = dragY + changeY;
+                currentX = mouseEvent.getX();
+                currentY = mouseEvent.getY();
             }
             public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
                 scale = scale * Math.pow(1.08, mouseWheelEvent.getWheelRotation());
@@ -80,41 +89,90 @@ public class SimulationPanel extends JPanel {
         // for some reason it makes keyAdapter above work ...
         getInputMap().put(KeyStroke.getKeyStroke("A"), "");
 
+        Button restartSimulation = new Button("Restart simulation");
+        restartSimulation.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                restartSimulation();
+            }
+        });
+        add(restartSimulation);
+
+        animationButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (isSimulating()) {
+                    pauseSimulation();
+                } else {
+                    resumeSimulation();
+                }
+            }
+        });
+        add(animationButton);
+
+        bodySelector.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                selectedBody = bodies.getBody((String)bodySelector.getSelectedItem());
+            }
+        });
+        add(bodySelector);
+
     }
 
     SimulationPanel(double scale, Bodies<BodyMetaSwing> bodies) {
 
         this();
 
-        this.scale = scale;
-        this.bodies = bodies;
+        setScale(scale);
+        setBodies(bodies);
 
     }
 
     void setBodies(Bodies<BodyMetaSwing> bodies) {
-        this.bodies = bodies;
+        this.bodies = bodies.copy();
+        this.originalBodies = bodies.copy();
+        updateBodySelector(bodies);
+    }
+
+    private void updateBodySelector(Bodies<BodyMetaSwing> bodies) {
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
+        bodies.apply((Body<BodyMetaSwing> body) -> model.addElement(body.getName()));
+        bodySelector.setModel(model);
+        bodySelector.setSelectedItem(bodies.getHeaviestBody().getName());
     }
 
     void setScale(double scale) {
         this.scale = scale;
     }
 
-    Timer startAnimation(Consumer<Bodies<BodyMetaSwing>> action) {
-        if(timer != null) timer.stop();
+    boolean isSimulating() {
+        return isSimulating;
+    }
+
+    void startSimulation(Consumer<Bodies<BodyMetaSwing>> frameUpdate) {
+        pauseSimulation();
         // Animate. Does repaint ~60 times a second.
         timer = new Timer(16, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(action != null) action.accept(bodies);
+                if(frameUpdate != null && isSimulating()) frameUpdate.accept(bodies);
                 repaint();
             }
         });
         timer.start();
-        return timer;
+        resumeSimulation();
     }
 
-    void stopAnimation() {
-        timer.stop();
+    void restartSimulation() {
+        setBodies(this.originalBodies);
+    }
+
+    void resumeSimulation() {
+        isSimulating = true;
+        animationButton.setLabel("Pause simulation");
+    }
+
+    void pauseSimulation() {
+        isSimulating = false;
+        animationButton.setLabel("Resume simulation");
     }
 
     public void paintComponent(Graphics g) {
@@ -124,8 +182,6 @@ public class SimulationPanel extends JPanel {
         super.paintComponent(g);
 
         turnAntialiasingOn(g);
-
-        g.translate(getWidth() / 2, getHeight() / 2);
 
         drawBodies(g);
 
@@ -138,15 +194,17 @@ public class SimulationPanel extends JPanel {
         displayBodies.apply(
             (Body<BodyMetaSwing> body) -> {
 
-                Vector translation = new Vector(translationX, translationY);
+                Vector nullVector = new Vector();
+
+                body.setPosition(body.getPosition().sum(selectedBody.getPosition().product(-1)));
 
                 body.setPosition(body.getPosition().product(1 / scale));
 
-                body.setPosition(body.getPosition().rotateAroundAxisX(translation, thetaY / 200));
+                body.setPosition(body.getPosition().rotateAroundAxisX(nullVector, dragY));
 
-                body.setPosition(body.getPosition().rotateAroundAxisY(translation, thetaX / 200));
+                body.setPosition(body.getPosition().rotateAroundAxisY(nullVector, dragX));
 
-                body.setPosition(body.getPosition().sum(translation));
+                body.setPosition(body.getPosition().sum(new Vector(translationX, translationY)));
 
             }
         );
@@ -156,8 +214,8 @@ public class SimulationPanel extends JPanel {
 
             Vector vector = body.getPosition();
 
-            int x = (int)Math.round(vector.x);
-            int y = (int)Math.round(vector.y);
+            int x = (int)Math.round(vector.x) + getWidth() / 2;
+            int y = (int)Math.round(vector.y) + getHeight() / 2;
 
             g.setColor(Color.BLACK);
 
@@ -177,13 +235,14 @@ public class SimulationPanel extends JPanel {
         g.setColor(oldColor);
 
         // Cube is here to help visualize 3D space.
-        Cube cube = new Cube(new Vector(-200, -200, -200), 400);
-        cube.rotateAroundAxisX(new Vector(), thetaY / 200);
-        cube.rotateAroundAxisY(new Vector(), thetaX / 200);
+        Cube cube = new Cube(new Vector(getWidth() / 2 -200, getHeight() / 2 -200, -200), 400);
+        cube.rotateAroundAxisX(new Vector(getWidth() / 2, getHeight() / 2), dragY);
+        cube.rotateAroundAxisY(new Vector(getWidth() / 2, getHeight() / 2), dragX);
 
-//        cube.draw(g);
+        cube.draw(g);
 
-        g.drawString("Day: " + Double.toString(bodies.getTime() / (60 * 60 * 24)), getWidth() / 2 - 100, getHeight() / 2 - 20);
+        g.drawString("Day: " + Double.toString(Math.round(bodies.getTime() / (60 * 60 * 24))), getWidth() - 110, getHeight() - 40);
+        g.drawString("Scale: " + Utils.round(scale), getWidth() - 110, getHeight() - 20);
 
     }
 

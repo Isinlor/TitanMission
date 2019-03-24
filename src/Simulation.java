@@ -1,16 +1,11 @@
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 class Simulation {
 
-    static private Simulation simulation;
-
     static private JFrame window = new JFrame();
-    static private SimulationPanel  simulationPanel = new SimulationPanel();
+    static private SimulationPanel simulationPanel = new SimulationPanel();
 
     private Bodies bodies;
 
@@ -24,30 +19,9 @@ class Simulation {
 
     private long replied;
 
-    private static boolean pause = false;
-
     static {
         System.setProperty("sun.java2d.opengl", "true");
         window.setContentPane(simulationPanel);
-        window.pack();
-
-        Button reset = new Button("Restart simulation");
-        reset.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                simulation.start();
-            }
-        });
-        simulationPanel.add(reset);
-
-        Button pauseButton = new Button("Pause simulation");
-        pauseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                pause = !pause;
-                if(pause) pauseButton.setLabel("Resume simulation");
-                if(!pause) pauseButton.setLabel("Pause simulation");
-            }
-        });
-        simulationPanel.add(pauseButton);
     }
 
     public static void main(String[] args) {
@@ -60,7 +34,6 @@ class Simulation {
         this.timeStep = timeStep;
         this.stepsPerFrame = stepsPerFrame;
         this.scale = scale;
-        simulation = this;
     }
 
     Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale, String metadata) {
@@ -73,14 +46,15 @@ class Simulation {
         simulationPanel.setBodies(bodies.copy());
         simulationPanel.setScale(scale);
 
+        window.pack();
         window.setVisible(true);
 
         replied = 0;
-        simulationPanel.startAnimation(
+        simulationPanel.startSimulation(
             (Bodies<BodyMetaSwing> bodies) -> {
 
-                if(pause || replied > steps) {
-                    return;
+                if(replied == steps) {
+                    simulationPanel.pauseSimulation();
                 }
 
                 for (int i = 0; i < stepsPerFrame; i++) {

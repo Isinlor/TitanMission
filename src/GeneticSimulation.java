@@ -113,10 +113,10 @@ public class GeneticSimulation {
         window.setVisible(true);
         animatedSteps = 0;
 
-        simulationPanel.startAnimation(
+        simulationPanel.startSimulation(
             (Bodies<BodyMetaSwing> bodies2) -> {
                 if(animatedSteps > steps) {
-                    simulationPanel.stopAnimation();
+                    simulationPanel.pauseSimulation();
                     window.dispose();
                 }
                 for (int i = 0; i < stepsPerFrame; i++) {

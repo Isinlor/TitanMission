@@ -1,11 +1,4 @@
 import javax.swing.*;
-import javax.swing.Timer;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Simple n-body simulation based on finite differences and O(n^2) computation of forces between all bodies.
@@ -42,7 +35,7 @@ class SimulationSolarSystem {
         // make display visible
         window.setVisible(true);
 
-        simulationPanel.startAnimation(
+        simulationPanel.startSimulation(
             (Bodies<BodyMetaSwing> bodies) -> {
                 for (int i = 0; i < 24; i++) {
                     bodies.iterate(60*60);
