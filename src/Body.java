@@ -21,7 +21,7 @@ class Body {
     private double mass;
     private double radius = 1.0;
 
-    private Metadata meta;
+    private Metadata meta = new Metadata();
 
     Body(String name, Vector position, Vector velocity, double mass) {
         this.name = name;
@@ -31,27 +31,7 @@ class Body {
 
         startingPosition = position;
         startingVelocity = velocity;
-
-        meta(name);
-
     }
-
-    private void meta(String name) {
-        switch (name) {
-            case "Sun": radius = 6.957e8; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.yellow.getRGB()).substring(2)); break;
-            case "Earth": radius = 6371008; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.cyan.getRGB()).substring(2)); break;
-            case "Mars": radius = 3.3895e6; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.red.getRGB()).substring(2)); break;
-            case "Saturn": radius = 5.8232e7; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.magenta.getRGB()).substring(2)); break;
-            case "Jupiter": radius = 6.9911e7; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.pink.getRGB()).substring(2)); break;
-            case "Titan": radius = 2.575e6; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.orange.getRGB()).substring(2)); break;
-            case "Moon (Earth)": radius = 1737400; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.lightGray.getRGB()).substring(2)); break;
-            case "Venus": radius = 6051900; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.white.getRGB()).substring(2)); break;
-            case "Mercury": radius = 2432000; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.darkGray.getRGB()).substring(2)); break;
-            case "Uranus": radius = 25362000; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.gray.getRGB()).substring(2)); break;
-            case "Neptune": radius = 24622000; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.blue.getRGB()).substring(2)); break;
-        }
-    }
-
 
     Body(String name, Vector position, Vector velocity, double mass, double radius) {
         this.name = name;
@@ -62,19 +42,16 @@ class Body {
 
         startingPosition = position;
         startingVelocity = velocity;
-meta(name);
     }
 
     Body(String name, Vector position, Vector velocity, double mass, double radius, Metadata meta) {
         this(name, position, velocity, mass, radius);
         this.meta = meta;
-meta(name);
     }
 
     Body(String name, Vector position, Vector velocity, double mass, Metadata meta) {
         this(name, position, velocity, mass);
         this.meta = meta;
-meta(name);
     }
 
     String getName() {
