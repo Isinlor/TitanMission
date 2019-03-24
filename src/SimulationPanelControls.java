@@ -41,35 +41,6 @@ class SimulationPanelControls extends JPanel {
         simulationPanel.addMouseMotionListener(mouseAdapter);
         simulationPanel.addMouseWheelListener(mouseAdapter);
 
-        KeyAdapter keyAdapter = new KeyAdapter() {
-            public void keyPressed(KeyEvent keyEvent) {
-                int step = -3;
-                switch (keyEvent.getKeyCode()) {
-                    case KeyEvent.VK_UP:
-                    case KeyEvent.VK_W:
-                        simulationPanel.translationY += step;
-                        break;
-                    case KeyEvent.VK_DOWN:
-                    case KeyEvent.VK_S:
-                        simulationPanel.translationY -= step;
-                        break;
-                    case KeyEvent.VK_LEFT:
-                    case KeyEvent.VK_A:
-                        simulationPanel.translationX += step;
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                    case KeyEvent.VK_D:
-                        simulationPanel.translationX -= step;
-                        break;
-                }
-            }
-        };
-
-        addKeyListener(keyAdapter);
-
-        // for some reason it makes keyAdapter above work ...
-        getInputMap().put(KeyStroke.getKeyStroke("A"), "");
-
         Button restartSimulation = new Button("Restart simulation");
         restartSimulation.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
