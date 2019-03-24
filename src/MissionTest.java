@@ -135,6 +135,7 @@ public class MissionTest {
                 }
             }
         }
+        if(probes.getBodies().isEmpty()) probes.addBody(probePrototype.copy());
         return probes;
     }
 
