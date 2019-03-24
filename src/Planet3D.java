@@ -2,7 +2,6 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Sphere;
 
 public class Planet3D extends Planet {
     private String texturePath;

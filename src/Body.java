@@ -18,6 +18,8 @@ class Body<M extends BodyMeta> {
     private Vector startingVelocity;
 
     private double mass;
+    private double radius = 1.0;
+
     private M meta;
 
     Body(String name, Vector position, Vector velocity, double mass) {
@@ -28,17 +30,41 @@ class Body<M extends BodyMeta> {
 
         startingPosition = position;
         startingVelocity = velocity;
+
+        switch (name) {
+            case "Sun": radius = 6.957e8; break;
+            case "Earth": radius = 6371008; break;
+            case "Mars": radius = 3.3895e6; break;
+            case "Saturn": radius = 5.8232e7; break;
+            case "Jupiter": radius = 6.9911e7; break;
+            case "Titan": radius = 2.575e6; break;
+            case "Moon (Earth)": radius = 1737400; break;
+            case "Venus": radius = 6051900; break;
+            case "Mercury": radius = 2432000; break;
+        }
+
     }
 
-    Body(String name, Vector position, Vector velocity, double mass, M meta) {
+
+    Body(String name, Vector position, Vector velocity, double mass, double radius) {
         this.name = name;
         this.position = position;
         this.velocity = velocity;
         this.mass = mass;
-        this.meta = meta;
+        this.radius = radius;
 
         startingPosition = position;
         startingVelocity = velocity;
+    }
+
+    Body(String name, Vector position, Vector velocity, double mass, double radius, M meta) {
+        this(name, position, velocity, mass, radius);
+        this.meta = meta;
+    }
+
+    Body(String name, Vector position, Vector velocity, double mass, M meta) {
+        this(name, position, velocity, mass);
+        this.meta = meta;
     }
 
     String getName() {
@@ -59,6 +85,10 @@ class Body<M extends BodyMeta> {
 
     double getMass() {
         return mass;
+    }
+
+    double getRadius() {
+        return radius;
     }
 
     M getMeta() {
@@ -134,6 +164,7 @@ class Body<M extends BodyMeta> {
             getPosition(),
             getVelocity(),
             getMass(),
+            getRadius(),
             getMeta()
         );
     }
@@ -146,7 +177,8 @@ class Body<M extends BodyMeta> {
             "name(" + name + ") " +
             "position(" + position.serialize() + ") " +
             "velocity(" + velocity.serialize() + ") " +
-            "mass(" + mass + ")";
+            "mass(" + mass + ") " +
+            "radius(" + radius + ")";
     }
 
     /**
@@ -158,7 +190,8 @@ class Body<M extends BodyMeta> {
             "name\\((?<name>.+)\\) " +
             "position\\((?<position>.+)\\) " +
             "velocity\\((?<velocity>.+)\\) " +
-            "mass\\((?<mass>.+)\\)"
+            "mass\\((?<mass>.+)\\) " +
+            "radius\\((?<radius>.+)\\)"
         );
         Matcher matcher = pattern.matcher(string.trim());
         matcher.matches();
@@ -167,7 +200,8 @@ class Body<M extends BodyMeta> {
             matcher.group("name"),
             Vector.unserialize(matcher.group("position")),
             Vector.unserialize(matcher.group("velocity")),
-            Double.parseDouble(matcher.group("mass"))
+            Double.parseDouble(matcher.group("mass")),
+            Double.parseDouble(matcher.group("radius"))
         );
     }
 

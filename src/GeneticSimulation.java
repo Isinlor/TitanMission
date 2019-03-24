@@ -18,10 +18,10 @@ public class GeneticSimulation {
 
         Random randomGenerator = new Random();
 
-        LinkedList<Planet> planets = CSVReader.readPlanets();
+        LinkedList<Body> planets = CSVReader.readPlanets();
 
-        Planet earth = planets.get(1);
-        Planet goal = planets.get(2); // 2 is Mars, 8 is Neptune (seeing Neptune requires changing scale in animate to 10e9)
+        Body earth = planets.get(1);
+        Body goal = planets.get(2); // 2 is Mars, 8 is Neptune (seeing Neptune requires changing scale in animate to 10e9)
         for (int i = 0; i < POPSIZE; i++) {
             Vector velocity = new Vector(randomGenerator.nextDouble() * 200000 - 100000, randomGenerator.nextDouble() * 200000 - 100000, 0);
             population[i] = new Spacecraft("First try " + i, 1, earth.getPosition().sum(new Vector(earth.getRadius(), earth.getRadius(), earth.getRadius())), velocity, goal);
@@ -34,7 +34,7 @@ public class GeneticSimulation {
             planets = CSVReader.readPlanets();
 
             Bodies bodies = new Bodies();
-            for (Planet planet: planets) bodies.addBody(planet);
+            for (Body planet: planets) bodies.addBody(planet);
             for (Spacecraft spacecraft: population) {
                 spacecraft.setGoal(goal);
                 bodies.addBody(spacecraft);

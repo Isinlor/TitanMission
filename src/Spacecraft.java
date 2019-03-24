@@ -1,13 +1,11 @@
-import javax.xml.bind.ValidationException;
-
 public class Spacecraft extends Body implements Comparable<Spacecraft> {
-    private Planet goal;
+    private Body goal;
     private double shortestDistance = Double.MAX_VALUE;
     private Vector shortestDistancePoint;
     private Vector startingPosition;
     private Vector startingVelocity;
 
-    Spacecraft (String name, double mass, Vector position, Vector velocity, Planet goal) {
+    Spacecraft (String name, double mass, Vector position, Vector velocity, Body goal) {
         super(name, position, velocity, mass);
         startingPosition = position;
         startingVelocity = velocity;
@@ -30,11 +28,11 @@ public class Spacecraft extends Body implements Comparable<Spacecraft> {
         return  startingVelocity;
     }
 
-    Planet getGoal() {
+    Body getGoal() {
         return goal;
     }
 
-    void setGoal(Planet goal) {
+    void setGoal(Body goal) {
         this.goal = goal;
     }
 
