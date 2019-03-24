@@ -9,7 +9,7 @@ import java.util.function.Consumer;
  *
  * Each body can be identified by unique name.
  */
-class Bodies<M extends BodyMeta> {
+class Bodies {
 
     /**
      * Notice! Linked version of HashMap is used purposefully!
@@ -17,7 +17,7 @@ class Bodies<M extends BodyMeta> {
      * Random order removes determinism that an optimization may relay on.
      * Linked version of HashMap assures consistent order.
      */
-    private LinkedHashMap<String, Body<M>> bodies;
+    private LinkedHashMap<String, Body> bodies;
 
     private double time;
 
@@ -25,9 +25,9 @@ class Bodies<M extends BodyMeta> {
         this.bodies = new LinkedHashMap<>();
     }
 
-    Bodies(Collection<Body<M>> bodies) {
+    Bodies(Collection<Body> bodies) {
         this();
-        for(Body<M> body: bodies) {
+        for(Body body: bodies) {
             addBody(body);
         }
     }
@@ -37,7 +37,7 @@ class Bodies<M extends BodyMeta> {
      *
      * The body must have a unique name.
      */
-    void addBody(Body<M> body) {
+    void addBody(Body body) {
         if(bodies.containsValue(body)) throw new RuntimeException("Body [" + body.getName() + "] already added!");
         if(bodies.containsKey(body.getName())) throw new RuntimeException("Duplicated name [" + body.getName() + "]!");
         bodies.put(body.getName(), body);
@@ -46,7 +46,7 @@ class Bodies<M extends BodyMeta> {
     /**
      * Add all given bodies.
      */
-    void addBodies(Bodies<M> bodies) {
+    void addBodies(Bodies bodies) {
         bodies.apply(this::addBody);
     }
 
@@ -60,7 +60,7 @@ class Bodies<M extends BodyMeta> {
     /**
      * Returns body by a unique name.
      */
-    Body<M> getBody(String name) {
+    Body getBody(String name) {
         return bodies.get(name);
     }
 
@@ -74,9 +74,9 @@ class Bodies<M extends BodyMeta> {
     /**
      * Returns body with the heaviest mass.
      */
-    Body<M> getHeaviestBody() {
-        Body<M> heaviestBody = getBodies().iterator().next();
-        for (Body<M> body: getBodies()) {
+    Body getHeaviestBody() {
+        Body heaviestBody = getBodies().iterator().next();
+        for (Body body: getBodies()) {
             if(heaviestBody.getMass() < body.getMass()) heaviestBody = body;
         }
         return heaviestBody;
@@ -88,7 +88,7 @@ class Bodies<M extends BodyMeta> {
      * Notice! Linked version of HashSet is used purposefully.
      * @see Bodies documentation for more details.
      */
-    Set<Body<M>> getBodies() {
+    Set<Body> getBodies() {
         return new LinkedHashSet<>(bodies.values());
     }
 
@@ -114,8 +114,8 @@ class Bodies<M extends BodyMeta> {
     /**
      * Allows to apply arbitrary operation on all bodies.
      */
-    void apply(Consumer<Body<M>> fn) {
-        for(Body<M> body: getBodies()) {
+    void apply(Consumer<Body> fn) {
+        for(Body body: getBodies()) {
             fn.accept(body);
         }
     }
@@ -145,9 +145,9 @@ class Bodies<M extends BodyMeta> {
         return stringBuilder.toString();
     }
 
-    Bodies<M> copy() {
-        Bodies<M> copy = new Bodies<M>();
-        for (Body<M> body: getBodies()) {
+    Bodies copy() {
+        Bodies copy = new Bodies();
+        for (Body body: getBodies()) {
             copy.addBody(body.copy());
         }
         copy.time = time;

@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -6,9 +7,9 @@ import java.util.regex.Pattern;
  *
  * Each body is identified by name.
  *
- * You can use an instance of BodyMeta to store metadata.
+ * You can use an instance of Metadata to store metadata.
  */
-class Body<M extends BodyMeta> {
+class Body {
 
     private String name;
     private Vector position;
@@ -20,7 +21,7 @@ class Body<M extends BodyMeta> {
     private double mass;
     private double radius = 1.0;
 
-    private M meta;
+    private Metadata meta;
 
     Body(String name, Vector position, Vector velocity, double mass) {
         this.name = name;
@@ -31,18 +32,24 @@ class Body<M extends BodyMeta> {
         startingPosition = position;
         startingVelocity = velocity;
 
-        switch (name) {
-            case "Sun": radius = 6.957e8; break;
-            case "Earth": radius = 6371008; break;
-            case "Mars": radius = 3.3895e6; break;
-            case "Saturn": radius = 5.8232e7; break;
-            case "Jupiter": radius = 6.9911e7; break;
-            case "Titan": radius = 2.575e6; break;
-            case "Moon (Earth)": radius = 1737400; break;
-            case "Venus": radius = 6051900; break;
-            case "Mercury": radius = 2432000; break;
-        }
+        meta(name);
 
+    }
+
+    private void meta(String name) {
+        switch (name) {
+            case "Sun": radius = 6.957e8; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.yellow.getRGB()).substring(2)); break;
+            case "Earth": radius = 6371008; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.cyan.getRGB()).substring(2)); break;
+            case "Mars": radius = 3.3895e6; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.red.getRGB()).substring(2)); break;
+            case "Saturn": radius = 5.8232e7; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.magenta.getRGB()).substring(2)); break;
+            case "Jupiter": radius = 6.9911e7; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.pink.getRGB()).substring(2)); break;
+            case "Titan": radius = 2.575e6; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.orange.getRGB()).substring(2)); break;
+            case "Moon (Earth)": radius = 1737400; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.lightGray.getRGB()).substring(2)); break;
+            case "Venus": radius = 6051900; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.white.getRGB()).substring(2)); break;
+            case "Mercury": radius = 2432000; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.darkGray.getRGB()).substring(2)); break;
+            case "Uranus": radius = 25362000; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.gray.getRGB()).substring(2)); break;
+            case "Neptune": radius = 24622000; meta = new Metadata(); meta.set("color", "#"+Integer.toHexString(Color.blue.getRGB()).substring(2)); break;
+        }
     }
 
 
@@ -55,16 +62,19 @@ class Body<M extends BodyMeta> {
 
         startingPosition = position;
         startingVelocity = velocity;
+meta(name);
     }
 
-    Body(String name, Vector position, Vector velocity, double mass, double radius, M meta) {
+    Body(String name, Vector position, Vector velocity, double mass, double radius, Metadata meta) {
         this(name, position, velocity, mass, radius);
         this.meta = meta;
+meta(name);
     }
 
-    Body(String name, Vector position, Vector velocity, double mass, M meta) {
+    Body(String name, Vector position, Vector velocity, double mass, Metadata meta) {
         this(name, position, velocity, mass);
         this.meta = meta;
+meta(name);
     }
 
     String getName() {
@@ -91,7 +101,7 @@ class Body<M extends BodyMeta> {
         return radius;
     }
 
-    M getMeta() {
+    Metadata getMeta() {
         return meta;
     }
 
@@ -158,8 +168,8 @@ class Body<M extends BodyMeta> {
         return "Name: " + getName() + ", Position" + position + ", Velocity" + velocity + ", mass(" + Utils.round(mass) + ")";
     }
 
-    Body<M> copy() {
-        return new Body<M>(
+    Body copy() {
+        return new Body(
             getName(),
             getPosition(),
             getVelocity(),
@@ -178,7 +188,8 @@ class Body<M extends BodyMeta> {
             "position(" + position.serialize() + ") " +
             "velocity(" + velocity.serialize() + ") " +
             "mass(" + mass + ") " +
-            "radius(" + radius + ")";
+            "radius(" + radius + ") " +
+            "metadata(" + (meta != null ? meta.serialize() : "") + ")";
     }
 
     /**
@@ -191,7 +202,8 @@ class Body<M extends BodyMeta> {
             "position\\((?<position>.+)\\) " +
             "velocity\\((?<velocity>.+)\\) " +
             "mass\\((?<mass>.+)\\) " +
-            "radius\\((?<radius>.+)\\)"
+            "radius\\((?<radius>.+)\\) " +
+            "metadata\\((?<metadata>.*)\\)"
         );
         Matcher matcher = pattern.matcher(string.trim());
         matcher.matches();
@@ -201,7 +213,8 @@ class Body<M extends BodyMeta> {
             Vector.unserialize(matcher.group("position")),
             Vector.unserialize(matcher.group("velocity")),
             Double.parseDouble(matcher.group("mass")),
-            Double.parseDouble(matcher.group("radius"))
+            Double.parseDouble(matcher.group("radius")),
+            Metadata.unserialize(matcher.group("metadata"))
         );
     }
 

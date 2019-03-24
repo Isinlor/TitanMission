@@ -36,7 +36,7 @@ class SimulationSolarSystem {
         window.setVisible(true);
 
         simulationPanel.startSimulation(
-            (Bodies<BodyMetaSwing> bodies) -> {
+            (Bodies bodies) -> {
                 for (int i = 0; i < 24; i++) {
                     bodies.iterate(60*60);
                 }

@@ -1,10 +1,8 @@
-import java.awt.*;
-
 @SuppressWarnings("Duplicates")
 public class MissionTest {
 
     private static final double timeStep = 60.0; // in s
-    private static final long steps = (long)(300*24*60*60 / timeStep); // around 1 year
+    private static final long steps = (long)(1200*24*60*60 / timeStep); // around 1 year
     private static final long stepsPerFrame = (long)(24*60*60 / timeStep); // around 1 day
 
     /**
@@ -12,34 +10,34 @@ public class MissionTest {
      */
     public static void main(String[] args) throws Exception {
 
-//        Bodies<BodyMetaSwing> bodies = new Bodies<>();
+//        Bodies bodies = new Bodies<>();
 //
 //        double auToM = 1.496e11;
 //        double dayToSecond = 1.0 / 86400.0;
 //
 //        // HORIZONS data for the 16th of March 2019 00:00 with SSB as origin
-//        bodies.addBody(new Body<BodyMetaSwing>(
+//        bodies.addBody(new Body(
 //            "sun",
 //            new Vector(-1.351343105506232E-03*auToM, 7.549817138203992E-03*auToM, -4.200718115315673E-05*auToM),
 //            new Vector(-8.222950279730839E-06*auToM*dayToSecond, 1.252598675779703E-06*auToM*dayToSecond, 2.140020605610505E-07*auToM*dayToSecond),
 //            1.988435e30,
-//            new BodyMetaSwing(Color.yellow)
+//            new Metadata(Color.yellow)
 //        ));
 //
-//        bodies.addBody(new Body<BodyMetaSwing>(
+//        bodies.addBody(new Body(
 //            "earth",
 //            new Vector(-9.918696803493554E-01*auToM, 9.679454643549934E-02*auToM, -4.277240997129137E-05*auToM),
 //            new Vector(-1.825836604899280E-03*auToM*dayToSecond, -1.719621912926312E-02*auToM*dayToSecond, 3.421794164900239E-07*auToM*dayToSecond),
 //            5.9721986e24,
-//            new BodyMetaSwing(Color.blue)
+//            new Metadata(Color.blue)
 //        ));
 //
-//        bodies.addBody(new Body<BodyMetaSwing>(
+//        bodies.addBody(new Body(
 //            "mars",
 //            new Vector(2.341284054032922E-01*auToM,  1.537313782783677E+00*auToM, 2.623394307816976E-02*auToM),
 //            new Vector(-1.331027418143195E-02*auToM*dayToSecond,  3.319493802125395E-03*auToM*dayToSecond, 3.961351541925593E-04*auToM*dayToSecond),
 //            6.41693e23,
-//            new BodyMetaSwing(Color.red)
+//            new Metadata(Color.red)
 //        ));
 //
 ////        System.out.println(getMinDistance(bodies.copy(), "mars"));
@@ -54,8 +52,8 @@ public class MissionTest {
     private static void optimize(Bodies bodies) throws Exception {
         Body target;
         String sourceName = "Earth";
-        String targetName = "Titan";
-        double targetRadius = 2574.7 * 1000;
+        String targetName = "Jupiter";
+        double targetRadius = 70000 * 1000; // 2574.7 * 1000;
         double minDistance = Double.MAX_VALUE;
         double bestDistance = Double.MAX_VALUE;
         Body source;
@@ -68,7 +66,7 @@ public class MissionTest {
         source = bodies.getBody(sourceName);
         double sourceRadius = 6371 * 1000.0;
         Double distanceFromCenter = sourceRadius + 100.0 * 1000.0;
-        Body<BodyMetaSwing> probePrototype = getProbeInOrbit(source, distanceFromCenter);
+        Body probePrototype = getProbeInOrbit(source, distanceFromCenter);
         Body minProbe = probePrototype;
 
         long additionalSteps = 0;
@@ -139,9 +137,9 @@ public class MissionTest {
         }
     }
 
-    private static Bodies getProbePrototypes(Body source, Body<BodyMetaSwing> probePrototype, double step) {
+    private static Bodies getProbePrototypes(Body source, Body probePrototype, double step) {
         Body probe;
-        Bodies probes = new Bodies<BodyMetaSwing>();
+        Bodies probes = new Bodies();
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 for (int k = -1; k <= 1; k++) {
@@ -157,7 +155,7 @@ public class MissionTest {
                     probe.addVelocity(stepUpdate);
 
                     // avoid crazy high probe velocities in relation to Earth
-                    if(probe.getRelativeVelocity(source).getLength() > 50000) {
+                    if(probe.getRelativeVelocity(source).getLength() > 20000) {
                         continue;
                     }
 
@@ -174,21 +172,20 @@ public class MissionTest {
         return probes;
     }
 
-    private static Body<BodyMetaSwing> getProbeInOrbit(Body body, Double distance) {
+    private static Body getProbeInOrbit(Body body, Double distance) {
         Double orbitalSpeed = Math.sqrt(SimulationSolarSystem.G * body.getMass() / distance);
         Vector position = body.getPosition().sum(new Vector(1.0, 0.0, 0.0).product(distance));
         Vector velocity = new Vector(0.0, 1.0, 0.0).product(orbitalSpeed).sum(body.getVelocity());
 
-        return new Body<BodyMetaSwing>(
+        return new Body(
             "probe",
             position,
             velocity,
-            1,
-            new BodyMetaSwing(Color.gray)
+            1//, new Metadata(Color.gray)
         );
     }
 
-    private static Tuple<Double, Body> getMinDistance(Bodies testBodies, String targetName, Bodies<BodyMeta> probes) {
+    private static Tuple<Double, Body> getMinDistance(Bodies testBodies, String targetName, Bodies probes) {
 
         Body target;
         Tuple<Double, Body> bestTuple = new Tuple<Double, Body>(Double.MAX_VALUE, null);
@@ -204,7 +201,7 @@ public class MissionTest {
 
                 // adding speed limit makes probe fly further away from sun
                 double probeSpeed = probe.getVelocity().getLength();
-                if(probeSpeed > 1000000) {
+                if(probeSpeed > 100000) {
                     testBodies.removeBody(probe);
                     probes.removeBody(probe);
                 }

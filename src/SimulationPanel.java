@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 
 public class SimulationPanel extends JPanel {
 
-    private Bodies<BodyMetaSwing> bodies;
-    private Bodies<BodyMetaSwing> originalBodies;
+    private Bodies bodies;
+    private Bodies originalBodies;
 
     private double scale;
     private double dragX;
@@ -15,7 +15,7 @@ public class SimulationPanel extends JPanel {
     private int translationX;
     private int translationY;
 
-    private Consumer<Bodies<BodyMetaSwing>> action;
+    private Consumer<Bodies> action;
 
     private Timer timer;
 
@@ -117,7 +117,7 @@ public class SimulationPanel extends JPanel {
 
     }
 
-    SimulationPanel(double scale, Bodies<BodyMetaSwing> bodies) {
+    SimulationPanel(double scale, Bodies bodies) {
 
         this();
 
@@ -126,15 +126,15 @@ public class SimulationPanel extends JPanel {
 
     }
 
-    void setBodies(Bodies<BodyMetaSwing> bodies) {
+    void setBodies(Bodies bodies) {
         this.bodies = bodies.copy();
         this.originalBodies = bodies.copy();
         updateBodySelector(bodies);
     }
 
-    private void updateBodySelector(Bodies<BodyMetaSwing> bodies) {
+    private void updateBodySelector(Bodies bodies) {
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
-        bodies.apply((Body<BodyMetaSwing> body) -> model.addElement(body.getName()));
+        bodies.apply((Body body) -> model.addElement(body.getName()));
         bodySelector.setModel(model);
         if(selectedBody != null && bodies.hasBody(selectedBody.getName())) {
             // keep selected body if exists
@@ -152,7 +152,7 @@ public class SimulationPanel extends JPanel {
         return isSimulating;
     }
 
-    void startSimulation(Consumer<Bodies<BodyMetaSwing>> frameUpdate) {
+    void startSimulation(Consumer<Bodies> frameUpdate) {
         pauseSimulation();
         // Animate. Does repaint ~60 times a second.
         timer = new Timer(16, new ActionListener() {
@@ -194,10 +194,10 @@ public class SimulationPanel extends JPanel {
 
     private void drawBodies(Graphics g) {
 
-        Bodies<BodyMetaSwing> displayBodies = bodies.copy();
+        Bodies displayBodies = bodies.copy();
 
         displayBodies.apply(
-            (Body<BodyMetaSwing> body) -> {
+            (Body body) -> {
 
                 Vector nullVector = new Vector();
 
@@ -215,7 +215,7 @@ public class SimulationPanel extends JPanel {
         );
 
         Color oldColor = g.getColor();
-        for(Body<BodyMetaSwing> body: displayBodies.getBodies()) {
+        for(Body body: displayBodies.getBodies()) {
 
             Vector vector = body.getPosition();
 
@@ -228,9 +228,9 @@ public class SimulationPanel extends JPanel {
 
             g.drawString(body.getName(), x + 15, y + 7);
 
-            if(body.getMeta() instanceof BodyMetaSwing) {
+            if(body.getMeta().has("color")) {
 
-                g.setColor(body.getMeta().getColor());
+                g.setColor(Color.decode(body.getMeta().get("color")));
 
                 g.fillOval(x, y, 6, 6);
 

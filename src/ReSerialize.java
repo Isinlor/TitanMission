@@ -1,9 +1,14 @@
 public class ReSerialize {
 
     public static void main(String[] args) {
-
-        Simulation.load(args[0]).save(args[0]);
-
+        for (String location: FileSystem.listFiles(args[0])) {
+            try {
+                Simulation.load(location).save(location);
+                System.out.println("✔ Location " + location);
+            } catch (Exception e) {
+                System.out.println("✗ Location " + location);
+            }
+        }
     }
 
 }

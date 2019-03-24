@@ -51,7 +51,7 @@ class Simulation {
 
         replied = 0;
         simulationPanel.startSimulation(
-            (Bodies<BodyMetaSwing> bodies) -> {
+            (Bodies bodies) -> {
 
                 if(replied == steps) {
                     simulationPanel.pauseSimulation();
@@ -100,7 +100,11 @@ class Simulation {
     }
 
     static Simulation load(String resource) {
-        return unserialize(FileSystem.read(resource));
+        try {
+            return unserialize(FileSystem.read(resource));
+        } catch (Exception e) {
+            throw new RuntimeException("\n\tFailed to unserialize simulation from resource " + resource, e);
+        }
     }
 
     String serialize() {
@@ -123,7 +127,10 @@ class Simulation {
             "metadata\\((?<metadata>.+)\\)"
         );
         Matcher matcher = pattern.matcher(string.split("(\\r\\n|\\r|\\n)")[0].trim());
-        matcher.matches();
+
+        if(!matcher.matches()) {
+            throw new RuntimeException("\n\tWrong format, can not unserialize simulation!");
+        }
 
         return new Simulation(
             Bodies.unserialize(string.split("(\\r\\n|\\r|\\n)", 2)[1].trim()),
