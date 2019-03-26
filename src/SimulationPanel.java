@@ -124,12 +124,13 @@ public class SimulationPanel extends JPanel {
 
             Vector vector = body.getPosition();
 
-            int x = (int)Math.round(vector.x) + getWidth() / 2;
-            int y = (int)Math.round(vector.y) + getHeight() / 2;
+            int displaySize = Math.max(7, (int)Math.round(body.getRadius() / scale));
+            int x = (int)Math.round(vector.x) + getWidth() / 2 - displaySize / 2;
+            int y = (int)Math.round(vector.y) + getHeight() / 2 - displaySize / 2;
 
             g.setColor(Color.BLACK);
 
-            g.fillOval(x, y, 7, 7);
+            g.fillOval(x, y, displaySize, displaySize);
 
             g.drawString(body.getName(), x + 15, y + 7);
 
@@ -137,7 +138,7 @@ public class SimulationPanel extends JPanel {
 
                 g.setColor(Color.decode(body.getMeta().get("color")));
 
-                g.fillOval(x, y, 6, 6);
+                g.fillOval(x, y, displaySize - 1, displaySize - 1);
 
             }
 
