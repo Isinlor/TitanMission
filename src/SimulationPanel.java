@@ -119,14 +119,23 @@ public class SimulationPanel extends JPanel {
             }
         );
 
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
         Color oldColor = g.getColor();
         for(Body body: displayBodies.getBodies()) {
 
             Vector vector = body.getPosition();
 
-            int displaySize = Math.max(7, (int)Math.round(body.getRadius() / scale));
-            int x = (int)Math.round(vector.x) + getWidth() / 2 - displaySize / 2;
-            int y = (int)Math.round(vector.y) + getHeight() / 2 - displaySize / 2;
+            int x = (int)Math.round(vector.x) + centerX;
+            int y = (int)Math.round(vector.y) + centerY;
+
+            if(x < 0 || x > getWidth()) continue;
+            if(y < 0 || y > getHeight()) continue;
+
+            int displaySize = Math.min(getWidth() * 2, Math.max(7, (int)Math.round(body.getRadius() / scale)));
+
+            x = x - displaySize / 2;
+            y = y - displaySize / 2;
 
             g.setColor(Color.BLACK);
 
@@ -146,9 +155,9 @@ public class SimulationPanel extends JPanel {
         g.setColor(oldColor);
 
         // Cube is here to help visualize 3D space.
-        Cube cube = new Cube(new Vector(getWidth() / 2 -200, getHeight() / 2 -200, -200), 400);
-        cube.rotateAroundAxisX(new Vector(getWidth() / 2, getHeight() / 2), dragY);
-        cube.rotateAroundAxisY(new Vector(getWidth() / 2, getHeight() / 2), dragX);
+        Cube cube = new Cube(new Vector(centerX - 200, centerY - 200, -200), 400);
+        cube.rotateAroundAxisX(new Vector(centerX, centerY), dragY);
+        cube.rotateAroundAxisY(new Vector(centerX, centerY), dragX);
 
         cube.draw(g);
 
