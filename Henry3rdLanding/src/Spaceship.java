@@ -11,8 +11,7 @@ public class Spaceship extends Body {
     }
 
     void iterate(double time) {
-        this.applyForce(slowingDown,time);
-        this.applyForce(this.computeForce(target),time);
+        this.applyForce(this.computeAttraction(target).sum(slowingDown),time);
     }
 
     private Force computeForce(Body bodyA){

@@ -2,35 +2,61 @@ public class Test {
 
     public static void main(String[] args) {
 
-        double auToM = 1.496e11;
-        double dayToSecond = 1.0 / 86400.0;
+        System.out.println("Free fall");
+        simulateSlowedDownFreeFall(getNewSpaceship());
+        System.out.println("Free fall with impulse");
+        simulateFreeFallWithImpulseAtTheEnd(getNewSpaceship());
+
+    }
+
+    private static void simulateFreeFallWithImpulseAtTheEnd(Spaceship henry3rd) {
+
+        System.out.println(henry3rd.getPosition());
+        for (int i=0; i < 24*60*60*1000; i++) {
+
+            if((int)henry3rd.getPosition().y <= 100) {
+                henry3rd.slowingDown = new Force(henry3rd.computeAttraction(henry3rd.target).product(-4818.085));
+            }
+
+            if ((int)henry3rd.getPosition().y <= 0){
+                System.out.println((int)henry3rd.getPosition().y);
+                System.out.println("Landed"+i + henry3rd.getVelocity());
+                break;
+            }
+
+            henry3rd.iterate(1 / 1000.0);
+
+        }
+    }
+
+    private static void simulateSlowedDownFreeFall(Spaceship henry3rd) {
+//        henry3rd.slowingDown = new Force(henry3rd.computeAttraction(henry3rd.target).product(-0.99));
+
+        System.out.println(henry3rd.getPosition());
+        for (int i=0; i < 24*60*60*1000; i++) {
+            if ((int)henry3rd.getPosition().y <= 0){
+                System.out.println((int)henry3rd.getPosition().y);
+                System.out.println("Landed"+i + henry3rd.getVelocity());
+                break;
+            }
+            henry3rd.iterate(1 / 1000.0);
+        }
+    }
+
+    private static Spaceship getNewSpaceship() {
+        double titanRadius = 2500*1000;
 
         Body titan=new Body(
                 "Titan",
-                new Vector(2.340010336367727E+00, -9.765469982604248E+00, 7.300390210773734E-02).product(auToM),
-                new Vector(1.947323954493107E-03, 1.729638118992622E-03, -1.417867687071718E-04).product(auToM*dayToSecond),
+                new Vector(0, -titanRadius),
+                new Vector(0, 0),
                 134.5e21
         );
 
-        double titanRadius=2574.7;
-        Vector positionTitan=new Vector(0,0,0);
-        Vector position=new Vector(positionTitan.x,positionTitan.y,positionTitan.z);
-        position.x = positionTitan.x+600+titanRadius;
-        System.out.println(position);
-        System.out.println(positionTitan);
-        Vector velocity=new Vector(-2,0,0);
-        Spaceship henry3rd=new Spaceship("henry3rd",position,velocity,500,new Force(0,0,0),titan);
-
-        System.out.println(henry3rd.getPosition().euclideanDistance(positionTitan));
-        for (int i=0; i<60*24;i++){
-            if (henry3rd.getPosition().euclideanDistance(positionTitan)<titanRadius){
-                System.out.println("Landed"+i + henry3rd.getVelocity());
-            }
-            henry3rd.iterate(1);
-        }
-        /*
-        Second coordinate system
-         */
+        Vector position=new Vector(0, 600*1000);
+        Vector velocity=new Vector(0,0);
+        Force force = new Force();
+        return new Spaceship("henry3rd",position,velocity,500,force,titan);
     }
 
 
