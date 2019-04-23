@@ -11,6 +11,7 @@ public class ODESolvers {
     static {
         solvers.put("euler", new EulerODE());
         solvers.put("midpoint", new MidpointODE());
+        solvers.put("RungaKutta", new RungaKuttaODE());
     }
 
     static ODESolver getODESolver(String name) {
