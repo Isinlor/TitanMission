@@ -12,6 +12,8 @@ class Simulation {
     private Bodies bodies;
 
     private ODESolver odeSolver = new EulerODE();
+    // not tested yet
+    // private ODESolver odeSolver = new RungaKuttaODE();
 
     private long steps;
     private double timeStep;
