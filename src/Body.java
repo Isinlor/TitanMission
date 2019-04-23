@@ -119,6 +119,7 @@ class Body {
         velocity = velocity.sum(change);
     }
 
+    void addPosition(Vector change) { position = position.sum(change);}
     /**
      * Computes force between this and the other body based on Newton's law of universal gravitation.
      * @link https://en.wikipedia.org/wiki/Newton's_law_of_universal_gravitation#Vector_form

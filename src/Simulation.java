@@ -11,6 +11,8 @@ class Simulation {
 
     private Bodies bodies;
 
+    private ODESolver odeSolver = new EulerODE();
+
     private long steps;
     private double timeStep;
 
@@ -48,6 +50,10 @@ class Simulation {
         this.metadata = metadata;
     }
 
+    void setODESolver(ODESolver odeSolver) {
+        this.odeSolver = odeSolver;
+    }
+
     private void start() {
 
         window.pack();
@@ -61,7 +67,7 @@ class Simulation {
                 }
 
                 for (int i = 0; i < stepsPerFrame; i++) {
-                    bodies.iterate(timeStep);
+                    odeSolver.iterate(bodies, timeStep);
                     replied++;
                 }
 

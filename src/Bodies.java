@@ -1,7 +1,4 @@
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -127,7 +124,7 @@ class Bodies {
     /**
      * Computes sum of forces that other bodies are working on body A.
      */
-    private Force computeForce(Body bodyA) {
+    Force computeForce(Body bodyA) {
         Force force = new Force();
         for (Body bodyB: getBodies()) {
             if(bodyA == bodyB) continue;
@@ -141,6 +138,14 @@ class Bodies {
             force = force.sum(bodyA.computeAttraction(bodyB));
         }
         return force;
+    }
+
+    LinkedHashMap<String, Force> getForces() {
+        LinkedHashMap<String, Force> forces = new LinkedHashMap<>();
+        for(Body body: this.getBodies()) {
+            forces.put(body.getName(), computeForce(body));
+        }
+        return forces;
     }
 
     public String toString() {
