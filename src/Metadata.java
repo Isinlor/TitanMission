@@ -62,4 +62,8 @@ class Metadata {
         return metadata;
     }
 
+    public String toString() {
+        return serialize();
+    }
+
 }
