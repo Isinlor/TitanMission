@@ -19,7 +19,7 @@ class Simulation {
     private long stepsPerFrame;
     private double scale;
 
-    private String metadata;
+    private Metadata metadata = new Metadata();
 
     private long replied;
 
@@ -45,9 +45,12 @@ class Simulation {
         start();
     }
 
-    Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale, String metadata) {
+    Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale, Metadata metadata) {
         this(bodies, steps, timeStep, stepsPerFrame, scale);
         this.metadata = metadata;
+        if(metadata.has("ODESolver")) {
+            setODESolver(ODESolvers.getODESolver(metadata.get("ODESolver")));
+        }
     }
 
     void setODESolver(ODESolver odeSolver) {
@@ -112,7 +115,7 @@ class Simulation {
         return scale;
     }
 
-    String getMetadata() {
+    Metadata getMetadata() {
         return metadata;
     }
 
@@ -159,7 +162,7 @@ class Simulation {
             Double.parseDouble(matcher.group("timeStep")),
             Long.parseLong(matcher.group("stepsPerFrame")),
             Double.parseDouble(matcher.group("scale")),
-            matcher.group("metadata")
+            Metadata.unserialize(matcher.group("metadata"))
         );
 
     }
