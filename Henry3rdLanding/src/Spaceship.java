@@ -5,8 +5,12 @@ public class Spaceship extends Body {
         super(name, position, velocity, mass);
     }
 
-    public void iterate(Body target, Force slowingDown, Double time) {
-        applyForce(computeAttraction(target).sum(slowingDown),time);
+    public void iterate(Body target, Force slowingDownForce, double time) {
+        applyForce(computeAttraction(target).sum(slowingDownForce),time);
+    }
+
+    public void iterate(Body target, double time) {
+        applyForce(computeAttraction(target), time);
     }
 
     private Force computeForce(Body bodyA){

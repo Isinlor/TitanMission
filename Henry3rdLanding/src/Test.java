@@ -5,11 +5,13 @@ public class Test {
         OpenLoopController openController = getOpenController();
 
         System.out.println("Free fall");
-        openController.freeFall(getNewSpaceship());
+        openController.simulateFreeFall(getNewSpaceship());
         System.out.println("Free fall impulse at the end");
         openController.simulateFreeFallWithImpulseAtTheEnd(getNewSpaceship());
         System.out.println("Unrealistically slow descent");
         openController.simulateUnrealisticReallySlowLanding(getNewSpaceship());
+        System.out.println("Deploy parachute and then impulse at the end");
+        openController.simulateParachuteAndThenImpulseAtTheEnd(getNewSpaceship());
 
     }
 

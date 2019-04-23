@@ -15,7 +15,7 @@ public class OpenLoopController {
         this.timeStep = timeStep;
     }
 
-    public void freeFall(Spaceship henry3rd) {
+    public void simulateFreeFall(Spaceship henry3rd) {
 
         System.out.println("Position is: " + henry3rd.getPosition());
         for (int i=0; i < timetoRunthrough; i++) {
@@ -24,7 +24,7 @@ public class OpenLoopController {
                 System.out.println("Landed in " + i + " seconds, with velocity: " + henry3rd.getVelocity() + "\n");
                 break;
             }
-            henry3rd.iterate(target, slowingDownForce, timeStep);
+            henry3rd.iterate(target, timeStep);
         }
 
     }
@@ -51,7 +51,7 @@ public class OpenLoopController {
 
     public void simulateUnrealisticReallySlowLanding(Spaceship henry3rd) {
 
-        slowingDownForce = new Force(henry3rd.computeAttraction(target).product(-0.999));
+        slowingDownForce = new Force(henry3rd.computeAttraction(target).product(-0.999999));
         System.out.println("Slowing down force is: " + slowingDownForce.toString());
         System.out.println("Position is: " + henry3rd.getPosition());
         for (int i=0; i < timetoRunthrough; i++) {
@@ -64,4 +64,29 @@ public class OpenLoopController {
         }
     }
 
+    //something is wrong with this method, maybe with all
+    public void simulateParachuteAndThenImpulseAtTheEnd(Spaceship henry3rd){
+
+        System.out.println("Position is: " + henry3rd.getPosition());
+        for (int i = 0; i < timetoRunthrough; i++) {
+            //deploy parachute at 200km above target, reduces the gravitational force
+            if ((int) henry3rd.getPosition().y <= 200000) {
+                slowingDownForce = new Force(henry3rd.computeAttraction(target).product(-0.2));
+            }
+
+            //start impulse to slow down fast
+            if ((int) henry3rd.getPosition().y <= 100) {
+                slowingDownForce = slowingDownForce.sum(new Force(henry3rd.computeAttraction(target).product(-10)));
+            }
+
+            if ((int) henry3rd.getPosition().y <= 0) {
+                System.out.println("Position is: " + (int)henry3rd.getPosition().y);
+                System.out.println("Landed in " + i + " seconds, with velocity: " + henry3rd.getVelocity() + "\n");
+                break;
+            }
+
+            henry3rd.iterate(target, slowingDownForce, timeStep);
+
+        }
+    }
 }
