@@ -32,5 +32,4 @@ public class Test {
         return new OpenLoopController(force, titan, 24 * 60 * 60 * 1000, 1 / 1000.0);
     }
 
-//
 }

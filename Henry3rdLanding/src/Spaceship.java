@@ -14,6 +14,4 @@ public class Spaceship extends Body {
         return force;
     }
 
-    //
-
 }
