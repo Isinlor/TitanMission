@@ -102,8 +102,8 @@ class Body {
      */
     void applyForce(Force force, double time) {
         Vector acceleration = force.computeAcceleration(mass);
-        Vector changeInSpeed = acceleration.product(time);
-        velocity = velocity.sum(changeInSpeed);
+        Vector changeInVelocity = acceleration.product(time);
+        velocity = velocity.sum(changeInVelocity);
         position = position.sum(velocity.product(time));
     }
 
