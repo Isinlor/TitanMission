@@ -44,4 +44,7 @@ class RungaKuttaODE implements ODESolver {
         }
 
     }
+    public String getName() {
+        return "RungaKutta";
+    }
 }

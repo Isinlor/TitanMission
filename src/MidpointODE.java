@@ -22,4 +22,7 @@ class MidpointODE implements ODESolver {
         }
 
     }
+    public String getName() {
+        return "midpoint";
+    }
 }

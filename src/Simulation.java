@@ -38,6 +38,7 @@ class Simulation {
     }
 
     Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale) {
+        setODESolver(odeSolver);
         setBodies(bodies);
         this.steps = steps;
         this.timeStep = timeStep;
@@ -57,6 +58,7 @@ class Simulation {
 
     void setODESolver(ODESolver odeSolver) {
         this.odeSolver = odeSolver;
+        metadata.set("ODESolver", odeSolver.getName());
     }
 
     private void start() {
