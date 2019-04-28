@@ -14,6 +14,9 @@ public class ODESolverTest extends SimpleUnitTest {
 
             // https://en.wikipedia.org/wiki/Equations_for_a_falling_body
             double g = earth.computeAttraction(object).getLength();
+
+            assertTrue(Math.abs(g - 9.8) < 0.1, "Gravitational acceleration should be around 9.8");
+
             double d = 10; // ground truth
             double t = Math.sqrt(2 * d / g);
 
