@@ -37,7 +37,8 @@ public class ODESolverTest extends SimpleUnitTest {
 
             assertTrue(
                 Math.abs(reductionInError - 1./4.) < 0.1,
-                "With reducing step size by 2 a second order method should reduce error by 4"
+                "With reducing step size by 2 a second order method should reduce error by 4; " +
+                    "actual reduction: " + reductionInError
             );
 
         });

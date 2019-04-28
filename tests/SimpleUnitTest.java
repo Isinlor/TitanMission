@@ -90,7 +90,7 @@ abstract class SimpleUnitTest {
      * @throws AssertionFailed This exception with explanation of the assertion is thrown if condition is false.
      */
     protected static void assertTrue(boolean condition, String explanation) throws RuntimeException {
-        if(!condition) throw new AssertionFailed("Assertion failed: " + explanation);
+        if(!condition) throw new AssertionFailed("Assertion failed: \n" + explanation);
     }
 
     /**
