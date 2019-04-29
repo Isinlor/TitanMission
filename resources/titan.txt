@@ -1,0 +1,1 @@
+name(Titan) position(0.0, 0.0, 0.0) velocity(0.0, 0.0, 0.0) mass(1.3452E23) radius(2575000.0) metadata( <color=#ffc800> )

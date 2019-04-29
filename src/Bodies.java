@@ -1,3 +1,7 @@
+import EventSystem.Event;
+import EventSystem.EventDispatcher;
+import EventSystem.EventListener;
+
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -17,6 +21,8 @@ class Bodies {
     private LinkedHashMap<String, Body> bodies;
 
     private double time;
+
+    private EventDispatcher eventDispatcher = EventDispatcher.create();
 
     Bodies() {
         this.bodies = new LinkedHashMap<>();
@@ -132,6 +138,7 @@ class Bodies {
             if(bodyA.computeDistance(bodyB) < bodyA.getRadius() + bodyB.getRadius()) {
                 Body crashedBody = bodyA.getMass() < bodyB.getMass() ? bodyA : bodyB;
                 removeBody(crashedBody);
+                eventDispatcher.dispatch(new BodyCrashedEvent(crashedBody));
                 if(crashedBody == bodyA) return new Force();
                 continue;
             }
@@ -148,6 +155,10 @@ class Bodies {
         return forces;
     }
 
+    void addEventListener(String eventName, EventListener<Event> listener) {
+        eventDispatcher.addListener(eventName, listener);
+    }
+
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         for (Body body: getBodies()) {
@@ -162,6 +173,7 @@ class Bodies {
             copy.addBody(body.copy());
         }
         copy.time = time;
+        copy.eventDispatcher = eventDispatcher;
         return copy;
     }
 
