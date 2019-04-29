@@ -78,6 +78,8 @@ class Body {
         return radius;
     }
 
+    double getDiameter() { return radius * 2; }
+
     Metadata getMeta() {
         return meta;
     }
@@ -140,6 +142,10 @@ class Body {
      */
     double computeDistance(Body body) {
         return position.euclideanDistance(body.position);
+    }
+
+    double computeOrbitalSpeed(double altitude) {
+        return Math.sqrt(SimulationSolarSystem.G * getMass() / (radius + altitude));
     }
 
     /**
