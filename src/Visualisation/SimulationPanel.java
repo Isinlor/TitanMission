@@ -136,10 +136,11 @@ public class SimulationPanel extends JPanel {
             int x = (int)Math.round(vector.x) + centerX;
             int y = (int)Math.round(vector.y) + centerY;
 
-            if(x < 0 || x > getWidth()) continue;
-            if(y < 0 || y > getHeight()) continue;
+            int scaledDiameter = (int)Math.round(body.getDiameter() / scale);
+            int displaySize = Math.max(7, scaledDiameter);
 
-            int displaySize = Math.min(getWidth() * 2, Math.max(7, (int)Math.round(body.getDiameter() / scale)));
+            if(x + displaySize < 0 || x - displaySize > getWidth()) continue;
+            if(y + displaySize < 0 || y - displaySize > getHeight()) continue;
 
             x = x - displaySize / 2;
             y = y - displaySize / 2;
