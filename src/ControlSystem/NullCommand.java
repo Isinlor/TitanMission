@@ -1,7 +1,7 @@
 package ControlSystem;
 
 /**
- * ControlSystem.Command that indicates to do nothing.
+ * Command that indicates to do nothing.
  */
 public class NullCommand extends Command {
     public NullCommand() {

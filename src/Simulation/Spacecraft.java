@@ -11,7 +11,8 @@ public class Spacecraft extends RotatingBody {
     private double internalTime;
     private Controller controller;
 
-    Spacecraft(
+    private BufferedImage image;
+    public Spacecraft(
         String name,
         Controller controller,
         Vector position,

@@ -1,3 +1,6 @@
+import ControlSystem.Command;
+import ControlSystem.Controller;
+import ControlSystem.Controllers.NullController;
 import EventSystem.Event;
 import Utilities.FileSystem;
 import Visualisation.Simulation;
@@ -23,9 +26,15 @@ public class LandingTest {
         double probeAltitude = 700 * 1000; // 100km above atmosphere, in order to avoid atmosphere influence
         double probeOrbitalSpeed = titan.computeOrbitalSpeed(probeAltitude);
 
-        Body orbitingProbe = new Body("probe A", new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, probeOrbitalSpeed, 0), 1);
+        Body orbitingProbe = new Spacecraft(
+            "Spacecraft A", new NullController(),
+            new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(),
+            new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 1),
+            1, 1, new Metadata()
+        );
+
         Body landingProbe  = orbitingProbe.copy();
-        landingProbe.rename("probe B");
+        landingProbe.rename("Spacecraft B");
         bodies.addBody(orbitingProbe);
         bodies.addBody(landingProbe);
 
