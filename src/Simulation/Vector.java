@@ -42,6 +42,14 @@ public class Vector {
         );
     }
 
+    public Vector quotient(double scalar) {
+        return new Vector(
+            x / scalar,
+            y / scalar,
+            z / scalar
+        );
+    }
+
     public Vector product(double scalar) {
         return new Vector(
                 x * scalar,
@@ -155,6 +163,14 @@ public class Vector {
           Math.abs(x),
           Math.abs(y),
           Math.abs(z)
+        );
+    }
+
+    public Vector mod(double scalar) {
+        return new Vector(
+          x % scalar,
+          y % scalar,
+          z % scalar
         );
     }
 
