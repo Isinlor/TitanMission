@@ -11,7 +11,7 @@ import Simulation.*;
 import Utilities.*;
 import Visualisation.*;
 
-public class SimulationPanel extends JPanel {
+public class SimulationPanel extends JPanel implements SimulationCanvas {
 
     Bodies bodies;
     private Bodies originalBodies;
@@ -60,6 +60,18 @@ public class SimulationPanel extends JPanel {
 
     public void setScale(double scale) {
         this.scale = scale;
+    }
+
+    public int getCenterX() {
+        return getWidth() / 2;
+    }
+
+    public int getCenterY() {
+        return getHeight() / 2;
+    }
+
+    public double getScale() {
+        return scale;
     }
 
     public boolean isSimulating() {
@@ -130,6 +142,11 @@ public class SimulationPanel extends JPanel {
         int centerY = getHeight() / 2;
         Color oldColor = g.getColor();
         for(Body body: displayBodies.getBodies()) {
+
+            if(body instanceof Displayable) {
+                ((Displayable) body).display(this, (Graphics2D)g);
+                continue;
+            }
 
             Vector vector = body.getPosition();
 
