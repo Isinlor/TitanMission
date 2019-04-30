@@ -110,9 +110,10 @@ public class Bodies {
      *
      * A force working on each body is computed and applied for specified time.
      */
-    public void iterate(double time) {
+    public void simulate(double time) {
         for (Body body: getBodies()) {
-            body.applyForce(computeForce(body), time);
+            body.setForce(computeForce(body));
+            body.simulate(time);
         }
         this.time += time;
     }

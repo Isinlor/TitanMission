@@ -3,8 +3,6 @@ package ODESolvers;
 import java.util.LinkedHashMap;
 
 import Simulation.*;
-import Utilities.*;
-import Visualisation.*;
 
 public class MidpointODE implements ODESolver {
     public void iterate(Bodies bodies, double time) {
@@ -14,7 +12,7 @@ public class MidpointODE implements ODESolver {
 
         LinkedHashMap<String, Force> forces = bodies.getForces();
         Bodies approximateBodies = bodies.copy();
-        approximateBodies.iterate(time);
+        approximateBodies.simulate(time);
         LinkedHashMap<String, Force> endForces = approximateBodies.getForces();
         for (Body body: bodies.getBodies()) {
             Force startForce = forces.get(body.getName());

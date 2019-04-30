@@ -42,9 +42,8 @@ public class Spacecraft extends Body implements Comparable<Spacecraft> {
         this.goal = goal;
     }
 
-    @Override
-    public void applyForce(Force force, double time) {
-        super.applyForce(force, time);
+    public void simulate(double time) {
+        super.simulate(time);
         double distance = super.getPosition().euclideanDistance(goal.getPosition());
         if (distance < shortestDistance) {
             shortestDistance = distance;

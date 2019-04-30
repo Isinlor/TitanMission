@@ -2,8 +2,6 @@ import Utilities.CSVReader;
 import Visualisation.SimulationPanel;
 import javax.swing.*;
 import Simulation.*;
-import Utilities.*;
-import Visualisation.*;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -53,7 +51,7 @@ public class GeneticSimulation {
             Bodies bodiesToAnimate = bodies.copy();
 
             for (int i = 0; i < steps; i++) {
-                bodies.iterate(timeStep);
+                bodies.simulate(timeStep);
             }
 
 //            System.out.println(bodies);
@@ -128,7 +126,7 @@ public class GeneticSimulation {
                     window.dispose();
                 }
                 for (int i = 0; i < stepsPerFrame; i++) {
-                    bodies2.iterate(timeStep);
+                    bodies2.simulate(timeStep);
                 }
             }
         );

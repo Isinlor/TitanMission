@@ -39,7 +39,7 @@ public class MissionTest {
         double bestDistance = Double.MAX_VALUE;
 
 //        for (int i = 0; i < (long)(100*24*60*60 / timeStep); i++) {
-//            bodies.iterate(timeStep);
+//            bodies.simulate(timeStep);
 //        }
 
         Double distanceFromCenter = sourceRadius + 100.0 * 1000.0;
@@ -168,7 +168,7 @@ public class MissionTest {
         double minDistance = Double.MAX_VALUE;
         for (int i = 0; i < steps; i++) {
 
-            testBodies.iterate(timeStep);
+            testBodies.simulate(timeStep);
 
             target = testBodies.getBody(targetName);
 

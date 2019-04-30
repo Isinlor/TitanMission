@@ -1,6 +1,4 @@
 import Simulation.*;
-import Utilities.*;
-import Visualisation.*;
 
 @SuppressWarnings("Duplicates")
 public class Test {
@@ -39,7 +37,7 @@ public class Test {
 
         // simulate time span of 10 days
         for (int i = 0; i < 60*60*24*10; i++) {
-            bodies.iterate(1);
+            bodies.simulate(1);
         }
 
         System.out.println(bodies);

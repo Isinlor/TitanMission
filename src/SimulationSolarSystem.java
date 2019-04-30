@@ -1,5 +1,4 @@
 import Simulation.*;
-import Utilities.*;
 import Visualisation.*;
 
 import javax.swing.*;
@@ -36,7 +35,7 @@ public class SimulationSolarSystem {
         simulationPanel.startSimulation(
             (Bodies bodies) -> {
                 for (int i = 0; i < 24; i++) {
-                    bodies.iterate(60*60);
+                    bodies.simulate(60*60);
                 }
             }
         );

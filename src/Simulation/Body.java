@@ -19,6 +19,8 @@ public class Body {
     private Vector position;
     private Vector velocity;
 
+    private Force force = new Force();
+
     private Vector startingPosition;
     private Vector startingVelocity;
 
@@ -104,11 +106,35 @@ public class Body {
     }
 
     /**
+     * Advances body in time. You may want to set net working force on the body before that.
+     *
+     * @param time The time step.
+     */
+    public void simulate(double time) {
+        applyForce(force, time);
+    }
+
+    /**
+     * Sets net force working on the body.
+     *
+     * @param netForce Total force working on the body.
+     */
+    public void setForce(Force netForce) {
+        force = netForce;
+    }
+
+    /**
      * Applies the given force for the specified time.
      *
      * It updates velocity as well as position.
+     *
+     * The method is private in order to avoid time getting out of sync.
+     * For example a body can have angular properties that should be advanced with time too.
+     * @see RotatingBody
+     *
+     * Use setForce() and simulate() in order to apply force.
      */
-    public void applyForce(Force force, double time) {
+    private void applyForce(Force force, double time) {
         Vector acceleration = force.computeAcceleration(mass);
         Vector changeInVelocity = acceleration.product(time);
         velocity = velocity.sum(changeInVelocity);

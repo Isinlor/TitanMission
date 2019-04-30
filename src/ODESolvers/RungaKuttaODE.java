@@ -3,8 +3,6 @@ package ODESolvers;
 import java.util.LinkedHashMap;
 
 import Simulation.*;
-import Utilities.*;
-import Visualisation.*;
 
 public class RungaKuttaODE implements ODESolver {
     public void iterate(Bodies bodies, double time) {
@@ -15,15 +13,15 @@ public class RungaKuttaODE implements ODESolver {
         LinkedHashMap<String, Force> forces = bodies.getForces();
 
         Bodies k2Bodies = bodies.copy();
-        k2Bodies.iterate(time/2);
+        k2Bodies.simulate(time/2);
         LinkedHashMap<String, Force> k2Forces = k2Bodies.getForces();
 
         Bodies k3Bodies = k2Bodies.copy();
-        k3Bodies.iterate(time/2);
+        k3Bodies.simulate(time/2);
         LinkedHashMap<String, Force> k3Forces = k3Bodies.getForces();
 
         Bodies k4Bodies = k3Bodies.copy();
-        k4Bodies.iterate(time);
+        k4Bodies.simulate(time);
         LinkedHashMap<String, Force> k4Forces = k4Bodies.getForces();
 
         for (Body body: bodies.getBodies()) {

@@ -1,11 +1,14 @@
 package Simulation;
 
 import Utilities.Metadata;
+import Utilities.Utils;
 
 /**
  * Extension of a body taking into account angular displacement and velocity of the body.
  */
 public class RotatingBody extends Body {
+
+    private Vector torque = new Vector();
 
     /**
      * A pseudo-vector where each coordinate indicates speed of rotation around axis of that coordinate.
@@ -16,7 +19,7 @@ public class RotatingBody extends Body {
      *
      * https://en.wikipedia.org/wiki/Angular_velocity
      */
-    Vector angularVelocity;
+    private Vector angularVelocity;
 
     /**
      * A pseudo-vector where each coordinate indicates rotation around axis of that coordinate.
@@ -27,7 +30,7 @@ public class RotatingBody extends Body {
      *
      * https://en.wikipedia.org/wiki/Angular_displacement
      */
-    Vector angularDisplacement;
+    private Vector angularDisplacement;
 
     RotatingBody(
         String name,
@@ -50,6 +53,30 @@ public class RotatingBody extends Body {
         this.angularDisplacement = new Vector();
     }
 
+    Vector getAngularVelocity() {
+        return angularVelocity;
+    }
+
+    Vector getAngularDisplacement() {
+        return angularDisplacement;
+    }
+
+    public void simulate(double time) {
+        applyTorque(torque, time);
+        super.simulate(time);
+    }
+
+    public void setTorque(Vector netTorque) {
+        torque = netTorque;
+    }
+
+    private void applyTorque(Vector torque, double time) {
+        Vector acceleration = torque.quotient(getMomentOfInertia());
+        Vector changeInVelocity = acceleration.product(time);
+        angularVelocity = angularVelocity.sum(changeInVelocity);
+        angularDisplacement = angularDisplacement.sum(angularVelocity.product(time)).mod(2*Math.PI);
+    }
+
     /**
      * Moment of inertia is an equivalent of mass when considering the second law of motion (F=ma) for rotating body.
      * Think about ice dancer pirouette; bringing hands close to chest lowers moment of inertia making you spin faster.
@@ -65,19 +92,27 @@ public class RotatingBody extends Body {
         return 2.0 / 5.0 * getMass() * getRadius();
     }
 
-    Vector getAngularVelocity() {
-        return angularVelocity;
+    public String toString() {
+        return "" +
+            "Name: " + getName() +
+            ", Position" + getPosition() +
+            ", Angular Displacement" + getAngularDisplacement() +
+            ", Velocity" + getVelocity() +
+            ", Angular Velocity" + getAngularVelocity() +
+            ", mass(" + Utils.round(getMass()) + ")";
     }
 
-    Vector getAngularDisplacement() {
-        return angularDisplacement;
+    public RotatingBody copy() {
+        return new RotatingBody(
+            getName(),
+            getPosition(),
+            getAngularDisplacement(),
+            getVelocity(),
+            getAngularVelocity(),
+            getMass(),
+            getRadius(),
+            getMeta()
+        );
     }
-
-    public void applyTorque(Vector torque, double time) {
-        Vector acceleration = torque.quotient(getMomentOfInertia());
-        Vector changeInVelocity = acceleration.product(time);
-        angularVelocity = angularVelocity.sum(changeInVelocity);
-        angularDisplacement = angularDisplacement.sum(angularVelocity.product(time)).mod(2*Math.PI);
-    }
-
+    
 }
