@@ -1,61 +1,39 @@
 package Simulation;
 
-import Simulation.*;
-import Utilities.*;
-import Visualisation.*;
+import ControlSystem.Controller;
+import Utilities.Metadata;
 
-public class Spacecraft extends Body implements Comparable<Spacecraft> {
-    private Body goal;
-    private double shortestDistance = Double.MAX_VALUE;
-    private Vector shortestDistancePoint;
-    private Vector startingPosition;
-    private Vector startingVelocity;
+/**
+ * Spacecraft is a body that can be controlled and keeps internal time.
+ */
+public class Spacecraft extends RotatingBody {
 
-    public Spacecraft (String name, double mass, Vector position, Vector velocity, Body goal) {
-        super(name, position, velocity, mass);
-        startingPosition = position;
-        startingVelocity = velocity;
-        this.goal = goal;
-    }
+    private double internalTime;
+    private Controller controller;
 
-    public double getShortestDistance() {
-        return shortestDistance;
-    }
-
-    public Vector getShortestDistancePoint() {
-        return  shortestDistancePoint;
-    }
-
-    public Vector getStartingPosition() {
-        return  startingPosition;
-    }
-
-    public Vector getStartingVelocity() {
-        return  startingVelocity;
-    }
-
-    public Body getGoal() {
-        return goal;
-    }
-
-    public void setGoal(Body goal) {
-        this.goal = goal;
+    Spacecraft(
+        String name,
+        Controller controller,
+        Vector position,
+        Vector angularDisplacement,
+        Vector velocity,
+        Vector angularVelocity,
+        double mass,
+        double radius,
+        Metadata meta
+    ) {
+        super(name, position, angularDisplacement, velocity, angularVelocity, mass, radius, meta);
+        this.controller = controller;
     }
 
     public void simulate(double time) {
+        controller.executeCommand(this);
         super.simulate(time);
-        double distance = super.getPosition().euclideanDistance(goal.getPosition());
-        if (distance < shortestDistance) {
-            shortestDistance = distance;
-            shortestDistancePoint = super.getPosition();
-        }
+        internalTime =+ time;
     }
 
-    public int compareTo(Spacecraft spacecraft) {
-        return Double.compare(shortestDistance, spacecraft.getShortestDistance());
+    double getInternalTime() {
+        return internalTime;
     }
 
-    public Spacecraft clone() {
-        return new Spacecraft(super.getName(), super.getMass(), startingPosition, startingVelocity, goal);
-    }
 }
