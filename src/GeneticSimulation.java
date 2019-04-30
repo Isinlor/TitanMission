@@ -20,7 +20,7 @@ public class GeneticSimulation {
     static final Random generator = new Random(System.currentTimeMillis());
 
     public static void main(String[] args) throws InterruptedException {
-        Spacecraft[] population = new Spacecraft[POPSIZE];
+        BallisticProbe[] population = new BallisticProbe[POPSIZE];
 
         Random randomGenerator = new Random();
 
@@ -30,7 +30,7 @@ public class GeneticSimulation {
         Body goal = planets.get(2); // 2 is Mars, 8 is Neptune (seeing Neptune requires changing scale in animate to 10e9)
         for (int i = 0; i < POPSIZE; i++) {
             Vector velocity = new Vector(randomGenerator.nextDouble() * 200000 - 100000, randomGenerator.nextDouble() * 200000 - 100000, 0);
-            population[i] = new Spacecraft("First try " + i, 1, earth.getPosition().sum(new Vector(earth.getRadius(), earth.getRadius(), earth.getRadius())), velocity, goal);
+            population[i] = new BallisticProbe("First try " + i, 1, earth.getPosition().sum(new Vector(earth.getRadius(), earth.getRadius(), earth.getRadius())), velocity, goal);
         }
 
         int generation = 0;
@@ -41,9 +41,9 @@ public class GeneticSimulation {
 
             Bodies bodies = new Bodies();
             for (Body planet: planets) bodies.addBody(planet);
-            for (Spacecraft spacecraft: population) {
-                spacecraft.setGoal(goal);
-                bodies.addBody(spacecraft);
+            for (BallisticProbe ballisticProbe : population) {
+                ballisticProbe.setGoal(goal);
+                bodies.addBody(ballisticProbe);
             }
 
             System.setProperty("sun.java2d.opengl", "true");
@@ -56,7 +56,7 @@ public class GeneticSimulation {
 
 //            System.out.println(bodies);
 
-            Spacecraft[] parents = topSelection(population);
+            BallisticProbe[] parents = topSelection(population);
 
             Arrays.sort(population);
             Double distance = population[0].getShortestDistance();
@@ -84,25 +84,25 @@ public class GeneticSimulation {
     }
 
     // first crossover method
-    public static Spacecraft crossoverAverage(Spacecraft p1, Spacecraft p2) {
+    public static BallisticProbe crossoverAverage(BallisticProbe p1, BallisticProbe p2) {
         Random randomGenerator = new Random();
-        Spacecraft child = new Spacecraft("Child " + randomGenerator.nextInt(9999999),  p1.getMass(), p1.getStartingPosition(), p1.getStartingVelocity().sum(p2.getStartingVelocity()).product(0.5), p1.getGoal());
+        BallisticProbe child = new BallisticProbe("Child " + randomGenerator.nextInt(9999999),  p1.getMass(), p1.getStartingPosition(), p1.getStartingVelocity().sum(p2.getStartingVelocity()).product(0.5), p1.getGoal());
         return child;
     }
 
     // one random mutation per individual in chance of a certain probability
-    public static void  mutation(Spacecraft p) {
+    public static void  mutation(BallisticProbe p) {
         p.addVelocity(new Vector(p.getStartingVelocity().x * (generator.nextDouble()-0.5) * 0.05,
                 p.getStartingVelocity().y * (generator.nextDouble()-0.5) * 0.05,
                 p.getStartingVelocity().z * (generator.nextDouble()-0.5) * 0.05));
     }
 
     // elitist selection method
-    public static Spacecraft[] topSelection(Spacecraft[] population) {
+    public static BallisticProbe[] topSelection(BallisticProbe[] population) {
         Arrays.sort(population);
 //        System.out.println(population[0].getShortestDistance());
 //        System.out.println(population[0].getStartingVelocity());
-        Spacecraft[] parents = new Spacecraft[ELITENUM];
+        BallisticProbe[] parents = new BallisticProbe[ELITENUM];
         for (int i = 0; i < ELITENUM; i++) {
             parents[i] = population[i].clone();
         }
