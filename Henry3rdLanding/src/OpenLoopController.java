@@ -7,6 +7,8 @@ public class OpenLoopController {
     private Body target;
     private double timetoRunthrough;
     private double timeStep;
+    private int IMPULSE_AT_END_TIME = 1095641;
+    private int TIME_TO_DEPLOY_PARACHUTE = 5000;
 
     OpenLoopController(Force slowingDown, Body target, double timetoRunthrough, double timeStep){
         this.slowingDownForce = slowingDown;
@@ -34,7 +36,7 @@ public class OpenLoopController {
         System.out.println("Position is: " + henry3rd.getPosition());
         for (int i = 0; i < timetoRunthrough; i++) {
 
-            if ((int) henry3rd.getPosition().y <= 100) {
+            if (i >= IMPULSE_AT_END_TIME) {
                 slowingDownForce = new Force(henry3rd.computeAttraction(target).product(-4818.085));
             }
 
@@ -51,6 +53,7 @@ public class OpenLoopController {
 
     public void simulateUnrealisticReallySlowLanding(Spaceship henry3rd) {
 
+        //here we can put almost exactly the same amount of opposing force but still land at around 520m/s
         slowingDownForce = new Force(henry3rd.computeAttraction(target).product(-0.999999));
         System.out.println("Slowing down force is: " + slowingDownForce.toString());
         System.out.println("Position is: " + henry3rd.getPosition());
@@ -64,19 +67,19 @@ public class OpenLoopController {
         }
     }
 
-    //something is wrong with this method, maybe with all
     public void simulateParachuteAndThenImpulseAtTheEnd(Spaceship henry3rd){
 
+        slowingDownForce = new Force(0,0,0);
         System.out.println("Position is: " + henry3rd.getPosition());
         for (int i = 0; i < timetoRunthrough; i++) {
             //deploy parachute at 200km above target, reduces the gravitational force
-            if ((int) henry3rd.getPosition().y <= 200000) {
-                slowingDownForce = new Force(henry3rd.computeAttraction(target).product(-0.2));
+            if (i <= TIME_TO_DEPLOY_PARACHUTE) {
+                slowingDownForce = new Force(henry3rd.computeAttraction(target).product(-0.1));
             }
 
             //start impulse to slow down fast
-            if ((int) henry3rd.getPosition().y <= 100) {
-                slowingDownForce = slowingDownForce.sum(new Force(henry3rd.computeAttraction(target).product(-10)));
+            if (i <= IMPULSE_AT_END_TIME) {
+                slowingDownForce = slowingDownForce.sum(new Force(henry3rd.computeAttraction(target).product(-0.000001202)));
             }
 
             if ((int) henry3rd.getPosition().y <= 0) {
