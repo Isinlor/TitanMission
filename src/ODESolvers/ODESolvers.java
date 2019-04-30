@@ -1,10 +1,12 @@
+package ODESolvers;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Static repository of ODE solvers.
  */
-class ODESolvers {
+public class ODESolvers {
 
     final static private Map<String, ODESolver> solvers = new HashMap<>();
 
@@ -14,7 +16,7 @@ class ODESolvers {
         solvers.put(new RungaKuttaODE().getName(), new RungaKuttaODE());
     }
 
-    static ODESolver getODESolver(String name) {
+    public static ODESolver getODESolver(String name) {
         return solvers.get(name);
     }
 

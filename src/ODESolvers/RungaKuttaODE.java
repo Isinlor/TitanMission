@@ -1,6 +1,12 @@
+package ODESolvers;
+
 import java.util.LinkedHashMap;
 
-class RungaKuttaODE implements ODESolver {
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
+public class RungaKuttaODE implements ODESolver {
     public void iterate(Bodies bodies, double time) {
 
         // yM = y0 + h*f(x0, y0)

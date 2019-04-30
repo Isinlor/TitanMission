@@ -1,10 +1,16 @@
+package Simulation;
+
 import EventSystem.Event;
+
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
 
 public class BodyCrashedEvent implements Event {
 
     private Body crashedBody;
 
-    BodyCrashedEvent(Body crashedBody) {
+    public BodyCrashedEvent(Body crashedBody) {
         this.crashedBody = crashedBody;
     }
 
@@ -12,7 +18,7 @@ public class BodyCrashedEvent implements Event {
         return "body crashed";
     }
 
-    Body getCrashedBody() {
+    public Body getCrashedBody() {
         return crashedBody;
     }
 

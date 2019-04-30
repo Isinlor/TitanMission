@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
 public class EventDispatcher {
 
     private Map<String, ArrayList<EventListener<Event>>> listeners = new LinkedHashMap<>();

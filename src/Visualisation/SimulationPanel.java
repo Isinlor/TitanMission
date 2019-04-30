@@ -1,8 +1,15 @@
+package Visualisation;
+
+import Utilities.Utils;
+
 import javax.swing.*;
-import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.function.Consumer;
+
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
 
 public class SimulationPanel extends JPanel {
 
@@ -21,7 +28,7 @@ public class SimulationPanel extends JPanel {
 
     Body selectedBody;
 
-    SimulationPanel() {
+    public SimulationPanel() {
 
         setPreferredSize(new Dimension(
             1800, 800
@@ -34,7 +41,7 @@ public class SimulationPanel extends JPanel {
 
     }
 
-    SimulationPanel(double scale, Bodies bodies) {
+    public SimulationPanel(double scale, Bodies bodies) {
 
         this();
 
@@ -43,7 +50,7 @@ public class SimulationPanel extends JPanel {
 
     }
 
-    void setBodies(Bodies bodies) {
+    public void setBodies(Bodies bodies) {
         this.bodies = bodies.copy();
         this.originalBodies = bodies.copy();
         if(selectedBody == null || !bodies.hasBody(selectedBody.getName())) {
@@ -51,15 +58,15 @@ public class SimulationPanel extends JPanel {
         }
     }
 
-    void setScale(double scale) {
+    public void setScale(double scale) {
         this.scale = scale;
     }
 
-    boolean isSimulating() {
+    public boolean isSimulating() {
         return isSimulating;
     }
 
-    void startSimulation(Consumer<Bodies> frameUpdate) {
+    public void startSimulation(Consumer<Bodies> frameUpdate) {
         pauseSimulation();
         // Animate. Does repaint ~60 times a second.
         Timer timer = new Timer(16, new ActionListener() {
@@ -73,15 +80,15 @@ public class SimulationPanel extends JPanel {
         resumeSimulation();
     }
 
-    void restartSimulation() {
+    public void restartSimulation() {
         setBodies(this.originalBodies);
     }
 
-    void resumeSimulation() {
+    public void resumeSimulation() {
         isSimulating = true;
     }
 
-    void pauseSimulation() {
+    public void pauseSimulation() {
         isSimulating = false;
     }
 

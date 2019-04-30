@@ -1,7 +1,15 @@
+package Utilities;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
+
+import Simulation.*;
+
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
 
 public class CSVReader {
     public static LinkedList<Body> readPlanets() {

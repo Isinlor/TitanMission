@@ -1,10 +1,10 @@
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
 
-class SolarSystem extends Bodies {
+public class SolarSystem extends Bodies {
 
-    SolarSystem() {
+    public SolarSystem() {
 
         double auToM = 149597870.700 * 1000;
         double invDayToSecond = 1 / 86400.0;

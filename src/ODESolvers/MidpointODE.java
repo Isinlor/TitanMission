@@ -1,6 +1,12 @@
+package ODESolvers;
+
 import java.util.LinkedHashMap;
 
-class MidpointODE implements ODESolver {
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
+public class MidpointODE implements ODESolver {
     public void iterate(Bodies bodies, double time) {
 
         // yM = y0 + h*f(x0, y0)

@@ -34,16 +34,16 @@ public class Command {
      */
     private double torque;
 
-    Command(double thrust, double torque) {
+    public Command(double thrust, double torque) {
         this.thrust = thrust;
         this.torque = torque;
     }
 
-    double getThrust() {
+    public double getThrust() {
         return thrust;
     }
 
-    double getTorque() {
+    public double getTorque() {
         return torque;
     }
 

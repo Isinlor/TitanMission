@@ -1,20 +1,22 @@
-import java.math.BigDecimal;
-import java.math.MathContext;
+package Simulation;
+
+import Utilities.Utils;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Vector with different operators. Allows to hide dimensionality.
  */
-class Vector {
+public class Vector {
 
-    double x;
-    double y;
-    double z;
+    public double x;
+    public double y;
+    public double z;
 
-    Vector() {}
+    public Vector() {}
 
-    Vector(double x, double y) {
+    public Vector(double x, double y) {
         this.x = x;
         this.y = y;
     }
@@ -25,14 +27,14 @@ class Vector {
         this.z = z;
     }
 
-    boolean isEqualTo(Vector vector, double tolerance) {
+    public boolean isEqualTo(Vector vector, double tolerance) {
         Vector absDiff = this.difference(vector).abs();
         return absDiff.x <= tolerance
             && absDiff.y <= tolerance
             && absDiff.z <= tolerance;
     }
 
-    double getLength() {
+    public double getLength() {
         return Math.sqrt(
                 Math.pow(x, 2.0) +
                 Math.pow(y, 2.0) +
@@ -40,7 +42,7 @@ class Vector {
         );
     }
 
-    Vector product(double scalar) {
+    public Vector product(double scalar) {
         return new Vector(
                 x * scalar,
                 y * scalar,
@@ -48,7 +50,7 @@ class Vector {
         );
     }
 
-    Vector crossProduct(Vector vector) {
+    public Vector crossProduct(Vector vector) {
 
         return new Vector(
             y*vector.z - z*vector.y,
@@ -58,7 +60,7 @@ class Vector {
 
     }
 
-    Vector sum(Vector vector) {
+    public Vector sum(Vector vector) {
         return new Vector(
                 x + vector.x,
                 y + vector.y,
@@ -66,7 +68,7 @@ class Vector {
         );
     }
 
-    Vector difference(Vector vector) {
+    public Vector difference(Vector vector) {
         return new Vector(
                 x - vector.x,
                 y - vector.y,
@@ -74,7 +76,7 @@ class Vector {
         );
     }
 
-    Vector unitVector() {
+    public Vector unitVector() {
         double length = getLength();
         return new Vector(
             x / length,
@@ -90,7 +92,7 @@ class Vector {
      *
      * https://www.cs.helsinki.fi/group/goa/mallinnus/3dtransf/3drot.html
      */
-    Vector rotateAroundAxisX(Vector center, double theta) {
+    public Vector rotateAroundAxisX(Vector center, double theta) {
         double cosTheta = Math.cos(theta);
         double sinTheta = Math.sin(theta);
         Vector centered = difference(center);
@@ -109,7 +111,7 @@ class Vector {
      *
      * https://www.cs.helsinki.fi/group/goa/mallinnus/3dtransf/3drot.html
      */
-    Vector rotateAroundAxisY(Vector center, double theta) {
+    public Vector rotateAroundAxisY(Vector center, double theta) {
         double cosTheta = Math.cos(theta);
         double sinTheta = Math.sin(theta);
         Vector centered = difference(center);
@@ -128,7 +130,7 @@ class Vector {
      *
      * https://www.cs.helsinki.fi/group/goa/mallinnus/3dtransf/3drot.html
      */
-    Vector rotateAroundAxisZ(Vector center, double theta) {
+    public Vector rotateAroundAxisZ(Vector center, double theta) {
         double cosTheta = Math.cos(theta);
         double sinTheta = Math.sin(theta);
         Vector centered = difference(center);
@@ -140,7 +142,7 @@ class Vector {
         return rotated.sum(center);
     }
 
-    double euclideanDistance(Vector vector) {
+    public double euclideanDistance(Vector vector) {
         return Math.sqrt(
                 Math.pow(x - vector.x, 2.0) +
                 Math.pow(y - vector.y, 2.0) +
@@ -148,7 +150,7 @@ class Vector {
         );
     }
 
-    Vector abs() {
+    public Vector abs() {
         return new Vector(
           Math.abs(x),
           Math.abs(y),
@@ -163,14 +165,14 @@ class Vector {
     /**
      * Serialize vector so that it can be saved.
      */
-    String serialize() {
+    public String serialize() {
         return x + ", " + y + ", " + z;
     }
 
     /**
      * Unserialize saved vector.
      */
-    static Vector unserialize(String string) {
+    public static Vector unserialize(String string) {
 
         Pattern pattern = Pattern.compile("" +
             "(?<x>[^,]+),\\s+(?<y>[^,]+),\\s+(?<z>[^,]+)"

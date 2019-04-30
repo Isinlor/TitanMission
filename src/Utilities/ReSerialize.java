@@ -1,3 +1,9 @@
+package Utilities;
+
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
 public class ReSerialize {
 
     public static void main(String[] args) {

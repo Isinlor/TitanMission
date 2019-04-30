@@ -108,9 +108,9 @@ abstract class SimpleUnitTest {
      * Exception indicating failed assertion.
      */
     static private class AssertionFailed extends RuntimeException {
-        AssertionFailed() {
+        public AssertionFailed() {
         }
-        AssertionFailed(String s) {
+        public AssertionFailed(String s) {
             super(s);
         }
     }

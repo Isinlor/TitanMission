@@ -1,5 +1,13 @@
+import Utilities.CSVReader;
+import Visualisation.SimulationPanel;
 import javax.swing.*;
-import java.util.*;
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Random;
 
 public class GeneticSimulation {
 

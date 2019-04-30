@@ -1,6 +1,9 @@
+package Simulation;
+
 import EventSystem.Event;
 import EventSystem.EventDispatcher;
 import EventSystem.EventListener;
+import Utilities.FileSystem;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -10,7 +13,7 @@ import java.util.function.Consumer;
  *
  * Each body can be identified by unique name.
  */
-class Bodies {
+public class Bodies {
 
     /**
      * Notice! Linked version of HashMap is used purposefully!
@@ -24,11 +27,11 @@ class Bodies {
 
     private EventDispatcher eventDispatcher = EventDispatcher.create();
 
-    Bodies() {
+    public Bodies() {
         this.bodies = new LinkedHashMap<>();
     }
 
-    Bodies(Collection<Body> bodies) {
+    public Bodies(Collection<Body> bodies) {
         this();
         for(Body body: bodies) {
             addBody(body);
@@ -40,8 +43,8 @@ class Bodies {
      *
      * The body must have a unique name.
      */
-    void addBody(Body body) {
-        if(bodies.containsValue(body)) throw new RuntimeException("Body [" + body.getName() + "] already added!");
+    public void addBody(Body body) {
+        if(bodies.containsValue(body)) throw new RuntimeException("Simulation [" + body.getName() + "] already added!");
         if(bodies.containsKey(body.getName())) throw new RuntimeException("Duplicated name [" + body.getName() + "]!");
         bodies.put(body.getName(), body);
     }
@@ -49,35 +52,35 @@ class Bodies {
     /**
      * Add all given bodies.
      */
-    void addBodies(Bodies bodies) {
+    public void addBodies(Bodies bodies) {
         bodies.apply(this::addBody);
     }
 
     /**
      * Remove body from the list of bodies.
      */
-    void removeBody(Body body) {
+    public void removeBody(Body body) {
         bodies.remove(body.getName());
     }
 
     /**
      * Returns body by a unique name.
      */
-    Body getBody(String name) {
+    public Body getBody(String name) {
         return bodies.get(name);
     }
 
     /**
      * Check whether a specific body is in the list.
      */
-    boolean hasBody(String name) {
+    public boolean hasBody(String name) {
         return bodies.containsKey(name);
     }
 
     /**
      * Returns body with the heaviest mass.
      */
-    Body getHeaviestBody() {
+    public Body getHeaviestBody() {
         Body heaviestBody = getBodies().iterator().next();
         for (Body body: getBodies()) {
             if(heaviestBody.getMass() < body.getMass()) heaviestBody = body;
@@ -91,14 +94,14 @@ class Bodies {
      * Notice! Linked version of HashSet is used purposefully.
      * @see Bodies documentation for more details.
      */
-    Set<Body> getBodies() {
+    public Set<Body> getBodies() {
         return new LinkedHashSet<>(bodies.values());
     }
 
     /**
      * Total time of simulation.
      */
-    double getTime() {
+    public double getTime() {
         return time;
     }
 
@@ -107,7 +110,7 @@ class Bodies {
      *
      * A force working on each body is computed and applied for specified time.
      */
-    void iterate(double time) {
+    public void iterate(double time) {
         for (Body body: getBodies()) {
             body.applyForce(computeForce(body), time);
         }
@@ -117,20 +120,20 @@ class Bodies {
     /**
      * Allows to apply arbitrary operation on all bodies.
      */
-    void apply(Consumer<Body> fn) {
+    public void apply(Consumer<Body> fn) {
         for(Body body: getBodies()) {
             fn.accept(body);
         }
     }
 
-    void resetAll() {
+    public void resetAll() {
         apply(Body::reset);
     }
 
     /**
      * Computes sum of forces that other bodies are working on body A.
      */
-    Force computeForce(Body bodyA) {
+    public Force computeForce(Body bodyA) {
         Force force = new Force();
         for (Body bodyB: getBodies()) {
             if(bodyA == bodyB) continue;
@@ -147,7 +150,7 @@ class Bodies {
         return force;
     }
 
-    LinkedHashMap<String, Force> getForces() {
+    public LinkedHashMap<String, Force> getForces() {
         LinkedHashMap<String, Force> forces = new LinkedHashMap<>();
         for(Body body: this.getBodies()) {
             forces.put(body.getName(), computeForce(body));
@@ -155,7 +158,7 @@ class Bodies {
         return forces;
     }
 
-    void addEventListener(String eventName, EventListener<Event> listener) {
+    public void addEventListener(String eventName, EventListener<Event> listener) {
         eventDispatcher.addListener(eventName, listener);
     }
 
@@ -167,7 +170,7 @@ class Bodies {
         return stringBuilder.toString();
     }
 
-    Bodies copy() {
+    public Bodies copy() {
         Bodies copy = new Bodies();
         for (Body body: getBodies()) {
             copy.addBody(body.copy());
@@ -177,7 +180,7 @@ class Bodies {
         return copy;
     }
 
-    void save(String location) {
+    public void save(String location) {
         try {
             FileSystem.write(location, serialize());
         } catch (Exception e) {
@@ -185,7 +188,7 @@ class Bodies {
         }
     }
 
-    static Bodies load(String location) {
+    public static Bodies load(String location) {
         try {
             return unserialize(FileSystem.read(location));
         } catch (Exception e) {
@@ -193,7 +196,7 @@ class Bodies {
         }
     }
 
-    String serialize() {
+    public String serialize() {
         StringBuilder stringBuilder = new StringBuilder();
         for (Body body: getBodies()) {
             stringBuilder.append(body.serialize()).append("\n");
@@ -201,7 +204,7 @@ class Bodies {
         return stringBuilder.toString();
     }
 
-    static Bodies unserialize(String string) {
+    public static Bodies unserialize(String string) {
         Bodies bodies = new Bodies();
         String[] serializedBodies = string.trim().split("(\\r\\n|\\r|\\n)");
         for(String serializedBody: serializedBodies) {

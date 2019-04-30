@@ -1,3 +1,7 @@
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
 @SuppressWarnings("Duplicates")
 public class MissionTest {
 
@@ -144,7 +148,7 @@ public class MissionTest {
     }
 
     private static Body getProbeInOrbit(Body body, Double distance) {
-        Double orbitalSpeed = Math.sqrt(SimulationSolarSystem.G * body.getMass() / distance);
+        Double orbitalSpeed = Math.sqrt(Constants.G * body.getMass() / distance);
         Vector position = body.getPosition().sum(new Vector(1.0, 0.0, 0.0).product(distance));
         Vector velocity = new Vector(0.0, 1.0, 0.0).product(orbitalSpeed).sum(body.getVelocity());
 

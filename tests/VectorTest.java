@@ -1,3 +1,7 @@
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
 public class VectorTest extends SimpleUnitTest {
 
     public static void main(String[] args) {

@@ -1,9 +1,19 @@
+package Visualisation;
+
+import Utilities.FileSystem;
+import Utilities.Metadata;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class Simulation {
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+import ODESolvers.*;
+
+public class Simulation {
 
     static private JFrame window = new JFrame();
     static private SimulationPanel simulationPanel = new SimulationPanel();
@@ -37,7 +47,7 @@ class Simulation {
         load(args[0]).start();
     }
 
-    Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale) {
+    public Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale) {
         setODESolver(odeSolver);
         setBodies(bodies);
         this.steps = steps;
@@ -48,7 +58,7 @@ class Simulation {
         start();
     }
 
-    Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale, Metadata metadata) {
+    public Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale, Metadata metadata) {
         this(bodies, steps, timeStep, stepsPerFrame, scale);
         this.metadata = metadata;
         if(metadata.has("ODESolver")) {
@@ -56,7 +66,7 @@ class Simulation {
         }
     }
 
-    void setODESolver(ODESolver odeSolver) {
+    public void setODESolver(ODESolver odeSolver) {
         this.odeSolver = odeSolver;
         metadata.set("ODESolver", odeSolver.getName());
     }
@@ -91,7 +101,7 @@ class Simulation {
         simulationPanelControls.resumeSimulation();
     }
 
-    void setBodies(Bodies bodies) {
+    public void setBodies(Bodies bodies) {
         this.replied = 0;
         this.bodies = bodies.copy();
         simulationPanel.setBodies(this.bodies.copy());
@@ -99,35 +109,35 @@ class Simulation {
         resume();
     }
 
-    Bodies getBodies() {
+    public Bodies getBodies() {
         return bodies;
     }
 
-    long getSteps() {
+    public long getSteps() {
         return steps;
     }
 
-    double getTimeStep() {
+    public double getTimeStep() {
         return timeStep;
     }
 
-    long getStepsPerFrame() {
+    public long getStepsPerFrame() {
         return stepsPerFrame;
     }
 
-    double getScale() {
+    public double getScale() {
         return scale;
     }
 
-    Metadata getMetadata() {
+    public Metadata getMetadata() {
         return metadata;
     }
 
-    void save(String resource) {
+    public void save(String resource) {
         FileSystem.write(resource, serialize());
     }
 
-    static Simulation load(String resource) {
+    public static Simulation load(String resource) {
         try {
             return unserialize(FileSystem.read(resource));
         } catch (Exception e) {
@@ -135,7 +145,7 @@ class Simulation {
         }
     }
 
-    String serialize() {
+    public String serialize() {
         return "" +
             "steps(" + steps + ") " +
             "timeStep(" + timeStep + ") " +
@@ -145,7 +155,7 @@ class Simulation {
             bodies.serialize();
     }
 
-    static Simulation unserialize(String string) {
+    public static Simulation unserialize(String string) {
 
         Pattern pattern = Pattern.compile("" +
             "steps\\((?<steps>.+)\\) " +

@@ -1,9 +1,15 @@
+package Visualisation;
+
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
 
-class SimulationPanelControls extends JPanel {
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
+public class SimulationPanelControls extends JPanel {
 
     private SimulationPanel simulationPanel;
 
@@ -11,7 +17,7 @@ class SimulationPanelControls extends JPanel {
 
     private JComboBox<String> bodySelector = new JComboBox<>();
 
-    SimulationPanelControls(SimulationPanel simulationPanel) {
+    public SimulationPanelControls(SimulationPanel simulationPanel) {
 
         setBackground(Color.WHITE);
 
@@ -75,17 +81,17 @@ class SimulationPanelControls extends JPanel {
 
     }
 
-    void resumeSimulation() {
+    public void resumeSimulation() {
         simulationPanel.resumeSimulation();
         animationButton.setLabel("Pause simulation");
     }
 
-    void pauseSimulation() {
+    public void pauseSimulation() {
         simulationPanel.pauseSimulation();
         animationButton.setLabel("Resume simulation");
     }
 
-    void updateBodySelector() {
+    public void updateBodySelector() {
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
         simulationPanel.bodies.apply((Body body) -> model.addElement(body.getName()));
         bodySelector.setModel(model);

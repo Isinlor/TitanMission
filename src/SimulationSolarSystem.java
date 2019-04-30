@@ -1,15 +1,13 @@
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
 import javax.swing.*;
 
 /**
  * Simple n-body simulation based on finite differences and O(n^2) computation of forces between all bodies.
  */
-class SimulationSolarSystem {
-
-    /**
-     * Gravitational constant; m^3*kg^−1*s^−2
-     * From "CODATA recommended values of the fundamental physical constants: 2014"
-     */
-    static final double G = 6.67408e-11;
+public class SimulationSolarSystem {
 
     static JFrame window;
 

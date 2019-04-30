@@ -1,9 +1,13 @@
+package Visualisation;
+
 import java.awt.*;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.stream.Collectors;
 
-class Cube {
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
+public class Cube {
 
     private HashMap<Integer, Vector> vertices = new HashMap<>();
 
@@ -13,7 +17,7 @@ class Cube {
      * @param A The corner of the cube.
      * @param a Side length of the cube.
      */
-    Cube(Vector A, int a) {
+    public Cube(Vector A, int a) {
 
         double Aax = A.x+a;
         double Aay = A.y+a;
@@ -30,25 +34,25 @@ class Cube {
 
     }
 
-    void rotateAroundAxisX(Vector center, double theta) {
+    public void rotateAroundAxisX(Vector center, double theta) {
         for (int i = 0; i < vertices.size(); i++) {
             vertices.replace(i, vertices.get(i).rotateAroundAxisX(center, theta));
         }
     }
 
-    void rotateAroundAxisY(Vector center, double theta) {
+    public void rotateAroundAxisY(Vector center, double theta) {
         for (int i = 0; i < vertices.size(); i++) {
             vertices.replace(i, vertices.get(i).rotateAroundAxisY(center, theta));
         }
     }
 
-    void rotateAroundAxisZ(Vector center, double theta) {
+    public void rotateAroundAxisZ(Vector center, double theta) {
         for (int i = 0; i < vertices.size(); i++) {
             vertices.replace(i, vertices.get(i).rotateAroundAxisZ(center, theta));
         }
     }
 
-    void draw(Graphics g) {
+    public void draw(Graphics g) {
         
         // Colors are added in order to allow keeping track of directions
         Color oldColor = g.getColor();

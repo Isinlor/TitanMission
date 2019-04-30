@@ -1,3 +1,5 @@
+package Utilities;
+
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
@@ -6,13 +8,17 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
 
-class FileSystem {
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
 
-    static boolean exists(String location) {
+public class FileSystem {
+
+    public static boolean exists(String location) {
         return Files.exists(Paths.get(location));
     }
 
-    static String read(String location) {
+    public static String read(String location) {
         try {
             return new String(Files.readAllBytes(Paths.get(location)));
         } catch (Exception e) {
@@ -20,7 +26,7 @@ class FileSystem {
         }
     }
 
-    static void write(String location, String content) {
+    public static void write(String location, String content) {
         try {
             Path path = Paths.get(location);
             if(!Files.exists(path)) {
@@ -32,14 +38,14 @@ class FileSystem {
         }
     }
 
-    static String tryLoadResource(String resource) {
+    public static String tryLoadResource(String resource) {
         URL url = FileSystem.class.getClassLoader().getResource(resource);
         if(url == null) return null;
         if(exists(url.getFile())) return read(url.getFile());
         return null;
     }
 
-    static String[] listFiles(String location) {
+    public static String[] listFiles(String location) {
         if(!exists(location)) return new String[]{};
         return
             Arrays.stream(Objects.requireNonNull(

@@ -1,7 +1,6 @@
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
 
 @SuppressWarnings("Duplicates")
 public class Test {

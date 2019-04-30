@@ -1,3 +1,9 @@
+package Simulation;
+
+import Simulation.*;
+import Utilities.*;
+import Visualisation.*;
+
 public class Spacecraft extends Body implements Comparable<Spacecraft> {
     private Body goal;
     private double shortestDistance = Double.MAX_VALUE;
@@ -5,39 +11,39 @@ public class Spacecraft extends Body implements Comparable<Spacecraft> {
     private Vector startingPosition;
     private Vector startingVelocity;
 
-    Spacecraft (String name, double mass, Vector position, Vector velocity, Body goal) {
+    public Spacecraft (String name, double mass, Vector position, Vector velocity, Body goal) {
         super(name, position, velocity, mass);
         startingPosition = position;
         startingVelocity = velocity;
         this.goal = goal;
     }
 
-    double getShortestDistance() {
+    public double getShortestDistance() {
         return shortestDistance;
     }
 
-    Vector getShortestDistancePoint() {
+    public Vector getShortestDistancePoint() {
         return  shortestDistancePoint;
     }
 
-    Vector getStartingPosition() {
+    public Vector getStartingPosition() {
         return  startingPosition;
     }
 
-    Vector getStartingVelocity() {
+    public Vector getStartingVelocity() {
         return  startingVelocity;
     }
 
-    Body getGoal() {
+    public Body getGoal() {
         return goal;
     }
 
-    void setGoal(Body goal) {
+    public void setGoal(Body goal) {
         this.goal = goal;
     }
 
     @Override
-    void applyForce(Force force, double time) {
+    public void applyForce(Force force, double time) {
         super.applyForce(force, time);
         double distance = super.getPosition().euclideanDistance(goal.getPosition());
         if (distance < shortestDistance) {
