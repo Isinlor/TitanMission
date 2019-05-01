@@ -12,6 +12,4 @@ public class NullController implements Controller {
     public Command getCommand(Spacecraft spacecraft) {
         return new NullCommand();
     }
-    public void executeCommand(Spacecraft spacecraft) {
-    }
 }
