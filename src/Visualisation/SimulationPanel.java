@@ -129,9 +129,9 @@ public class SimulationPanel extends JPanel implements SimulationCanvas {
 
                 body.setPosition(body.getPosition().product(1 / scale));
 
-                body.setPosition(body.getPosition().rotateAroundAxisX(nullVector, dragY));
-
-                body.setPosition(body.getPosition().rotateAroundAxisY(nullVector, dragX));
+                // disable rotation to not confuse spacecrafts (orientation of basis vectors get of sync)
+                // body.setPosition(body.getPosition().rotateAroundAxisX(nullVector, dragY));
+                // body.setPosition(body.getPosition().rotateAroundAxisY(nullVector, dragX));
 
                 body.setPosition(body.getPosition().sum(new Vector(translationX, translationY)));
 
