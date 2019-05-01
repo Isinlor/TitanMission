@@ -56,6 +56,8 @@ public class Spacecraft extends RotatingBody implements Displayable {
 
     public void display(SimulationCanvas canvas, Graphics2D g) {
 
+        g.setColor(Color.BLACK);
+
         Vector vector = getPosition();
 
         int x = (int)Math.round(vector.x) + canvas.getCenterX();
@@ -67,12 +69,14 @@ public class Spacecraft extends RotatingBody implements Displayable {
         if(x + displaySize < 0 || x - displaySize > canvas.getWidth()) return;
         if(y + displaySize < 0 || y - displaySize > canvas.getHeight()) return;
 
+        Vector velocity = getVelocity().unitVector().product(20);
+        g.drawLine(x, y, (int)velocity.x + x, (int)velocity.y + y);
+
         x = x - displaySize / 2;
         y = y - displaySize / 2;
 
         g.drawImage(ImageHelper.rotate(image, getAngularDisplacement().z), x, y, displaySize, displaySize, null);
 
-        g.setColor(Color.BLACK);
         g.drawString(getName(), x + 15, y + 7);
 
     }
