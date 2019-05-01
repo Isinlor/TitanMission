@@ -56,4 +56,10 @@ public class FileSystem {
             .toArray(String[]::new);
     }
 
+    public static File getFileResource(String resource) {
+        URL url = FileSystem.class.getClassLoader().getResource(resource);
+        if(url == null) throw new RuntimeException("Resource " + resource + " not found!");
+        return new File(url.getFile());
+    }
+
 }

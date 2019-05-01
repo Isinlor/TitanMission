@@ -29,7 +29,7 @@ public class LandingTest {
         Body orbitingProbe = new Spacecraft(
             "Spacecraft A", new NullController(),
             new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(),
-            new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 1),
+            new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.005),
             1, 1, new Metadata()
         );
 
