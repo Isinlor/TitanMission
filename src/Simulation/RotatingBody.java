@@ -70,6 +70,10 @@ public class RotatingBody extends Body {
         torque = netTorque;
     }
 
+    protected void addTorque(Vector torque) {
+        this.torque = this.torque.sum(torque);
+    }
+
     private void applyTorque(Vector torque, double time) {
         Vector acceleration = torque.quotient(getMomentOfInertia());
         Vector changeInVelocity = acceleration.product(time);

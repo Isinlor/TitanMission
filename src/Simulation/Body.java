@@ -123,6 +123,10 @@ public class Body {
         force = netForce;
     }
 
+    protected void addForce(Vector force) {
+        this.force = new Force(this.force.sum(force));
+    }
+
     /**
      * Applies the given force for the specified time.
      *

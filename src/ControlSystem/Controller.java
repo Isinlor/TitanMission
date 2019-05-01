@@ -24,14 +24,4 @@ public interface Controller {
      */
     Command getCommand(Spacecraft spacecraft);
 
-    /**
-     * Updates state of a spacecraft based on it's state.
-     *
-     * The update must be consistent with the command that would be returned by the getCommand() method.
-     *
-     * @param spacecraft The full state of a spacecraft.
-     *                   An open loop controller should relay just on internal time of the spacecraft.
-     */
-    void executeCommand(Spacecraft spacecraft);
-
 }

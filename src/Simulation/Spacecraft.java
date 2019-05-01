@@ -1,5 +1,6 @@
 package Simulation;
 
+import ControlSystem.Command;
 import ControlSystem.Controller;
 import Utilities.Metadata;
 import Visualisation.Displayable;
@@ -35,9 +36,18 @@ public class Spacecraft extends RotatingBody implements Displayable {
     }
 
     public void simulate(double time) {
-        controller.executeCommand(this);
+        executeCommand(controller.getCommand(this));
         super.simulate(time);
         internalTime =+ time;
+        setTorque(new Vector());
+    }
+
+    private void executeCommand(Command command) {
+        Vector torque = new Vector(0, 0, command.getTorque());
+        Vector thrust = new Vector(0, -command.getThrust(), 0)
+            .rotateAroundAxisZ(new Vector(), getAngularDisplacement().z);
+        addTorque(torque);
+        addForce(thrust);
     }
 
     double getInternalTime() {
