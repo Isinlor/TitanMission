@@ -35,6 +35,7 @@ public class Command {
     private double torque;
 
     public Command(double thrust, double torque) {
+        if(thrust < 0) throw new RuntimeException("Thrust must not be negative! Thrust given: " + thrust);
         this.thrust = thrust;
         this.torque = torque;
     }

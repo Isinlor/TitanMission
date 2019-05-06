@@ -36,8 +36,6 @@ public class KeyboardController implements Controller {
         int thrustDirection = 0;
         if(pressedKeys.containsKey(KeyEvent.VK_UP)) {
             thrustDirection = 1;
-        } else if(pressedKeys.containsKey(KeyEvent.VK_DOWN)) {
-            thrustDirection = -1;
         }
 
         int torqueDirection = 0;
