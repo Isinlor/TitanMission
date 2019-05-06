@@ -1,9 +1,12 @@
 package Visualisation;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.function.Consumer;
 
 import Simulation.*;
 import Utilities.*;
@@ -16,6 +19,12 @@ public class SimulationPanelControls extends JPanel {
     private Button animationButton = new Button("Pause simulation");
 
     private JComboBox<String> bodySelector = new JComboBox<>();
+
+    private JSpinner stepsPerFrameSpinner;
+    private Consumer<Integer> stepsPerFrameChangeListener = (i) -> {};
+
+    private JSpinner stepSpinner;
+    private Consumer<Double> stepChangeListener = (d) -> {};
 
     public SimulationPanelControls(SimulationPanel simulationPanel) {
 
@@ -79,6 +88,22 @@ public class SimulationPanelControls extends JPanel {
         });
         add(bodySelector);
 
+        add(new JLabel("SPF: "));
+        stepsPerFrameSpinner = new JSpinner();
+        stepsPerFrameSpinner.setPreferredSize(new Dimension(60, 24));
+        stepsPerFrameSpinner.addChangeListener((e) -> {
+            stepsPerFrameChangeListener.accept(((Double)stepsPerFrameSpinner.getValue()).intValue());
+        });
+        add(stepsPerFrameSpinner);
+
+        add(new JLabel("Step: "));
+        stepSpinner = new JSpinner();
+        stepSpinner.setPreferredSize(new Dimension(60, 24));
+        stepSpinner.addChangeListener((e) -> {
+            stepChangeListener.accept((Double)stepSpinner.getValue());
+        });
+        add(stepSpinner);
+
     }
 
     public void resumeSimulation() {
@@ -101,6 +126,16 @@ public class SimulationPanelControls extends JPanel {
         } else {
             bodySelector.setSelectedItem(simulationPanel.bodies.getHeaviestBody().getName());
         }
+    }
+
+    void setStepsPerFrameSpinnerControl(SpinnerNumberModel model, Consumer<Integer> changeListener) {
+        stepsPerFrameSpinner.setModel(model);
+        stepsPerFrameChangeListener = changeListener;
+    }
+
+    void setStepSpinnerControl(SpinnerNumberModel model, Consumer<Double> changeListener) {
+        stepSpinner.setModel(model);
+        stepChangeListener = changeListener;
     }
 
 }

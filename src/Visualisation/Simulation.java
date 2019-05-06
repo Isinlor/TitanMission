@@ -9,8 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import Simulation.*;
-import Utilities.*;
-import Visualisation.*;
 import ODESolvers.*;
 
 public class Simulation {
@@ -48,12 +46,12 @@ public class Simulation {
     }
 
     public Simulation(Bodies bodies, long steps, double timeStep, long stepsPerFrame, double scale) {
-        setODESolver(odeSolver);
-        setBodies(bodies);
         this.steps = steps;
         this.timeStep = timeStep;
         this.stepsPerFrame = stepsPerFrame;
         this.scale = scale;
+        setODESolver(odeSolver);
+        setBodies(bodies);
         simulationPanel.setScale(scale);
         start();
     }
@@ -106,6 +104,27 @@ public class Simulation {
         this.bodies = bodies.copy();
         simulationPanel.setBodies(this.bodies.copy());
         simulationPanelControls.updateBodySelector();
+
+        simulationPanelControls.setStepsPerFrameSpinnerControl(
+            new SpinnerNumberModel(
+                stepsPerFrame, //initial value
+                1, //minimum value
+                stepsPerFrame * 10, //maximum value
+                stepsPerFrame // step
+            ),
+            (Integer newStepsPerFrame) -> { stepsPerFrame = newStepsPerFrame;}
+        );
+
+        simulationPanelControls.setStepSpinnerControl(
+            new SpinnerNumberModel(
+                timeStep, //initial value
+                -timeStep, //minimum value
+                timeStep * 10, //maximum value
+                timeStep / 10 // step
+            ),
+            (Double newTimeStep) -> { timeStep = newTimeStep;}
+        );
+
         resume();
     }
 
