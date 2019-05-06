@@ -34,14 +34,14 @@ public class KeyboardController implements Controller {
     public Command getCommand(Spacecraft spacecraft) {
 
         int thrustDirection = 0;
-        if(pressedKeys.containsKey(KeyEvent.VK_UP)) {
+        if(pressedKeys.containsKey(KeyEvent.VK_UP) || pressedKeys.containsKey(KeyEvent.VK_W)) {
             thrustDirection = 1;
         }
 
         int torqueDirection = 0;
-        if(pressedKeys.containsKey(KeyEvent.VK_RIGHT)) {
+        if(pressedKeys.containsKey(KeyEvent.VK_RIGHT) || pressedKeys.containsKey(KeyEvent.VK_D)) {
             torqueDirection = 1;
-        } else if(pressedKeys.containsKey(KeyEvent.VK_LEFT)) {
+        } else if(pressedKeys.containsKey(KeyEvent.VK_LEFT) || pressedKeys.containsKey(KeyEvent.VK_A)) {
             torqueDirection = -1;
         }
 
