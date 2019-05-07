@@ -81,7 +81,7 @@ public class RotationController implements Controller {
             return Utils.clockAngle(
                 spacecraftPositionWithTargetAtCenter.x,
                 -spacecraftPositionWithTargetAtCenter.y // FIXME: y-axis reversed (swing)
-            );
+            ) + angle;
         });
     }
 
