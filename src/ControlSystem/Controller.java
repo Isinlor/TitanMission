@@ -19,10 +19,11 @@ public interface Controller {
      * Computes command based on the state of the spaceship.
      *
      * @param spacecraft The full state of a spacecraft.
-     *                   An open loop controller should relay just on internal time of the spacecraft.
+     *                   An open loop controller should relay just on the internal time of the spacecraft.
+     * @param timeStep The length of time step when the command will be applied in seconds.
      *
      * @return The foreseen command for this spacecraft at this moment.
      */
-    Command getCommand(Spacecraft spacecraft);
+    Command getCommand(Spacecraft spacecraft, double timeStep);
 
 }

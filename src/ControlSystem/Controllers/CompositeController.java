@@ -20,10 +20,10 @@ public class CompositeController implements Controller {
         this.controllers = controllers;
     }
 
-    public Command getCommand(Spacecraft spacecraft) {
+    public Command getCommand(Spacecraft spacecraft, double timeStep) {
         Command command = new NullCommand();
         for (Controller controller: controllers) {
-            command = command.compose(controller.getCommand(spacecraft));
+            command = command.compose(controller.getCommand(spacecraft, timeStep));
         }
         return command;
     }

@@ -36,7 +36,7 @@ public class Spacecraft extends RotatingBody implements Displayable {
     }
 
     public void simulate(double time) {
-        executeCommand(controller.getCommand(this));
+        executeCommand(controller.getCommand(this, time));
         super.simulate(time);
         internalTime =+ time;
         setTorque(new Vector());

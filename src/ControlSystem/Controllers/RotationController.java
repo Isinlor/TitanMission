@@ -19,7 +19,7 @@ public class RotationController implements Controller {
         this.targetAngleFunction = targetAngleFunction;
     }
 
-    public Command getCommand(Spacecraft spacecraft) {
+    public Command getCommand(Spacecraft spacecraft, double timeStep) {
 
         double targetAngle = targetAngleFunction.apply(spacecraft);
         double spacecraftAngle = spacecraft.getAngularDisplacement().z;

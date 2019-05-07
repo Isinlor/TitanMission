@@ -31,7 +31,7 @@ public class KeyboardController implements Controller {
             });
     }
 
-    public Command getCommand(Spacecraft spacecraft) {
+    public Command getCommand(Spacecraft spacecraft, double timeStep) {
 
         int thrustDirection = 0;
         if(pressedKeys.containsKey(KeyEvent.VK_UP) || pressedKeys.containsKey(KeyEvent.VK_W)) {

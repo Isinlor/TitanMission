@@ -28,8 +28,8 @@ public class RecordController implements Controller {
         return recording;
     }
 
-    public Command getCommand(Spacecraft spacecraft) {
-        Command command = controller.getCommand(spacecraft);
+    public Command getCommand(Spacecraft spacecraft, double timeStep) {
+        Command command = controller.getCommand(spacecraft, timeStep);
         record(command);
         return command;
     }
