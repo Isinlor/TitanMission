@@ -48,4 +48,11 @@ public class Command {
         return torque;
     }
 
+    public Command compose(Command command) {
+        return new Command(
+            thrust + command.getThrust(),
+            torque + command.getTorque()
+        );
+    }
+
 }
