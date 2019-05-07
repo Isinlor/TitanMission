@@ -53,11 +53,11 @@ public class RotatingBody extends Body {
         this.angularDisplacement = new Vector();
     }
 
-    Vector getAngularVelocity() {
+    public Vector getAngularVelocity() {
         return angularVelocity;
     }
 
-    Vector getAngularDisplacement() {
+    public Vector getAngularDisplacement() {
         return angularDisplacement;
     }
 
