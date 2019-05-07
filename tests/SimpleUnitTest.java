@@ -105,6 +105,39 @@ abstract class SimpleUnitTest {
     }
 
     /**
+     * This methods allows to assert that two doubles are equal with certain tolerance.
+     *
+     * @param actual The actual value.
+     * @param expected The expected value.
+     * @param tolerance The allowed tolerance.
+     * @param explanation An explanation of the assertion.
+     *
+     * @throws RuntimeException
+     */
+    protected static void assertEqual(double actual, double expected, double tolerance, String explanation) throws RuntimeException {
+        if(Math.abs(actual - expected) > tolerance) throw new AssertionFailed(
+            "Assertion Failed: " + explanation + "\n" +
+            "Actual value: \t" + actual + "\n" +
+            "Expected value:\t" + expected + "\n" +
+            "Tolerance:\t\t" + tolerance + "\n" +
+            "Difference:\t\t" + Math.abs(actual - expected)
+        );
+    }
+
+    /**
+     * This methods allows to assert that two doubles are equal with certain tolerance.
+     *
+     * @param actual The actual value.
+     * @param expected The expected value.
+     * @param tolerance The allowed tolerance.
+     *
+     * @throws RuntimeException
+     */
+    protected static void assertEqual(double actual, double expected, double tolerance) throws RuntimeException {
+        assertEqual(actual, expected, tolerance, "");
+    }
+
+    /**
      * Exception indicating failed assertion.
      */
     static private class AssertionFailed extends RuntimeException {
