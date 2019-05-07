@@ -2,6 +2,7 @@ import ControlSystem.Command;
 import ControlSystem.Controller;
 import ControlSystem.Controllers.KeyboardController;
 import ControlSystem.Controllers.NullController;
+import ControlSystem.Controllers.RotationController;
 import EventSystem.Event;
 import Utilities.FileSystem;
 import Visualisation.Simulation;
@@ -27,14 +28,19 @@ public class LandingTest {
         double probeAltitude = 700 * 1000; // 100km above atmosphere, in order to avoid atmosphere influence
         double probeOrbitalSpeed = titan.computeOrbitalSpeed(probeAltitude);
 
-        Body orbitingProbe = new Spacecraft(
-            "Spacecraft", new KeyboardController(),
-            new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, Math.PI),
+        bodies.addBody(new Spacecraft(
+            "Rotation Control", new RotationController(titan),
+            new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, Math.PI / 2),
             new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
             1, 1, new Metadata()
-        );
+        ));
 
-        bodies.addBody(orbitingProbe);
+        bodies.addBody(new Spacecraft(
+            "Keyboard Control", new KeyboardController(),
+            new Vector(-(titan.getRadius() + probeAltitude), 0, 0), new Vector(0, 0, Math.PI / 2),
+            new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
+            1, 1, new Metadata()
+        ));
 
         bodies.addEventListener("body crashed", (Event event) -> {
             BodyCrashedEvent crashedEvent = (BodyCrashedEvent) event;
