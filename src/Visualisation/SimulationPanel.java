@@ -179,12 +179,12 @@ public class SimulationPanel extends JPanel implements SimulationCanvas {
         }
         g.setColor(oldColor);
 
-        // Cube is here to help visualize 3D space.
-        Cube cube = new Cube(new Vector(centerX - 200, centerY - 200, -200), 400);
-        cube.rotateAroundAxisX(new Vector(centerX, centerY), dragY);
-        cube.rotateAroundAxisY(new Vector(centerX, centerY), dragX);
-
-        cube.draw(g);
+//        // Cube is here to help visualize 3D space.
+//        Cube cube = new Cube(new Vector(centerX - 200, centerY - 200, -200), 400);
+//        cube.rotateAroundAxisX(new Vector(centerX, centerY), dragY);
+//        cube.rotateAroundAxisY(new Vector(centerX, centerY), dragX);
+//
+//        cube.draw(g);
 
         g.drawString("Day: " + Double.toString(Math.round(bodies.getTime() / (60 * 60 * 24))), getWidth() - 110, getHeight() - 40);
         g.drawString("Scale: " + Utils.round(scale), getWidth() - 110, getHeight() - 20);
