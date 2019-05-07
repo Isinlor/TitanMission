@@ -3,10 +3,22 @@ package Utilities;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
+import static java.lang.Double.NaN;
+
 /**
- * Some useful common functions.
+ * Some useful common functions and constants.
  */
 public class Utils {
+
+    /**
+     * TAU represents full rotation in radians.
+     *
+     * PI radians is equal to 180 degrees, or half rotation, therefore TAU = 2 * PI;
+     *
+     * More info: https://tauday.com/tau-manifesto
+     */
+    public static final double TAU = Math.PI * 2;
+    public static final double HALF_PI = Math.PI / 2;
 
     /**
      * Outputs easy to read string representing double.
@@ -20,6 +32,47 @@ public class Utils {
         BigDecimal bd = new BigDecimal(n);
         bd = bd.round(new MathContext(3));
         return bd.toString();
+    }
+
+    /**
+     * Returns modulo with reminder having sign of the divisor.
+     * This is in contrast to the java "%" operator that returns reminder with the sign of the dividend.
+     * Java also implements Math.floorMod() that works only for integers.
+     *
+     * More info: https://en.wikipedia.org/wiki/Modulo_operation
+     *
+     * @param dividend The number to divide.
+     * @param divisor The number to divide by.
+     *
+     * @return The remainder.
+     */
+    public static double mod(double dividend, double divisor) {
+        if(divisor == 1 || divisor == -1) return 0;
+        if(divisor < 0) return dividend >= 0 ? dividend % divisor + divisor : -(dividend % divisor);
+        if(divisor > 0) return dividend >= 0 ? +(dividend % divisor) : dividend % divisor + divisor;
+        return dividend % divisor;
+    }
+
+    /**
+     * This function returns angle in radians between the positive y-axis and the ray to the point (x, y).
+     *
+     * Think about this as reading an analog clock where handle is pointing towards the point (x, y).
+     * This function will return angle in radians between 12 o'clock and the clock handle.
+     *
+     * The function goes from 0 (including) to 2*PI (excluding) and wraps back to 0.
+     *
+     * The function returns NaN for point (0, 0).
+     *
+     * See: https://en.wikipedia.org/wiki/Atan2
+     *
+     * @param x The x coordinate.
+     * @param y The y coordinate.
+     *
+     * @return The angle in radians.
+     */
+    public static double clockAngle(double x, double y) {
+        if(x == 0 && y == 0) return NaN;
+        return mod(-Math.atan2(y, x) + HALF_PI, TAU);
     }
 
 }
