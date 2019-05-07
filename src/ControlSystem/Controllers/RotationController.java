@@ -22,8 +22,13 @@ public class RotationController implements Controller {
         Vector targetPosition = target.getPosition();
         Vector spacecraftPosition = spacecraft.getPosition();
 
+        // move coordinates, so that in this frame target is at coordinate (0, 0)
+        // the transformation preserves relative position
+        // this will allow to compute clock angle - see below
         Vector spacecraftPositionWithTargetAtCenter = spacecraftPosition.difference(targetPosition);
 
+        // computes clock angle between the target body and spacecraft
+        // see Utils.clockAngle documentation for explanation of "clock angle" concept
         double clockAngle = Utils.clockAngle(
             spacecraftPositionWithTargetAtCenter.x,
             -spacecraftPositionWithTargetAtCenter.y // FIXME: y-axis reversed
@@ -31,6 +36,7 @@ public class RotationController implements Controller {
 
         double spacecraftAngle = spacecraft.getAngularDisplacement().z;
 
+        // We need to compute the smallest change that will move spacecraft angle to clock angle
         // See: https://stackoverflow.com/questions/1878907/the-smallest-difference-between-2-angles
         double signedDistance = Utils.mod(clockAngle - spacecraftAngle + Math.PI, Utils.TAU) - Math.PI;
 
