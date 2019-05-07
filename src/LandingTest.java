@@ -1,5 +1,6 @@
 import ControlSystem.Command;
 import ControlSystem.Controller;
+import ControlSystem.Controllers.CompositeController;
 import ControlSystem.Controllers.KeyboardController;
 import ControlSystem.Controllers.NullController;
 import ControlSystem.Controllers.RotationController;
@@ -29,15 +30,12 @@ public class LandingTest {
         double probeOrbitalSpeed = titan.computeOrbitalSpeed(probeAltitude);
 
         bodies.addBody(new Spacecraft(
-            "Rotation Control", RotationController.createMaintainAngleToSurfaceController(titan, 0),
+            "Spacecraft",
+            new CompositeController(
+                RotationController.createMaintainAngleToSurfaceController(titan, - Math.PI / 2),
+                new KeyboardController()
+            ),
             new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, Math.PI),
-            new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
-            1, 1, new Metadata()
-        ));
-
-        bodies.addBody(new Spacecraft(
-            "Keyboard Control", new KeyboardController(),
-            new Vector(-(titan.getRadius() + probeAltitude), 0, 0), new Vector(0, 0, Math.PI / 2),
             new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
             1, 1, new Metadata()
         ));
