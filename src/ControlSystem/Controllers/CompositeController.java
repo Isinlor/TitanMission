@@ -14,9 +14,15 @@ import java.util.List;
  */
 public class CompositeController implements Controller {
 
-    private List<Controller> controllers;
+    private Controller[] controllers;
 
-    CompositeController(List<Controller> controllers) {
+    /**
+     * In order to understand "..." below see:
+     * https://docs.oracle.com/javase/8/docs/technotes/guides/language/varargs.html
+     *
+     * @param controllers An list of controllers to compose.
+     */
+    public CompositeController(Controller... controllers) {
         this.controllers = controllers;
     }
 
