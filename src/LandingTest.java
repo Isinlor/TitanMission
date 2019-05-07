@@ -29,7 +29,7 @@ public class LandingTest {
         double probeOrbitalSpeed = titan.computeOrbitalSpeed(probeAltitude);
 
         bodies.addBody(new Spacecraft(
-            "Rotation Control", new RotationController(titan),
+            "Rotation Control", RotationController.createMaintainAngleToSurfaceController(titan, 0),
             new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, Math.PI / 2),
             new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
             1, 1, new Metadata()
