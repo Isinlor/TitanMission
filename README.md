@@ -1,6 +1,8 @@
 # Quick documentation 
 ##### In other words: copy & paste + comments
 
+Report link: (https://www.overleaf.com/6691112276qxmsgdtmcbtj)
+
 Our current model is based on finite-differences naive O(n^2) n-body simulation. 
 
 In mathematics, [finite-difference methods](https://en.wikipedia.org/wiki/Finite_difference_method) (FDM) are numerical methods for solving differential equations by approximating them with difference equations, in which finite differences approximate the derivatives.
