@@ -58,6 +58,10 @@ public class Vector {
         );
     }
 
+    public double dotProduct(Vector vector) {
+        return x * vector.x + y * vector.y + z * vector.z;
+    }
+
     public Vector crossProduct(Vector vector) {
 
         return new Vector(
