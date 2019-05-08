@@ -55,4 +55,11 @@ public class Command {
         );
     }
 
+    public Command weight(double thrustWeight, double torqueWeight) {
+        return new Command(
+            thrust * thrustWeight,
+            torque * torqueWeight
+        );
+    }
+
 }
