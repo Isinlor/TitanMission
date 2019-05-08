@@ -4,6 +4,7 @@ import ControlSystem.Command;
 import ControlSystem.Controller;
 import ControlSystem.NullCommand;
 import Simulation.*;
+import Utilities.Logger.ConsoleLogger;
 import Utilities.Logger.Logger;
 import Utilities.Logger.NullLogger;
 import Utilities.Utils;
@@ -82,6 +83,22 @@ public class RotationController implements Controller {
                 spacecraftPositionWithTargetAtCenter.x,
                 -spacecraftPositionWithTargetAtCenter.y // FIXME: y-axis reversed (swing)
             ) + angle;
+        });
+    }
+
+    /**
+     * Creates controller that allows spacecraft to maintain constant angle with regard to it's own velocity.
+     *
+     * @param angle The angle relative to the velocity.
+     *
+     * @return The controller.
+     */
+    public static RotationController createMaintainAngleToVelocityController(double angle) {
+        return new RotationController((Spacecraft spacecraft) -> {
+            Vector velocity = spacecraft.getVelocity();
+            double velocityAngle = Utils.clockAngle(velocity.x, -velocity.y); // FIXME: y-axis reversed (swing)
+            logger.log("Velocity angle: " + Math.toDegrees(velocityAngle));
+            return  velocityAngle + angle;
         });
     }
 
