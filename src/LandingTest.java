@@ -29,12 +29,14 @@ public class LandingTest {
         // one controller will maintain constant angle to the spacecraft velocity, allowing to deorbit efficiently
         // the other controller will maintain constant angle to the surface, allowing to reduce speed of approach
         Function<Spacecraft, Double> importantAtSurface = (Spacecraft spacecraft) -> {
+            // the importance weight should be 1 at the surface and 0 in orbit
             double distanceToCenter = spacecraft.getPosition().euclideanDistance(titan.getPosition());
             double distanceToSurface = distanceToCenter - titan.getRadius();
             return 1. - distanceToSurface / probeAltitude;
         };
 
         Function<Spacecraft, Double> importantInOrbit = (Spacecraft spacecraft) -> {
+            // the importance weight should be 1 in orbit and 0 at the surface
             double distanceToCenter = spacecraft.getPosition().euclideanDistance(titan.getPosition());
             double distanceToSurface = distanceToCenter - titan.getRadius();
             return distanceToSurface / probeAltitude;
