@@ -3,6 +3,7 @@ package Simulation;
 import ControlSystem.Command;
 import ControlSystem.Controller;
 import Utilities.Metadata;
+import Utilities.Utils;
 import Visualisation.Displayable;
 import Visualisation.ImageHelper;
 import Visualisation.SimulationCanvas;
@@ -20,8 +21,11 @@ public class Spacecraft extends RotatingBody implements Displayable {
 
     private BufferedImage image = ImageHelper.getImageResource("spaceships/15px.png");
 
+    private Body target;
+
     public Spacecraft(
         String name,
+        Body target,
         Controller controller,
         Vector position,
         Vector angularDisplacement,
@@ -33,6 +37,7 @@ public class Spacecraft extends RotatingBody implements Displayable {
     ) {
         super(name, position, angularDisplacement, velocity, angularVelocity, mass, radius, meta);
         this.controller = controller;
+        this.target = target;
     }
 
     public void simulate(double time) {
@@ -77,13 +82,14 @@ public class Spacecraft extends RotatingBody implements Displayable {
 
         g.drawImage(ImageHelper.rotate(image, getAngularDisplacement().z), x, y, displaySize, displaySize, null);
 
-        g.drawString(getName(), x + 15, y + 7);
+        g.drawString(getName() + ", v: " + Utils.round(getApproachSpeed(target)), x + 15, y + 7);
 
     }
 
     public Spacecraft copy() {
         return new Spacecraft(
             getName(),
+            target,
             controller,
             getPosition(),
             getAngularDisplacement(),

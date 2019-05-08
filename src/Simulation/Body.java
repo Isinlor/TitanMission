@@ -76,6 +76,25 @@ public class Body {
         return getVelocity().sum(body.getVelocity().product(-1));
     }
 
+    /**
+     * This function gives speed at which two bodies are approaching each other.
+     * In other words this is the rate of change of the distance between the bodies.
+     *
+     * The approach speed is positive when bodies are getting closer together.
+     * It is negative when they are getting further apart.
+     *
+     * @param body The other body.
+     *
+     * @return THe rate of change of distance between bodies.
+     */
+    public double getApproachSpeed(Body body) {
+        Vector relativePosition = getPosition().difference(body.getPosition());
+        return getRelativeVelocity(body)
+            .dotProduct(
+                relativePosition.unitVector()
+            );
+    }
+
     public double getMass() {
         return mass;
     }
