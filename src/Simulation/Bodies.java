@@ -113,7 +113,9 @@ public class Bodies {
     public void simulate(double time) {
         for (Body body: getBodies()) {
             body.setForce(computeForce(body));
-            body.simulate(time);
+            if(bodies.containsValue(body)) {
+                body.simulate(time);
+            }
         }
         this.time += time;
     }
