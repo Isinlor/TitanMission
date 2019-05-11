@@ -1,15 +1,15 @@
 package Visualisation;
 
+import Simulation.Bodies;
+import Simulation.Body;
+import Simulation.Vector;
 import Utilities.Utils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.function.Consumer;
-
-import Simulation.*;
-import Utilities.*;
-import Visualisation.*;
 
 public class SimulationPanel extends JPanel implements SimulationCanvas {
 
@@ -74,6 +74,13 @@ public class SimulationPanel extends JPanel implements SimulationCanvas {
         return scale;
     }
 
+    public Vector transform(Vector vector) {
+        return vector
+            .sum(selectedBody.getPosition().product(-1))
+            .product(1 / scale)
+            .sum(new Vector(translationX, translationY));
+    }
+
     public boolean isSimulating() {
         return isSimulating;
     }
@@ -120,24 +127,6 @@ public class SimulationPanel extends JPanel implements SimulationCanvas {
 
         Bodies displayBodies = bodies.copy();
 
-        displayBodies.apply(
-            (Body body) -> {
-
-                Vector nullVector = new Vector();
-
-                body.setPosition(body.getPosition().sum(selectedBody.getPosition().product(-1)));
-
-                body.setPosition(body.getPosition().product(1 / scale));
-
-                // disable rotation to not confuse spacecrafts (orientation of basis vectors get of sync)
-                // body.setPosition(body.getPosition().rotateAroundAxisX(nullVector, dragY));
-                // body.setPosition(body.getPosition().rotateAroundAxisY(nullVector, dragX));
-
-                body.setPosition(body.getPosition().sum(new Vector(translationX, translationY)));
-
-            }
-        );
-
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
         Color oldColor = g.getColor();
@@ -148,7 +137,7 @@ public class SimulationPanel extends JPanel implements SimulationCanvas {
                 continue;
             }
 
-            Vector vector = body.getPosition();
+            Vector vector = transform(body.getPosition());
 
             int x = (int)Math.round(vector.x) + centerX;
             int y = (int)Math.round(vector.y) + centerY;

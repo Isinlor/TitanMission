@@ -1,6 +1,6 @@
 package Visualisation;
 
-import Utilities.Tuple;
+import Simulation.Vector;
 
 public interface SimulationCanvas {
     int getWidth();
@@ -8,4 +8,5 @@ public interface SimulationCanvas {
     int getCenterX();
     int getCenterY();
     double getScale();
+    Vector transform(Vector vector);
 }

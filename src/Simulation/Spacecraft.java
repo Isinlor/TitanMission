@@ -63,7 +63,7 @@ public class Spacecraft extends RotatingBody implements Displayable {
 
         g.setColor(Color.BLACK);
 
-        Vector vector = getPosition();
+        Vector vector = canvas.transform(getPosition());
 
         int x = (int)Math.round(vector.x) + canvas.getCenterX();
         int y = (int)Math.round(vector.y) + canvas.getCenterY();
