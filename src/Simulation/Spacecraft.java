@@ -3,7 +3,7 @@ package Simulation;
 import ControlSystem.Command;
 import ControlSystem.Controller;
 import Utilities.Metadata;
-import Utilities.Utils;
+import Utilities.Units;
 import Visualisation.Displayable;
 import Visualisation.ImageHelper;
 import Visualisation.SimulationCanvas;
@@ -82,7 +82,9 @@ public class Spacecraft extends RotatingBody implements Displayable {
 
         g.drawImage(ImageHelper.rotate(image, getAngularDisplacement().z), x, y, displaySize, displaySize, null);
 
-        g.drawString(getName() + ", v: " + Utils.round(getApproachSpeed(target)), x + 15, y + 7);
+        g.drawString(getName(), x + 15, y + 7);
+        g.drawString("Altitude: " + Units.distance(target.computeDistance(this) - target.getRadius()), x + 15, y + 7 + 20);
+        g.drawString("Approach speed: " + Units.speed(getApproachSpeed(target)), x + 15, y + 7 + 40);
 
     }
 
