@@ -21,9 +21,6 @@ public class Body {
 
     private Force force = new Force();
 
-    private Vector startingPosition;
-    private Vector startingVelocity;
-
     private double mass;
     private double radius = 1.0;
 
@@ -34,29 +31,15 @@ public class Body {
         this.position = position;
         this.velocity = velocity;
         this.mass = mass;
-
-        startingPosition = position;
-        startingVelocity = velocity;
     }
 
     public Body(String name, Vector position, Vector velocity, double mass, double radius) {
-        this.name = name;
-        this.position = position;
-        this.velocity = velocity;
-        this.mass = mass;
+        this(name, position, velocity, mass);
         this.radius = radius;
-
-        startingPosition = position;
-        startingVelocity = velocity;
     }
 
     public Body(String name, Vector position, Vector velocity, double mass, double radius, Metadata meta) {
         this(name, position, velocity, mass, radius);
-        this.meta = meta;
-    }
-
-    public Body(String name, Vector position, Vector velocity, double mass, Metadata meta) {
-        this(name, position, velocity, mass);
         this.meta = meta;
     }
 
@@ -109,19 +92,6 @@ public class Body {
 
     public Metadata getMeta() {
         return meta;
-    }
-
-    public Vector getStartingPosition() {
-        return  startingPosition;
-    }
-
-    public Vector getStartingVelocity() {
-        return  startingVelocity;
-    }
-
-    public void reset() {
-        position = startingPosition;
-        velocity = startingVelocity;
     }
 
     /**

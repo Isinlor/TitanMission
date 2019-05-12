@@ -129,10 +129,6 @@ public class Bodies {
         }
     }
 
-    public void resetAll() {
-        apply(Body::reset);
-    }
-
     /**
      * Computes sum of forces that other bodies are working on body A.
      */
