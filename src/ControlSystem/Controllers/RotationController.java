@@ -2,9 +2,9 @@ package ControlSystem.Controllers;
 
 import ControlSystem.Command;
 import ControlSystem.Controller;
-import ControlSystem.NullCommand;
-import Simulation.*;
-import Utilities.Logger.ConsoleLogger;
+import Simulation.Body;
+import Simulation.Spacecraft;
+import Simulation.Vector;
 import Utilities.Logger.Logger;
 import Utilities.Logger.NullLogger;
 import Utilities.Utils;
@@ -31,31 +31,36 @@ public class RotationController implements Controller {
 
         double targetAngle = targetAngleFunction.apply(spacecraft);
         double spacecraftAngle = spacecraft.getAngularDisplacement().z;
-        double spacecraftAngularVelocity = spacecraft.getAngularVelocity().z;
+        double spacecraftAngularSpeed = spacecraft.getAngularVelocity().z;
 
         // We need to compute the smallest change that will move spacecraft angle to target angle
         // See: https://stackoverflow.com/questions/1878907/the-smallest-difference-between-2-angles
         double signedDistance = Utils.mod(targetAngle - spacecraftAngle + Math.PI, Utils.TAU) - Math.PI;
 
-        // when signed distance is high, the spacecraft will increase velocity until reaching the target
-        // this means that it will almost certainly overshoot, due to the high velocity that needs to be cancelled
-        // this process of overshooting and counteracting may lead to continuous oscillation (instability)
-        // taking into account the current velocity allows to reduce the torque, and dampen the oscillation
-        // see: https://en.wikipedia.org/wiki/PID_controller#Derivative
-        // see: https://en.wikipedia.org/wiki/PID_controller#Control_damping
-        // to consider: Should this be based on recorded error?
-        double predictedChange = spacecraftAngularVelocity * timeStep;
-        double neededChange = signedDistance - predictedChange;
+        // This controller will try to achieve the target angle as soon as possible i.e. in the next time step
+        // To cover the distance in the given time the spacecraft needs to have certain speed
+        double neededSpeed = signedDistance / timeStep;
+
+        // To achieve the needed speed, one needs to take into account the current speed and the moment of inertia
+        // More explicitly:
+        // needed speed = current speed + needed change in speed
+        // needed change in speed = needed acceleration * time
+        // needed acceleration = needed torque / moment of inertia
+        // needed change in speed = (needed torque / moment of inertia) * time
+        // needed speed = current speed + (needed torque / moment of inertia) * time
+        // Rearranging the equation above gives the final equation for the needed torque below
+        double neededTorque = (neededSpeed - spacecraftAngularSpeed) * spacecraft.getMomentOfInertia() / timeStep;
 
         logger.log(
-            "\ttarget: " + Math.toDegrees(targetAngle) +
-            "\tcurrent: " + Math.toDegrees(spacecraftAngle) +
+            "\ttarget angle: " + Math.toDegrees(targetAngle) +
+            "\tcurrent angle: " + Math.toDegrees(spacecraftAngle) +
             "\tdistance: " + Math.toDegrees(signedDistance) +
-            "\tpredicted: " + Math.toDegrees(predictedChange) +
-            "\tneeded change: " + Math.toDegrees(neededChange)
+            "\tneeded speed: " + Math.toDegrees(neededSpeed) +
+            "\tcurrent speed: " + Math.toDegrees(spacecraftAngularSpeed) +
+            "\tneeded torque: " + Math.toDegrees(neededTorque)
         );
 
-        return new Command(0,  neededChange * 0.001);
+        return new Command(0,  neededTorque);
 
     }
 

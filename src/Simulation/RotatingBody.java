@@ -92,7 +92,7 @@ public class RotatingBody extends Body {
      *
      * @return The moment of inertia.
      */
-    double getMomentOfInertia() {
+    public double getMomentOfInertia() {
         return 2.0 / 5.0 * getMass() * getRadius();
     }
 
