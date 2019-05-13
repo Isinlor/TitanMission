@@ -20,7 +20,7 @@ public class Simulation {
 
     private Bodies bodies;
 
-    private ODESolver odeSolver = new LeapfrogODE();
+    private ODESolver odeSolver = new EulerODE();
 
     private long steps;
     private double timeStep;
