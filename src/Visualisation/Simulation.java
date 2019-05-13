@@ -1,5 +1,9 @@
 package Visualisation;
 
+import ODESolvers.*;
+import ODESolvers.ODESolver;
+import ODESolvers.ODESolvers;
+import Simulation.Bodies;
 import Utilities.FileSystem;
 import Utilities.Metadata;
 
@@ -7,9 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import Simulation.*;
-import ODESolvers.*;
 
 public class Simulation {
 
@@ -19,9 +20,7 @@ public class Simulation {
 
     private Bodies bodies;
 
-    private ODESolver odeSolver = new EulerODE();
-    // not tested yet
-    // private ODESolver odeSolver = new RungaKuttaODE();
+    private ODESolver odeSolver = new LeapfrogODE();
 
     private long steps;
     private double timeStep;

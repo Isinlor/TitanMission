@@ -1,57 +1,94 @@
-import ODESolvers.MidpointODE;
+import ODESolvers.EulerODE;
+import ODESolvers.LeapfrogODE;
 import ODESolvers.ODESolver;
-
-import Simulation.*;
-import Utilities.*;
-import Visualisation.*;
+import ODESolvers.ODESolvers;
+import Simulation.Bodies;
+import Simulation.Body;
+import Simulation.Constants;
+import Simulation.Vector;
+import Utilities.Utils;
 
 public class ODESolverTest extends SimpleUnitTest {
+
     public static void main(String[] args) {
 
-        // https://math.stackexchange.com/questions/2873291/what-is-the-intuitive-meaning-of-order-of-accuracy-and-order-of-approximation
-        it("results in 1/2^n reduction in error according to O(h^n) order of method", () -> {
+        for(ODESolver solver: ODESolvers.getODESolvers()) {
+            System.out.println("Test " + solver.getName());
+            try {
+                testBasedOnSatelliteOrbit(solver);
+            } catch (Exception e) {
+                System.out.println("Test failed! Details:");
+                e.printStackTrace();
+            }
+            System.out.println();
+        }
 
-            // https://en.wikipedia.org/wiki/Earth_radius
-            // https://en.wikipedia.org/wiki/Earth_mass
-            Body earth = new Body("Earth", new Vector(), new Vector(), 5.9722e24);
-            Body object = new Body("Object", new Vector(6378100, 0,0), new Vector(), 1);
-            Bodies bodies = new Bodies();
-            bodies.addBody(earth);
-            bodies.addBody(object);
+    }
 
-            // https://en.wikipedia.org/wiki/Equations_for_a_falling_body
-            double g = earth.computeAttraction(object).getLength();
+    /**
+     * This test runs a practical simulation of a satellite in a circular orbit around Earth.
+     * The satellite is do one full orbit and return to the same position.
+     *
+     * There are two test cases A and B. The test case B runs twice as many steps as the test case A.
+     *
+     * https://en.wikipedia.org/wiki/Orbital_speed#Mean_orbital_speed
+     * https://en.wikipedia.org/wiki/Orbital_period#Small_body_orbiting_a_central_body
+     *
+     * @param solver The solver to test.
+     */
+    static void testBasedOnSatelliteOrbit(ODESolver solver) {
 
-            assertTrue(Math.abs(g - 9.8) < 0.1, "Gravitational acceleration should be around 9.8");
+        // https://en.wikipedia.org/wiki/Earth_radius
+        // https://en.wikipedia.org/wiki/Earth_mass
+        double earthRadius = 6371008.0;
+        Body earth = new Body("Earth", new Vector(), new Vector(), 5.9722e24, 1);
+        // Notice! Earth radius is set to 1 in the simulation in order to avoid collision of satellite with the Earth in
+        //         the case of bad simulation.
 
-            double d = 10; // ground truth
-            double t = Math.sqrt(2 * d / g);
+        double altitude = 500 * 1000;
+        double semiMajorAxis = earthRadius + altitude;
 
-            object.addPosition(new Vector(d, 0,0));
 
-            Vector startingPosition = object.getPosition();
+        // https://en.wikipedia.org/wiki/Orbital_speed#Mean_orbital_speed
+        double orbitalSpeed = Math.sqrt(Constants.G * earth.getMass() / semiMajorAxis);
 
-            ODESolver solver = new MidpointODE();
+        // https://en.wikipedia.org/wiki/Orbital_period#Small_body_orbiting_a_central_body
+        double orbitalPeriod = Utils.TAU * Math.sqrt(Math.pow(semiMajorAxis, 3) / (Constants.G * earth.getMass()));
 
-            Bodies bodiesA = bodies.copy();
-            Bodies bodiesB = bodies.copy();
+        Body satellite = new Body(
+            "Satellite",
+            new Vector(semiMajorAxis, 0,0),
+            new Vector(0, orbitalSpeed, 0),
+            1, 1
+        );
 
-            solver.iterate(bodiesA, t);
-            solver.iterate(bodiesB, t/2);
-            solver.iterate(bodiesB, t/2);
+        Bodies bodies = new Bodies();
+        bodies.addBody(earth);
+        bodies.addBody(satellite);
 
-            double dA = bodiesA.getBody("Object").getPosition().euclideanDistance(startingPosition);
-            double dB = bodiesB.getBody("Object").getPosition().euclideanDistance(startingPosition);
 
-            double reductionInError = Math.abs(d - dB) / Math.abs(d - dA);
 
-            assertTrue(
-                Math.abs(reductionInError - 1./4.) < 0.1,
-                "With reducing step size by 2 a second order method should reduce error by 4; " +
-                    "actual reduction: " + reductionInError
-            );
+        int stepsA = 100;
+        int stepsB = stepsA * 2;
 
-        });
+        Bodies bodiesA = bodies.copy();
+        double timeStepA = orbitalPeriod / stepsA;
+        for (int i = 0; i < stepsA; i++) {
+            solver.iterate(bodiesA, timeStepA);
+        }
+        double errorA = satellite.computeDistance(bodiesA.getBody("Satellite"));
+
+        Bodies bodiesB = bodies.copy();
+        double timeStepB = orbitalPeriod / stepsB;
+        for (int i = 0; i < stepsB; i++) {
+            solver.iterate(bodiesB, timeStepB);
+        }
+        double errorB = satellite.computeDistance(bodiesB.getBody("Satellite"));
+
+        System.out.println("Satellite distance from the expected position after a full revolution with: ");
+        System.out.println(" - " + stepsA + " steps: " + errorA);
+        System.out.println(" - " + stepsB + " steps: " + errorB);
+        System.out.println("Reducing the step size by factor of 2 reduces the error by factor of " + errorA / errorB);
 
     }
 }

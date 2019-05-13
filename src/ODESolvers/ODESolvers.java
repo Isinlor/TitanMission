@@ -1,5 +1,6 @@
 package ODESolvers;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,11 +14,16 @@ public class ODESolvers {
     static {
         solvers.put(new EulerODE().getName(), new EulerODE());
         solvers.put(new MidpointODE().getName(), new MidpointODE());
+        solvers.put(new LeapfrogODE().getName(), new LeapfrogODE());
         solvers.put(new RungaKuttaODE().getName(), new RungaKuttaODE());
     }
 
     public static ODESolver getODESolver(String name) {
         return solvers.get(name);
+    }
+
+    public static Collection<ODESolver> getODESolvers() {
+        return solvers.values();
     }
 
 }
