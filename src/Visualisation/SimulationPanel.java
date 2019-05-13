@@ -175,7 +175,14 @@ public class SimulationPanel extends JPanel implements SimulationCanvas {
 //
 //        cube.draw(g);
 
-        g.drawString("Day: " + Double.toString(Math.round(bodies.getTime() / (60 * 60 * 24))), getWidth() - 110, getHeight() - 40);
+        g.drawString(
+            "Day: " + (int)Math.floor(bodies.getTime() / (60 * 60 * 24)),
+            getWidth() - 110, getHeight() - 60
+        );
+        g.drawString(
+            "Hour: " + (int)Math.floor((bodies.getTime() % (60 * 60 * 24)) / (60 * 60)),
+            getWidth() - 110, getHeight() - 40
+        );
         g.drawString("Scale: " + Utils.round(scale), getWidth() - 110, getHeight() - 20);
 
     }
