@@ -1,3 +1,4 @@
+import ODESolvers.LeapfrogODE;
 import Simulation.*;
 
 @SuppressWarnings("Duplicates")
@@ -37,7 +38,7 @@ public class Test {
 
         // simulate time span of 10 days
         for (int i = 0; i < 60*60*24*10; i++) {
-            bodies.simulate(1);
+            new LeapfrogODE().iterate(bodies, 1);
         }
 
         System.out.println(bodies);

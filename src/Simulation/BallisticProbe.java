@@ -38,8 +38,8 @@ public class BallisticProbe extends Body implements Comparable<BallisticProbe> {
         this.goal = goal;
     }
 
+    // FIXME: this is not called anymore, but should be
     public void simulate(double time) {
-        super.simulate(time);
         double distance = super.getPosition().euclideanDistance(goal.getPosition());
         if (distance < shortestDistance) {
             shortestDistance = distance;

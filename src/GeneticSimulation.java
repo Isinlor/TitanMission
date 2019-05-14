@@ -1,3 +1,4 @@
+import ODESolvers.LeapfrogODE;
 import Utilities.CSVReader;
 import Visualisation.SimulationPanel;
 import javax.swing.*;
@@ -51,7 +52,7 @@ public class GeneticSimulation {
             Bodies bodiesToAnimate = bodies.copy();
 
             for (int i = 0; i < steps; i++) {
-                bodies.simulate(timeStep);
+//                bodies.simulate(timeStep);
             }
 
 //            System.out.println(bodies);
@@ -126,7 +127,7 @@ public class GeneticSimulation {
                     window.dispose();
                 }
                 for (int i = 0; i < stepsPerFrame; i++) {
-                    bodies2.simulate(timeStep);
+                    new LeapfrogODE().iterate(bodies2, timeStep);
                 }
             }
         );

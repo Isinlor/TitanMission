@@ -25,8 +25,6 @@ public class Bodies {
 
     private double time;
 
-    private EventDispatcher eventDispatcher = EventDispatcher.create();
-
     public Bodies() {
         this.bodies = new LinkedHashMap<>();
     }
@@ -106,59 +104,12 @@ public class Bodies {
     }
 
     /**
-     * Computes next time step in simulation.
-     *
-     * A force working on each body is computed and applied for specified time.
-     */
-    public void simulate(double time) {
-        for (Body body: getBodies()) {
-            body.setForce(computeForce(body));
-            if(bodies.containsValue(body)) {
-                body.simulate(time);
-            }
-        }
-        this.time += time;
-    }
-
-    /**
      * Allows to apply arbitrary operation on all bodies.
      */
     public void apply(Consumer<Body> fn) {
         for(Body body: getBodies()) {
             fn.accept(body);
         }
-    }
-
-    /**
-     * Computes sum of forces that other bodies are working on body A.
-     */
-    public Force computeForce(Body bodyA) {
-        Force force = new Force();
-        for (Body bodyB: getBodies()) {
-            if(bodyA == bodyB) continue;
-            if(bodyB.getMass() < 2) continue; // negligible
-            if(bodyA.computeDistance(bodyB) < bodyA.getRadius() + bodyB.getRadius()) {
-                Body crashedBody = bodyA.getMass() < bodyB.getMass() ? bodyA : bodyB;
-                removeBody(crashedBody);
-                eventDispatcher.dispatch(new BodyCrashedEvent(crashedBody));
-                if(crashedBody == bodyA) return new Force();
-                continue;
-            }
-            force = force.sum(bodyA.computeAttraction(bodyB));
-        }
-        return force;
-    }
-
-    public LinkedHashMap<String, Force> getForces() {
-        LinkedHashMap<String, Force> forces = new LinkedHashMap<>();
-        for(Body body: this.getBodies()) {
-            forces.put(body.getName(), computeForce(body));
-        }
-        return forces;
-    }
-
-    public void addEventListener(String eventName, EventListener<Event> listener) {
-        eventDispatcher.addListener(eventName, listener);
     }
 
     public String toString() {
@@ -175,7 +126,6 @@ public class Bodies {
             copy.addBody(body.copy());
         }
         copy.time = time;
-        copy.eventDispatcher = eventDispatcher;
         return copy;
     }
 

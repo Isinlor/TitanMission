@@ -1,7 +1,6 @@
 package Simulation;
 
-import ControlSystem.Command;
-import ControlSystem.Controller;
+import ControlSystem.*;
 import Utilities.Metadata;
 import Utilities.Units;
 import Visualisation.Displayable;
@@ -14,7 +13,7 @@ import java.awt.image.BufferedImage;
 /**
  * Spacecraft is a body that can be controlled and keeps internal time.
  */
-public class Spacecraft extends RotatingBody implements Displayable {
+public class Spacecraft extends RotatingBody implements Displayable, Controllable {
 
     private double internalTime;
     private Controller controller;
@@ -40,19 +39,8 @@ public class Spacecraft extends RotatingBody implements Displayable {
         this.target = target;
     }
 
-    public void simulate(double time) {
-        executeCommand(controller.getCommand(this, time));
-        super.simulate(time);
-        internalTime =+ time;
-        setTorque(new Vector());
-    }
-
-    private void executeCommand(Command command) {
-        Vector torque = new Vector(0, 0, command.getTorque());
-        Vector thrust = new Vector(0, -command.getThrust(), 0)
-            .rotateAroundAxisZ(new Vector(), getAngularDisplacement().z);
-        addTorque(torque);
-        addForce(thrust);
+    public Command getCommand(double timeStep) {
+        return controller.getCommand(this, timeStep);
     }
 
     double getInternalTime() {

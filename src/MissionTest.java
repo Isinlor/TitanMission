@@ -1,3 +1,4 @@
+import ODESolvers.LeapfrogODE;
 import Simulation.*;
 import Utilities.*;
 import Visualisation.*;
@@ -168,7 +169,7 @@ public class MissionTest {
         double minDistance = Double.MAX_VALUE;
         for (int i = 0; i < steps; i++) {
 
-            testBodies.simulate(timeStep);
+            new LeapfrogODE().iterate(testBodies, timeStep);
 
             target = testBodies.getBody(targetName);
 

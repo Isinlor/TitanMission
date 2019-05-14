@@ -19,8 +19,6 @@ public class Body {
     private Vector position;
     private Vector velocity;
 
-    private Force force = new Force();
-
     private double mass;
     private double radius = 1.0;
 
@@ -94,52 +92,8 @@ public class Body {
         return meta;
     }
 
-    /**
-     * Advances body in time. You may want to set net working force on the body before that.
-     *
-     * @param time The time step.
-     */
-    public void simulate(double time) {
-        applyForce(force, time);
-    }
-
-    /**
-     * Sets net force working on the body.
-     *
-     * @param netForce Total force working on the body.
-     */
-    public void setForce(Force netForce) {
-        force = netForce;
-    }
-
-    protected void addForce(Vector force) {
-        this.force = new Force(this.force.sum(force));
-    }
-
-    /**
-     * Applies the given force for the specified time.
-     *
-     * It updates velocity as well as position.
-     *
-     * The method is private in order to avoid time getting out of sync.
-     * For example a body can have angular properties that should be advanced with time too.
-     * @see RotatingBody
-     *
-     * Use setForce() and simulate() in order to apply force.
-     */
-    private void applyForce(Force force, double time) {
-        Vector acceleration = force.computeAcceleration(mass);
-        Vector changeInVelocity = acceleration.product(time);
-        velocity = velocity.sum(changeInVelocity);
-        position = position.sum(velocity.product(time));
-    }
-
     public void rename(String name) {
         this.name = name;
-    }
-
-    public void setPosition(Vector position) {
-        this.position = position;
     }
 
     public void addVelocity(Vector change) {
@@ -147,6 +101,7 @@ public class Body {
     }
 
     public void addPosition(Vector change) { position = position.sum(change);}
+
     /**
      * Computes force between this and the other body based on Newton's law of universal gravitation.
      * @link https://en.wikipedia.org/wiki/Newton's_law_of_universal_gravitation#Vector_form

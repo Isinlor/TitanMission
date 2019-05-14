@@ -8,7 +8,7 @@ public class Force extends Vector {
     public Force() {
     }
 
-    Force (Vector vector) {
+    public Force (Vector vector) {
         this(vector.x, vector.y, vector.z);
     }
 

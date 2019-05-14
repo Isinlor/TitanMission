@@ -15,7 +15,7 @@ public class ODESolvers {
         solvers.put(new EulerODE().getName(), new EulerODE());
         solvers.put(new MidpointODE().getName(), new MidpointODE());
         solvers.put(new LeapfrogODE().getName(), new LeapfrogODE());
-        solvers.put(new RungaKuttaODE().getName(), new RungaKuttaODE());
+        solvers.put(new RungeKuttaODE().getName(), new RungeKuttaODE());
     }
 
     public static ODESolver getODESolver(String name) {

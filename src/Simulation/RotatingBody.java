@@ -8,8 +8,6 @@ import Utilities.Utils;
  */
 public class RotatingBody extends Body {
 
-    private Vector torque = new Vector();
-
     /**
      * A pseudo-vector where each coordinate indicates speed of rotation around axis of that coordinate.
      * Magnitude of coordinate indicates speed of rotation.
@@ -57,28 +55,16 @@ public class RotatingBody extends Body {
         return angularVelocity;
     }
 
+    public void addAngularVelocity(Vector angularVelocity) {
+        this.angularVelocity = this.angularVelocity.sum(angularVelocity);
+    }
+
     public Vector getAngularDisplacement() {
         return angularDisplacement;
     }
 
-    public void simulate(double time) {
-        applyTorque(torque, time);
-        super.simulate(time);
-    }
-
-    public void setTorque(Vector netTorque) {
-        torque = netTorque;
-    }
-
-    protected void addTorque(Vector torque) {
-        this.torque = this.torque.sum(torque);
-    }
-
-    private void applyTorque(Vector torque, double time) {
-        Vector acceleration = torque.quotient(getMomentOfInertia());
-        Vector changeInVelocity = acceleration.product(time);
-        angularVelocity = angularVelocity.sum(changeInVelocity);
-        angularDisplacement = angularDisplacement.sum(angularVelocity.product(time)).mod(2*Math.PI);
+    public void addAngularDisplacement(Vector angularDisplacement) {
+        this.angularDisplacement = this.angularDisplacement.sum(angularDisplacement).mod(Utils.TAU);
     }
 
     /**
