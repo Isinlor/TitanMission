@@ -47,32 +47,22 @@ public class LandingTest {
             titan,
 //            new NullController(),
             new CompositeController(
-                new KeyboardController(),
-                // FIXME: this controller somehow contributes to simulation breakdown when orbital speed is 0
-                WeightedController.createConstantThrustWeightController(
-                    RotationController.createMaintainAngleToVelocityController(Math.PI),
-                    1,
-                    importantInOrbit
-                ),
-                WeightedController.createConstantThrustWeightController(
-                    RotationController.createMaintainAngleToSurfaceController(titan,0),
-                    1,
-                    importantAtSurface
-                ),
-                new SuicideBurnController(titan, 10000)
+//                new KeyboardController(),
+                RotationController.createMaintainAngleToVelocityController(Math.PI),
+                new SuicideBurnController(titan, 701000)
             ),
-            new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, Math.PI),
+            new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, 0),
             new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
             1, 1, new Metadata()
         ));
 
-        bodies.addEventListener("body crashed", (Event event) -> {
-            BodyCrashedEvent crashedEvent = (BodyCrashedEvent) event;
-            Body crashedBody = crashedEvent.getCrashedBody();
-            System.out.println(
-                "Vertical speed: " + crashedBody.getApproachSpeed(titan) + ", Landing velocity: " + crashedBody.getVelocity().getLength() + ", " + crashedBody
-            );
-        });
+//        bodies.addEventListener("body crashed", (Event event) -> {
+//            BodyCrashedEvent crashedEvent = (BodyCrashedEvent) event;
+//            Body crashedBody = crashedEvent.getCrashedBody();
+//            System.out.println(
+//                "Vertical speed: " + crashedBody.getApproachSpeed(titan) + ", Landing velocity: " + crashedBody.getVelocity().getLength() + ", " + crashedBody
+//            );
+//        });
 
         simulation = new Simulation(bodies, steps, timeStep, stepsPerFrame, 1e4);
 

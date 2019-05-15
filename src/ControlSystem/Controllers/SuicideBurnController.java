@@ -30,11 +30,9 @@ public class SuicideBurnController implements Controller {
         double altitude = target.computeDistance(spacecraft) - target.getRadius();
         if(altitude > startAltitude) return new NullCommand();
 
-        double initialSpeed = target.getApproachSpeed(spacecraft);
-        if(initialSpeed > 0) return new NullCommand(); // suicide burn should not be raising altitude
-
         // the spacecraft needs to overcome gravity in order to decelerate
         double gravity = target.computeAttraction(spacecraft).getLength();
+        double initialSpeed = target.getApproachSpeed(spacecraft);
 
         // Thrust must be setup so that final velocity is 0; see below for derivation:
         // https://www.reddit.com/r/KerbalAcademy/comments/4c42rz/maths_help_calculating_when_to_suicide_burn/d1f6xed/
