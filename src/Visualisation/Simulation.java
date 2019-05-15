@@ -5,6 +5,8 @@ import ODESolvers.ODESolver;
 import ODESolvers.ODESolvers;
 import Simulation.Bodies;
 import Utilities.FileSystem;
+import Utilities.Logger.ConsoleLogger;
+import Utilities.Logger.Logger;
 import Utilities.Metadata;
 
 import javax.swing.*;
@@ -13,6 +15,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Simulation {
+
+    static final public Logger logger = new ConsoleLogger();
 
     static private JFrame window = new JFrame();
     static private SimulationPanel simulationPanel = new SimulationPanel();
@@ -109,7 +113,7 @@ public class Simulation {
                 stepsPerFrame, //initial value
                 1, //minimum value
                 stepsPerFrame * 10, //maximum value
-                stepsPerFrame // step
+                1 // step
             ),
             (Integer newStepsPerFrame) -> { stepsPerFrame = newStepsPerFrame;}
         );
