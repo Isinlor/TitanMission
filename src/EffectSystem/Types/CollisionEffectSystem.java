@@ -14,7 +14,7 @@ public class CollisionEffectSystem implements EffectSystem {
 
                 if(bodyA.computeDistance(bodyB) < bodyA.getRadius() + bodyB.getRadius()) {
                     Body crashedBody = bodyA.getMass() < bodyB.getMass() ? bodyA : bodyB;
-                    Simulation.logger.log(crashedBody.toString());
+                    Simulation.logger.log("Body crashed! " + crashedBody.toString());
                     bodies.removeBody(crashedBody);
                 }
 

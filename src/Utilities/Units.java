@@ -1,6 +1,9 @@
 package Utilities;
 
 public class Units {
+
+    public static final double AU = 149597870700.0;
+
     public static String speed(double metersPerSecond) {
         double absMetersPerSecond = Math.abs(metersPerSecond);
         if(absMetersPerSecond < 1) {
@@ -16,8 +19,10 @@ public class Units {
             return Utils.round(meters * 100) + "cm";
         } else if(meters < 1000) {
             return Utils.round(meters) + "m";
-        } else {
+        } else if(meters < AU) {
             return Utils.round(meters / 1000) + "km";
+        } else {
+            return Utils.round(meters / AU) + "au";
         }
     }
 }
