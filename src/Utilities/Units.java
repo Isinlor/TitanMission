@@ -19,8 +19,12 @@ public class Units {
             return Utils.round(meters * 100) + " cm";
         } else if(meters < 1000) {
             return Utils.round(meters) + " m";
-        } else if(meters < AU) {
+        } else if(meters < 1000 * 1000) {
             return Utils.round(meters / 1000) + " km";
+        } else if(meters < 1000 * 1000 * 1000) {
+            return Utils.round(meters / (1000 * 1000)) + " thousand km";
+        } else if(meters < Units.AU) {
+            return Utils.round(meters / (1000 * 1000 * 1000)) + " million km";
         } else {
             return Utils.round(meters / AU) + " au";
         }
