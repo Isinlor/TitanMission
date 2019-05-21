@@ -2,6 +2,7 @@ package ControlSystem.Controllers;
 
 import ControlSystem.Command;
 import ControlSystem.Controller;
+import ControlSystem.NullCommand;
 import Simulation.Spacecraft;
 
 import java.util.function.Function;
@@ -28,11 +29,14 @@ public class WeightedController implements Controller {
     }
 
     public Command getCommand(Spacecraft spacecraft, double timeStep) {
+        Double thrustWeight = thrustWeightFunction.apply(spacecraft);
+        Double torqueWeight = torqueWeightFunction.apply(spacecraft);
+        if(thrustWeight == 0 && torqueWeight == 0) return new NullCommand();
         return controller
             .getCommand(spacecraft, timeStep)
             .weight(
-                thrustWeightFunction.apply(spacecraft),
-                torqueWeightFunction.apply(spacecraft)
+                thrustWeight,
+                torqueWeight
             );
     }
 
