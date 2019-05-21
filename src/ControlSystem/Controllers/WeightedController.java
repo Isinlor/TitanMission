@@ -17,7 +17,7 @@ public class WeightedController implements Controller {
     private Function<Spacecraft, Double> thrustWeightFunction;
     private Function<Spacecraft, Double> torqueWeightFunction;
 
-    WeightedController(
+    public WeightedController(
         Controller controller,
         Function<Spacecraft, Double> thrustWeightFunction,
         Function<Spacecraft, Double> torqueWeightFunction
