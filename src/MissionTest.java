@@ -74,7 +74,7 @@ public class MissionTest {
                 System.out.println("Hit!");
                 simulation.getBodies().getBody(minProbe.getName()).rename(probePrototype.getName() + " HIT!");
                 try {
-                    simulation.save(resourcesPath + "/simulation-" + targetName + ".txt");
+                    simulation.save(resourcesPath, "simulation-" + targetName + ".txt");
                 } catch (Exception e) {
                     System.out.println(simulation.serialize());
                 }
@@ -90,7 +90,7 @@ public class MissionTest {
 
                 System.out.println("  relative speed: " + Units.speed(probePrototype.getRelativeVelocity(bodies.getBody(sourceName)).getLength()));
 
-                simulation.save(resourcesPath + "/simulation-" + targetName + ".txt");
+                simulation.save(resourcesPath , "simulation-" + targetName + ".txt");
 
                 noProgress = 0;
 

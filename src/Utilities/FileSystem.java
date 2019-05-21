@@ -39,7 +39,7 @@ public class FileSystem {
         }
     }
 
-    public static void write(String location, String content) {
+    public static void write(URI location, String content) {
         try {
             Path path = Paths.get(location);
             if (!Files.exists(path)) {
@@ -48,6 +48,17 @@ public class FileSystem {
             Files.write(path, content.getBytes());
         } catch (Exception e) {
             throw new RuntimeException("Failed to write to resource " + location, e);
+        }
+    }
+
+    public static void write(Path path, String content) {
+        try {
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+            Files.write(path, content.getBytes());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to write to resource " + path, e);
         }
     }
 
