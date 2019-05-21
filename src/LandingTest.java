@@ -49,7 +49,7 @@ public class LandingTest {
             new CompositeController(
 //                new KeyboardController(),
                 RotationController.createMaintainAngleToVelocityController(Math.PI),
-                new SuicideBurnController(titan, 701000)
+                new SuicideBurnController(titan, 801000)
             ),
             new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, 0),
             new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
