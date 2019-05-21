@@ -1,12 +1,10 @@
+import ControlSystem.Controller;
 import ControlSystem.Controllers.*;
-import EventSystem.Event;
 import Utilities.FileSystem;
 import Visualisation.Simulation;
 
 import Simulation.*;
 import Utilities.*;
-
-import java.util.function.Function;
 
 public class LandingTest {
 
@@ -18,6 +16,23 @@ public class LandingTest {
 
     public static void main(String[] args) {
 
+        Controller openLoopController = new CompositeController(
+            RotationController.createMaintainAngleToVelocityController(Math.PI),
+            new SuicideBurnController(701000)
+        );
+
+        Bodies bodies = createSimulation(openLoopController);
+
+        simulation = new Simulation(bodies, steps, timeStep, stepsPerFrame, 1e4);
+
+//        while(bodies.getBody("Spacecraft") != null) {
+//            new LeapfrogODE().iterate(bodies, timeStep);
+//        }
+
+    }
+
+    static Bodies createSimulation(Controller controller) {
+
         Bodies bodies = Bodies.unserialize(FileSystem.tryLoadResource("titan.txt"));
         Body titan = bodies.getBody("Titan");
 
@@ -25,47 +40,16 @@ public class LandingTest {
         double probeAltitude = 700 * 1000; // 100km above atmosphere, in order to avoid atmosphere influence
         double probeOrbitalSpeed = titan.computeOrbitalSpeed(probeAltitude);
 
-        // initialize functions that will smoothly switch control between different controllers
-        // one controller will maintain constant angle to the spacecraft velocity, allowing to deorbit efficiently
-        // the other controller will maintain constant angle to the surface, allowing to reduce speed of approach
-        Function<Spacecraft, Double> importantAtSurface = (Spacecraft spacecraft) -> {
-            // the importance weight should be 1 at the surface and 0 in orbit
-            double distanceToCenter = spacecraft.getPosition().euclideanDistance(titan.getPosition());
-            double distanceToSurface = distanceToCenter - titan.getRadius();
-            return 1. - distanceToSurface / probeAltitude;
-        };
-
-        Function<Spacecraft, Double> importantInOrbit = (Spacecraft spacecraft) -> {
-            // the importance weight should be 1 in orbit and 0 at the surface
-            double distanceToCenter = spacecraft.getPosition().euclideanDistance(titan.getPosition());
-            double distanceToSurface = distanceToCenter - titan.getRadius();
-            return distanceToSurface / probeAltitude;
-        };
-
         bodies.addBody(new Spacecraft(
             "Spacecraft",
             titan,
-//            new NullController(),
-            new CompositeController(
-//                new KeyboardController(),
-                RotationController.createMaintainAngleToVelocityController(Math.PI),
-                new SuicideBurnController(titan, 701000)
-            ),
+            controller,
             new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, 0),
             new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
             1, 1, new Metadata()
         ));
 
-//        bodies.addEventListener("body crashed", (Event event) -> {
-//            BodyCrashedEvent crashedEvent = (BodyCrashedEvent) event;
-//            Body crashedBody = crashedEvent.getCrashedBody();
-//            System.out.println(
-//                "Vertical speed: " + crashedBody.getApproachSpeed(titan) + ", Landing velocity: " + crashedBody.getVelocity().getLength() + ", " + crashedBody
-//            );
-//        });
-
-        simulation = new Simulation(bodies, steps, timeStep, stepsPerFrame, 1e4);
-
+        return bodies;
     }
 
 }

@@ -17,16 +17,15 @@ import Simulation.Body;
  */
 public class SuicideBurnController implements Controller {
 
-    private Body target;
     private double startAltitude;
 
-    public SuicideBurnController(Body target, double startAltitude) {
-        this.target = target;
+    public SuicideBurnController(double startAltitude) {
         this.startAltitude = startAltitude;
     }
 
     public Command getCommand(Spacecraft spacecraft, double timeStep) {
 
+        Body target = spacecraft.getTarget();
         double altitude = target.computeDistance(spacecraft) - target.getRadius();
         if(altitude > startAltitude) return new NullCommand();
 

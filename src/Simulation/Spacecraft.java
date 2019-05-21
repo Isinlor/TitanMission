@@ -43,6 +43,10 @@ public class Spacecraft extends RotatingBody implements Displayable, Controllabl
         return controller.getCommand(this, timeStep);
     }
 
+    public Body getTarget() {
+        return target;
+    }
+
     double getInternalTime() {
         return internalTime;
     }
