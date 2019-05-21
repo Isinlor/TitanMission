@@ -53,8 +53,17 @@ public class Body {
         return velocity;
     }
 
+    /**
+     * It returns velocity of the given body as seen from this body.
+     *
+     * See: https://en.wikipedia.org/wiki/Relative_velocity
+     *
+     * @param body The given body.
+     *
+     * @return The velocity of the given body as seen from this body.
+     */
     public Vector getRelativeVelocity(Body body) {
-        return getVelocity().sum(body.getVelocity().product(-1));
+        return body.getVelocity().difference(getVelocity());
     }
 
     /**
@@ -66,7 +75,7 @@ public class Body {
      *
      * @param body The other body.
      *
-     * @return THe rate of change of distance between bodies.
+     * @return The rate of change of distance between bodies.
      */
     public double getApproachSpeed(Body body) {
         Vector relativePosition = getPosition().difference(body.getPosition());
