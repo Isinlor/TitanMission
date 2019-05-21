@@ -13,18 +13,19 @@ import java.awt.image.BufferedImage;
 /**
  * Spacecraft is a body that can be controlled and keeps internal time.
  */
-public class Spacecraft extends RotatingBody implements Displayable, Controllable {
+public class Spacecraft extends RotatingBody implements BodiesAware, Displayable, Controllable {
 
-    private double internalTime;
+    private Bodies bodies;
+
     private Controller controller;
+
+    private String targetName;
 
     private BufferedImage image = ImageHelper.getImageResource("spaceships/15px.png");
 
-    private Body target;
-
     public Spacecraft(
         String name,
-        Body target,
+        String targetName,
         Controller controller,
         Vector position,
         Vector angularDisplacement,
@@ -36,7 +37,7 @@ public class Spacecraft extends RotatingBody implements Displayable, Controllabl
     ) {
         super(name, position, angularDisplacement, velocity, angularVelocity, mass, radius, meta);
         this.controller = controller;
-        this.target = target;
+        this.targetName = targetName;
     }
 
     public Command getCommand(double timeStep) {
@@ -44,11 +45,16 @@ public class Spacecraft extends RotatingBody implements Displayable, Controllabl
     }
 
     public Body getTarget() {
-        return target;
+        return bodies.getBody(targetName);
     }
 
-    double getInternalTime() {
-        return internalTime;
+    private Bodies getBodies() {
+        return bodies;
+    }
+
+    public void setBodies(Bodies bodies) {
+        if(this.bodies != null) throw new RuntimeException("A body can belong only to one set of bodies!");
+        this.bodies = bodies;
     }
 
     public void display(SimulationCanvas canvas, Graphics2D g) {
@@ -75,15 +81,15 @@ public class Spacecraft extends RotatingBody implements Displayable, Controllabl
         g.drawImage(ImageHelper.rotate(image, getAngularDisplacement().z), x, y, displaySize, displaySize, null);
 
         g.drawString(getName(), x + 15, y + 7);
-        g.drawString("Altitude: " + Units.distance(target.computeDistance(this) - target.getRadius()), x + 15, y + 7 + 20);
-        g.drawString("Approach speed: " + Units.speed(getApproachSpeed(target)), x + 15, y + 7 + 40);
+        g.drawString("Altitude: " + Units.distance(getTarget().computeDistance(this) - getTarget().getRadius()), x + 15, y + 7 + 20);
+        g.drawString("Approach speed: " + Units.speed(getApproachSpeed(getTarget())), x + 15, y + 7 + 40);
 
     }
 
     public Spacecraft copy() {
         return new Spacecraft(
             getName(),
-            target,
+            targetName,
             controller,
             getPosition(),
             getAngularDisplacement(),

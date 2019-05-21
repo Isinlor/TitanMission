@@ -45,6 +45,7 @@ public class Bodies {
     public void addBody(Body body) {
         if(bodies.containsValue(body)) throw new RuntimeException("Simulation [" + body.getName() + "] already added!");
         if(bodies.containsKey(body.getName())) throw new RuntimeException("Duplicated name [" + body.getName() + "]!");
+        if(body instanceof BodiesAware) ((BodiesAware)body).setBodies(this);
         bodies.put(body.getName(), body);
     }
 
@@ -52,7 +53,9 @@ public class Bodies {
      * Add all given bodies.
      */
     public void addBodies(Bodies bodies) {
-        bodies.apply(this::addBody);
+        for (Body body: bodies.getBodies()) {
+            addBody(body.copy());
+        }
     }
 
     /**

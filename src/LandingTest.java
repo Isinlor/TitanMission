@@ -42,7 +42,7 @@ public class LandingTest {
 
         bodies.addBody(new Spacecraft(
             "Spacecraft",
-            titan,
+            titan.getName(),
             controller,
             new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, 0),
             new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
