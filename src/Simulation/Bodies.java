@@ -5,6 +5,7 @@ import EventSystem.EventDispatcher;
 import EventSystem.EventListener;
 import Utilities.FileSystem;
 
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -129,9 +130,9 @@ public class Bodies {
         return copy;
     }
 
-    public void save(String location) {
+    public void save(String location, String filename) {
         try {
-            FileSystem.write(location, serialize());
+            FileSystem.write(Paths.get(location, filename), serialize());
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize bodies to location " + location, e);
         }
