@@ -2,6 +2,7 @@ package EffectSystem.Types;
 
 import EffectSystem.*;
 import Simulation.*;
+import Utilities.Units;
 import Visualisation.Simulation;
 
 public class CollisionEffectSystem implements EffectSystem {
@@ -14,7 +15,9 @@ public class CollisionEffectSystem implements EffectSystem {
 
                 if(bodyA.computeDistance(bodyB) < bodyA.getRadius() + bodyB.getRadius()) {
                     Body crashedBody = bodyA.getMass() < bodyB.getMass() ? bodyA : bodyB;
-                    Simulation.logger.log("Body crashed! " + crashedBody.toString());
+                    Body crashedIntoBody = bodyA.getMass() < bodyB.getMass() ? bodyB : bodyA;
+                    String details = "Approach speed: " + Units.speed(crashedIntoBody.getApproachSpeed(crashedBody));
+                    Simulation.logger.log(crashedBody.getName() + " crashed into " + crashedIntoBody.getName() + "! \t\t" + details);
                     bodies.removeBody(crashedBody);
                 }
 
