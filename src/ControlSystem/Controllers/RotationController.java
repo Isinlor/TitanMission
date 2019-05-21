@@ -107,4 +107,22 @@ public class RotationController implements Controller {
         });
     }
 
+    /**
+     * Creates controller that allows spacecraft to maintain constant angle with regard to the relative velocity.
+     *
+     * The relative velocity is computed as the velocity of a target as seen from the spacecraft.
+     *
+     * @param angle The angle with regard to the relative velocity of a target as seen from the spacecraft.
+     *
+     * @return The controller.
+     */
+    public static RotationController createMaintainAngleToRelativeVelocityController(double angle) {
+        return new RotationController((Spacecraft spacecraft) -> {
+            Vector velocity = spacecraft.getRelativeVelocity(spacecraft.getTarget());
+            double velocityAngle = Utils.clockAngle(velocity.x, -velocity.y); // FIXME: y-axis reversed (swing)
+            logger.log("Relative Velocity angle: " + Math.toDegrees(velocityAngle));
+            return  velocityAngle + angle;
+        });
+    }
+
 }

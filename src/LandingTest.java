@@ -17,7 +17,7 @@ public class LandingTest {
     public static void main(String[] args) {
 
         Controller openLoopController = new CompositeController(
-            RotationController.createMaintainAngleToVelocityController(Math.PI),
+            RotationController.createMaintainAngleToRelativeVelocityController(0),
             new SuicideBurnController(701000)
         );
 
