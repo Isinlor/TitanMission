@@ -1,5 +1,7 @@
+import ControlSystem.Command;
 import ControlSystem.Controller;
 import ControlSystem.Controllers.*;
+import ODESolvers.LeapfrogODE;
 import Utilities.FileSystem;
 import Visualisation.Simulation;
 
@@ -16,18 +18,20 @@ public class LandingTest {
 
     public static void main(String[] args) {
 
-        Controller openLoopController = new CompositeController(
+        RecordController<Command> controller = RecordController.createCommandRecordController(new CompositeController(
             RotationController.createMaintainAngleToRelativeVelocityController(0),
             new SuicideBurnController(701000)
-        );
+        ));
 
-        Bodies bodies = createSimulation(openLoopController);
+        Bodies predictions = createSimulation(controller);
+        while(predictions.getBody("Spacecraft") != null) {
+            new LeapfrogODE().iterate(predictions, timeStep);
+        }
+//        controller.getRecording().save("/home/isinlor/Projects/TitanMission/resources/recording.txt");
 
-        simulation = new Simulation(bodies, steps, timeStep, stepsPerFrame, 1e4);
+        Bodies actual = createSimulation(new ReplayController(controller.getRecording()));
 
-//        while(bodies.getBody("Spacecraft") != null) {
-//            new LeapfrogODE().iterate(bodies, timeStep);
-//        }
+        simulation = new Simulation(actual, steps, timeStep, stepsPerFrame, 1e4);
 
     }
 
