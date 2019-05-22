@@ -49,6 +49,17 @@ public class Body {
         return position;
     }
 
+    /**
+     * Returns the position of the given body as seen from this body.
+     *
+     * @param body The given body.
+     *
+     * @return The relative position.
+     */
+    public Vector getRelativePosition(Body body) {
+        return body.getPosition().difference(getPosition());
+    }
+
     public Vector getVelocity() {
         return velocity;
     }

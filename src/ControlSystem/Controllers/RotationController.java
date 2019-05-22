@@ -71,27 +71,22 @@ public class RotationController implements Controller {
     /**
      * Creates controller that allows spacecraft to maintain constant angle towards the surface of another body.
      *
-     * @param body The body with a surface.
      * @param angle The angle relative to the surface.
      *
      * @return The controller.
      */
-    public static RotationController createMaintainAngleToSurfaceController(Body body, double angle) {
+    public static RotationController createMaintainAngleToSurfaceController(double angle) {
         return new RotationController((Spacecraft spacecraft) -> {
-            Vector targetPosition = body.getPosition();
-            Vector spacecraftPosition = spacecraft.getPosition();
 
-            // move coordinates, so that in this frame target is at coordinate (0, 0)
-            // the transformation preserves relative position
-            // this will allow to compute clock angle - see below
-            Vector spacecraftPositionWithTargetAtCenter = spacecraftPosition.difference(targetPosition);
+            Vector relativePosition = spacecraft.getRelativePosition(spacecraft.getTarget());
 
             // computes clock angle between the body and a spacecraft
             // see Utils.clockAngle documentation for explanation of "clock angle" concept
             return Utils.clockAngle(
-                spacecraftPositionWithTargetAtCenter.x,
-                -spacecraftPositionWithTargetAtCenter.y // FIXME: y-axis reversed (swing)
+                relativePosition.x,
+                -relativePosition.y // FIXME: y-axis reversed (swing)
             ) + angle;
+
         });
     }
 
