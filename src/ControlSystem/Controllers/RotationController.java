@@ -2,6 +2,7 @@ package ControlSystem.Controllers;
 
 import ControlSystem.Command;
 import ControlSystem.Controller;
+import ControlSystem.NullCommand;
 import Simulation.Body;
 import Simulation.Spacecraft;
 import Simulation.Vector;
@@ -30,6 +31,9 @@ public class RotationController implements Controller {
     public Command getCommand(Spacecraft spacecraft, double timeStep) {
 
         double targetAngle = targetAngleFunction.apply(spacecraft);
+
+        if(!Utils.isRealNumber(targetAngle)) return new NullCommand();
+
         double spacecraftAngle = spacecraft.getAngularDisplacement().z;
         double spacecraftAngularSpeed = spacecraft.getAngularVelocity().z;
 

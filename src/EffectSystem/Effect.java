@@ -8,6 +8,8 @@ public class Effect {
     private Vector torque;
 
     public Effect(Vector force, Vector torque) {
+        if(!force.isRealValued()) throw new RuntimeException("Wrong force: " + force);
+        if(!torque.isRealValued()) throw new RuntimeException("Wrong torque: " + torque);
         this.force = force;
         this.torque = torque;
     }

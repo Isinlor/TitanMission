@@ -1,7 +1,7 @@
 package ControlSystem;
 
-import Simulation.Vector;
 import Utilities.Serializable;
+import Utilities.Utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,6 +42,8 @@ public class Command implements Serializable {
 
     public Command(double thrust, double torque) {
         if(thrust < 0) throw new RuntimeException("Thrust must not be negative! Thrust given: " + thrust);
+        if(!Utils.isRealNumber(thrust)) throw new RuntimeException("Wrong thrust: " + thrust);
+        if(!Utils.isRealNumber(torque)) throw new RuntimeException("Wrong torque: " + torque);
         this.thrust = thrust;
         this.torque = torque;
     }

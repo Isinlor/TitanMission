@@ -37,6 +37,8 @@ public class SuicideBurnController implements Controller {
         // https://www.reddit.com/r/KerbalAcademy/comments/4c42rz/maths_help_calculating_when_to_suicide_burn/d1f6xed/
         double thrust = gravity + (initialSpeed * initialSpeed) / (2 * altitude);
 
+        if(thrust < 0) return new NullCommand();
+
         return new Command(thrust, 0);
 
     }

@@ -75,4 +75,14 @@ public class Utils {
         return mod(-Math.atan2(y, x) + HALF_PI, TAU);
     }
 
+    /**
+     * Checks whether the given value is a real number.
+     *
+     * @param value The value to check.
+     * @return Whether the given value is a real number.
+     */
+    public static boolean isRealNumber(double value) {
+        return !Double.isNaN(value) && !Double.isInfinite(value);
+    }
+
 }
