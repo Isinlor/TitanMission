@@ -18,9 +18,28 @@ public class LandingTest {
 
     public static void main(String[] args) {
 
-        simpleLandingTest();
+        simpleDestinationTest();
+//        simpleLandingTest();
 //        replayControllerLandingTest();
 
+    }
+
+    static void simpleDestinationTest() {
+
+        Bodies bodies = new Bodies();
+
+        Spacecraft b = new Spacecraft("B", "A", new NullController());
+
+        Spacecraft a = new Spacecraft("A", "B", new CompositeController(
+            new DestinationController(),
+            RotationController.createMaintainAngleToSurfaceController(0)
+        ));
+        a.addPosition(new Vector(100, 100));
+
+        bodies.addBody(a);
+        bodies.addBody(b);
+
+        simulation = new Simulation(bodies, steps, 1.0, 1, 1);
     }
 
     static void simpleLandingTest() {
