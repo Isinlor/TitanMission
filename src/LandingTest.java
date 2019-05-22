@@ -30,16 +30,14 @@ public class LandingTest {
 
         Spacecraft b = new Spacecraft("B", "A", new NullController());
 
-        Spacecraft a = new Spacecraft("A", "B", new CompositeController(
-            new DestinationController(),
-            RotationController.createMaintainAngleToSurfaceController(0)
-        ));
-        a.addPosition(new Vector(100, 100));
+        Spacecraft a = new Spacecraft("A", "B", new DestinationController(1));
+        a.addPosition(new Vector(100, 0));
+        a.addVelocity(new Vector(10, 10));
 
         bodies.addBody(a);
         bodies.addBody(b);
 
-        simulation = new Simulation(bodies, steps, 1.0, 1, 1);
+        simulation = new Simulation(bodies, steps, 0.01, 10, 0.3);
     }
 
     static void simpleLandingTest() {

@@ -24,7 +24,7 @@ public class RotationController implements Controller {
 
     Function<Spacecraft, Double> targetAngleFunction;
 
-    private RotationController(Function<Spacecraft, Double> targetAngleFunction) {
+    public RotationController(Function<Spacecraft, Double> targetAngleFunction) {
         this.targetAngleFunction = targetAngleFunction;
     }
 
