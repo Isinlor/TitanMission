@@ -18,6 +18,22 @@ public class LandingTest {
 
     public static void main(String[] args) {
 
+        simpleLandingTest();
+//        replayControllerLandingTest();
+
+    }
+
+    static void simpleLandingTest() {
+        Bodies actual = createSimulation(new CompositeController(
+            RotationController.createMaintainAngleToRelativeVelocityController(0),
+            new SuicideBurnController(701000)
+        ));
+
+        simulation = new Simulation(actual, steps, timeStep, stepsPerFrame, 1e4);
+    }
+
+    static void replayControllerLandingTest() {
+
         RecordController<Command> controller = RecordController.createCommandRecordController(new CompositeController(
             RotationController.createMaintainAngleToRelativeVelocityController(0),
             new SuicideBurnController(701000)
