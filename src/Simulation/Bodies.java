@@ -73,7 +73,9 @@ public class Bodies {
      * Returns body by a unique name.
      */
     public Body getBody(String name) {
-        return bodies.get(name);
+        Body body = bodies.get(name);
+        if(body == null) throw new RuntimeException("Body with name " + name + " not found!");
+        return body;
     }
 
     /**
