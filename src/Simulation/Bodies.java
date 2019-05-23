@@ -37,6 +37,10 @@ public class Bodies {
         }
     }
 
+    public void advanceTime(double timeStep) {
+        time += timeStep;
+    }
+
     /**
      * Adds a body to the set.
      *

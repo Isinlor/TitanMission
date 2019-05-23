@@ -29,4 +29,15 @@ public class Units {
             return Utils.round(meters / AU) + " au";
         }
     }
+    public static String time(double seconds) {
+        if(seconds < 60) {
+            return Utils.round(seconds) + " s";
+        } else if(seconds < 60 * 60) {
+            return Utils.round(seconds / 60) + " min";
+        } else if(seconds < 24 * 60 * 60) {
+            return Utils.round(seconds / (60 * 60)) + " h";
+        } else {
+            return Utils.round(seconds / (24 * 60 * 60)) + " d";
+        }
+    }
 }
