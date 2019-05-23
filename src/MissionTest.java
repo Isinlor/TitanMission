@@ -168,7 +168,7 @@ public class MissionTest {
             for (Body probe : probes.getBodies()) {
 
                 if(!testBodies.hasBody(probe.getName())) continue;
-                double distance = testBodies.getBody(probe.getName()).computeDistance(target);
+                double distance = testBodies.getBody(probe.getName()).getDistance(target);
 
                 if (distance < minDistance) {
                     minDistance = distance;

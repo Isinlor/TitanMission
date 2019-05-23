@@ -26,7 +26,7 @@ public class SuicideBurnController implements Controller {
     public Command getCommand(Spacecraft spacecraft, double timeStep) {
 
         Body target = spacecraft.getTarget();
-        double altitude = target.computeDistance(spacecraft) - target.getRadius();
+        double altitude = target.getDistance(spacecraft) - target.getRadius();
         if(altitude > startAltitude) return new NullCommand();
 
         // the spacecraft needs to overcome gravity in order to decelerate

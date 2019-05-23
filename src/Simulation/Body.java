@@ -95,14 +95,14 @@ public class Body {
     }
 
     /**
-     * Returns straight line distance between two bodies.
+     * Returns simple straight line euclidean distance between two bodies.
      *
      * @param body The other body.
      *
      * @return The distance.
      */
     public double getDistance(Body body) {
-        return getRelativePosition(body).getLength();
+        return position.euclideanDistance(body.position);
     }
 
     /**
@@ -147,7 +147,18 @@ public class Body {
      * @link https://en.wikipedia.org/wiki/Newton's_law_of_universal_gravitation#Vector_form
      */
     public Force computeAttraction(Body body) {
-        double distance = computeDistance(body);
+        return computeAttraction(body, getDistance(body));
+    }
+
+    /**
+     * Computes attraction between bodies at the given distance.
+     *
+     * @param body The other body.
+     * @param distance The simple center of mass euclidean distance.
+     *
+     * @return The attraction at the given distance.
+     */
+    public Force computeAttraction(Body body, double distance) {
         // strength of attraction = -(G*m1*m2)/(d^2)
         double strength = -(Constants.G * mass * body.mass) / (distance * distance);
         // we need to go from scalar to vector, therefore we compute direction
@@ -155,13 +166,6 @@ public class Body {
         return new Force(
             direction.product(strength) // combine strength with direction
         );
-    }
-
-    /**
-     * Compute simple euclidean distance.
-     */
-    public double computeDistance(Body body) {
-        return position.euclideanDistance(body.position);
     }
 
     public double computeOrbitalSpeed(double altitude) {
@@ -173,7 +177,7 @@ public class Body {
      * It is slower the further away from the body an object is, and slower for less massive bodies.
      */
     public double computeSecondEscapeVelocity(Body body) {
-        return Math.sqrt(2* Constants.G*getMass() / computeDistance(body));
+        return Math.sqrt(2 * Constants.G * getMass() / getDistance(body));
     }
 
     public String toString() {
