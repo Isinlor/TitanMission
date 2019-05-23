@@ -10,9 +10,9 @@ import Simulation.Bodies;
 public class AbstractODESolver {
 
     protected EffectSystem effectSystem = new CompositeEffectSystem(
+        new CollisionEffectSystem(),
         new GravitationalEffectSystem(),
-        new ControllerEffectSystem(),
-        new CollisionEffectSystem()
+        new ControllerEffectSystem()
     );
 
     AbstractODESolver() {

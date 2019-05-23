@@ -13,7 +13,7 @@ public class CollisionEffectSystem implements EffectSystem {
             for (int j = i + 1; j < bodiesArray.length; j++) {
                 Body bodyB = bodiesArray[j];
 
-                if(bodyA.computeDistance(bodyB) < bodyA.getRadius() + bodyB.getRadius()) {
+                if(bodyA.getDistance(bodyB) < bodyA.getRadius() + bodyB.getRadius()) {
                     Body crashedBody = bodyA.getMass() < bodyB.getMass() ? bodyA : bodyB;
                     Body crashedIntoBody = bodyA.getMass() < bodyB.getMass() ? bodyB : bodyA;
                     String details = "Approach speed: " + Units.speed(crashedIntoBody.getApproachSpeed(crashedBody));
