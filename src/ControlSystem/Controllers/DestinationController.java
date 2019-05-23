@@ -29,7 +29,7 @@ public class DestinationController implements Controller {
         rotationController = new RotationController((Spacecraft spacecraft) -> {
 
             Vector relativePosition = spacecraft.getRelativePosition(spacecraft.getTarget());
-            double distance = relativePosition.getLength();
+            double distance = spacecraft.getSurfaceToSurfaceDistance(spacecraft.getTarget());
             double approachSpeed = spacecraft.getApproachSpeed(spacecraft.getTarget());
             double maxAcceleration = maxThrust / spacecraft.getMass();
             double decelerationToStop = (approachSpeed * approachSpeed) / (2 * distance);

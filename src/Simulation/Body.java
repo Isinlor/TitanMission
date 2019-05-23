@@ -89,11 +89,31 @@ public class Body {
      * @return The rate of change of distance between bodies.
      */
     public double getApproachSpeed(Body body) {
-        Vector relativePosition = getPosition().difference(body.getPosition());
-        return getRelativeVelocity(body)
-            .dotProduct(
-                relativePosition.unitVector()
-            );
+        return -getRelativeVelocity(body).dotProduct(
+            getRelativePosition(body).unitVector()
+        );
+    }
+
+    /**
+     * Returns straight line distance between two bodies.
+     *
+     * @param body The other body.
+     *
+     * @return The distance.
+     */
+    public double getDistance(Body body) {
+        return getRelativePosition(body).getLength();
+    }
+
+    /**
+     * Returns surface to surface distance between two bodies.
+     *
+     * @param body The other body.
+     *
+     * @return The distance.
+     */
+    public double getSurfaceToSurfaceDistance(Body body) {
+        return getDistance(body) - getRadius() - body.getRadius();
     }
 
     public double getMass() {
