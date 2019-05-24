@@ -5,6 +5,7 @@ import EventSystem.EventDispatcher;
 import EventSystem.EventListener;
 import Utilities.FileSystem;
 
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -36,6 +37,10 @@ public class Bodies {
         }
     }
 
+    public void advanceTime(double timeStep) {
+        time += timeStep;
+    }
+
     /**
      * Adds a body to the set.
      *
@@ -44,6 +49,7 @@ public class Bodies {
     public void addBody(Body body) {
         if(bodies.containsValue(body)) throw new RuntimeException("Simulation [" + body.getName() + "] already added!");
         if(bodies.containsKey(body.getName())) throw new RuntimeException("Duplicated name [" + body.getName() + "]!");
+        if(body instanceof BodiesAware) ((BodiesAware)body).setBodies(this);
         bodies.put(body.getName(), body);
     }
 
@@ -51,7 +57,9 @@ public class Bodies {
      * Add all given bodies.
      */
     public void addBodies(Bodies bodies) {
-        bodies.apply(this::addBody);
+        for (Body body: bodies.getBodies()) {
+            addBody(body.copy());
+        }
     }
 
     /**
@@ -65,7 +73,9 @@ public class Bodies {
      * Returns body by a unique name.
      */
     public Body getBody(String name) {
-        return bodies.get(name);
+        Body body = bodies.get(name);
+        if(body == null) throw new RuntimeException("Body with name " + name + " not found!");
+        return body;
     }
 
     /**
@@ -129,9 +139,9 @@ public class Bodies {
         return copy;
     }
 
-    public void save(String location) {
+    public void save(String location, String filename) {
         try {
-            FileSystem.write(location, serialize());
+            FileSystem.write(Paths.get(location, filename), serialize());
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize bodies to location " + location, e);
         }

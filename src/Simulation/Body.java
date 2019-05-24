@@ -49,12 +49,32 @@ public class Body {
         return position;
     }
 
+    /**
+     * Returns the position of the given body as seen from this body.
+     *
+     * @param body The given body.
+     *
+     * @return The relative position.
+     */
+    public Vector getRelativePosition(Body body) {
+        return body.getPosition().difference(getPosition());
+    }
+
     public Vector getVelocity() {
         return velocity;
     }
 
+    /**
+     * It returns velocity of the given body as seen from this body.
+     *
+     * See: https://en.wikipedia.org/wiki/Relative_velocity
+     *
+     * @param body The given body.
+     *
+     * @return The velocity of the given body as seen from this body.
+     */
     public Vector getRelativeVelocity(Body body) {
-        return getVelocity().sum(body.getVelocity().product(-1));
+        return body.getVelocity().difference(getVelocity());
     }
 
     /**
@@ -66,14 +86,34 @@ public class Body {
      *
      * @param body The other body.
      *
-     * @return THe rate of change of distance between bodies.
+     * @return The rate of change of distance between bodies.
      */
     public double getApproachSpeed(Body body) {
-        Vector relativePosition = getPosition().difference(body.getPosition());
-        return getRelativeVelocity(body)
-            .dotProduct(
-                relativePosition.unitVector()
-            );
+        return -getRelativeVelocity(body).dotProduct(
+            getRelativePosition(body).unitVector()
+        );
+    }
+
+    /**
+     * Returns simple straight line euclidean distance between two bodies.
+     *
+     * @param body The other body.
+     *
+     * @return The distance.
+     */
+    public double getDistance(Body body) {
+        return position.euclideanDistance(body.position);
+    }
+
+    /**
+     * Returns surface to surface distance between two bodies.
+     *
+     * @param body The other body.
+     *
+     * @return The distance.
+     */
+    public double getSurfaceToSurfaceDistance(Body body) {
+        return getDistance(body) - getRadius() - body.getRadius();
     }
 
     public double getMass() {
@@ -107,7 +147,18 @@ public class Body {
      * @link https://en.wikipedia.org/wiki/Newton's_law_of_universal_gravitation#Vector_form
      */
     public Force computeAttraction(Body body) {
-        double distance = computeDistance(body);
+        return computeAttraction(body, getDistance(body));
+    }
+
+    /**
+     * Computes attraction between bodies at the given distance.
+     *
+     * @param body The other body.
+     * @param distance The simple center of mass euclidean distance.
+     *
+     * @return The attraction at the given distance.
+     */
+    public Force computeAttraction(Body body, double distance) {
         // strength of attraction = -(G*m1*m2)/(d^2)
         double strength = -(Constants.G * mass * body.mass) / (distance * distance);
         // we need to go from scalar to vector, therefore we compute direction
@@ -115,13 +166,6 @@ public class Body {
         return new Force(
             direction.product(strength) // combine strength with direction
         );
-    }
-
-    /**
-     * Compute simple euclidean distance.
-     */
-    public double computeDistance(Body body) {
-        return position.euclideanDistance(body.position);
     }
 
     public double computeOrbitalSpeed(double altitude) {
@@ -133,7 +177,7 @@ public class Body {
      * It is slower the further away from the body an object is, and slower for less massive bodies.
      */
     public double computeSecondEscapeVelocity(Body body) {
-        return Math.sqrt(2* Constants.G*getMass() / computeDistance(body));
+        return Math.sqrt(2 * Constants.G * getMass() / getDistance(body));
     }
 
     public String toString() {

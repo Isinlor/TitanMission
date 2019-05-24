@@ -52,6 +52,8 @@ public class LeapfrogODE extends AbstractODESolver implements ODESolver {
 
         }
 
+        bodies.advanceTime(time);
+
     }
 
     public String getName() {

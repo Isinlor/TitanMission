@@ -8,8 +8,8 @@ public class MissionTest {
 
     private static Simulation simulation;
 
-    private static final double timeStep = 60.0; // in s
-    private static final long steps = (long)(100*24*60*60 / timeStep); // around 1 year
+    private static final double timeStep = 200*60.0; // in s
+    private static final long steps = (long)(600*24*60*60 / timeStep);
     private static final long stepsPerFrame = (long)(24*60*60 / timeStep); // around 1 day
 
     private static String resourcesPath;
@@ -30,7 +30,7 @@ public class MissionTest {
         Body source;
         Body target;
         String sourceName = "Earth";
-        String targetName = "Mars";
+        String targetName = "Titan";
         source = bodies.getBody(sourceName);
         target = bodies.getBody(targetName);
         double sourceRadius = source.getRadius();
@@ -69,15 +69,12 @@ public class MissionTest {
             minDistance = tuple.getX();
             minProbe = initProbes.getBody(tuple.getY().getName());
 
-            double astronomicalUnits = 1.496e11;
-            long distanceInTargetRadii = Math.round(minDistance / targetRadius);
-
             // if we flyby closer than mars radius, then we have a direct hit
             if (minDistance < targetRadius) {
                 System.out.println("Hit!");
-                saveBodies.getBody(minProbe.getName()).rename(probePrototype.getName() + " HIT!");
+                simulation.getBodies().getBody(minProbe.getName()).rename(probePrototype.getName() + " HIT!");
                 try {
-                    simulation.save(resourcesPath + "/simulation-" + targetName + ".txt");
+                    simulation.save(resourcesPath, "simulation-" + targetName + ".txt");
                 } catch (Exception e) {
                     System.out.println(simulation.serialize());
                 }
@@ -89,22 +86,22 @@ public class MissionTest {
                 probePrototype = minProbe;
 
                 System.out.print("Updated! ");
-                System.out.print(distanceInTargetRadii + "\t" + Math.round(step));
+                System.out.print(Units.distance(minDistance) + "\t" + Math.round(step));
 
-                System.out.println("  relative speed: " + Math.round(probePrototype.getRelativeVelocity(bodies.getBody(sourceName)).getLength() / 1000) + " km/s");
+                System.out.println("  relative speed: " + Units.speed(probePrototype.getRelativeVelocity(bodies.getBody(sourceName)).getLength()));
 
-                simulation.save(resourcesPath + "/simulation-" + targetName + ".txt");
+                simulation.save(resourcesPath , "simulation-" + targetName + ".txt");
 
                 noProgress = 0;
 
                 animate(animateBodies);
             } else {
                 System.out.print("         ");
-                System.out.println(distanceInTargetRadii + "\t" + Math.round(step) + "\t" + noProgress);
+                System.out.println(Units.distance(minDistance) + "\t" + Math.round(step) + "\t" + noProgress);
                 noProgress++;
             }
 
-            if(noProgress > 3 && range > 1) {
+            if(noProgress > 5 && range > 1) {
                 range = range / 2;
                 noProgress = 0;
                 System.out.println("Range updated to " + range);
@@ -132,11 +129,6 @@ public class MissionTest {
 
                     // avoid crazy high probe velocities in relation to source
                     if(probe.getRelativeVelocity(source).getLength() > source.computeSecondEscapeVelocity(probe) * 2) {
-                        continue;
-                    }
-
-                    // not enough to escape source
-                    if(probe.getRelativeVelocity(source).getLength() < source.computeSecondEscapeVelocity(probe)) {
                         continue;
                     }
 
@@ -175,14 +167,8 @@ public class MissionTest {
 
             for (Body probe : probes.getBodies()) {
 
-                // adding speed limit makes probe fly further away from sun
-                double probeSpeed = probe.getVelocity().getLength();
-                if(probeSpeed > 100000) {
-                    testBodies.removeBody(probe);
-                    probes.removeBody(probe);
-                }
-
-                double distance = probe.computeDistance(target);
+                if(!testBodies.hasBody(probe.getName())) continue;
+                double distance = testBodies.getBody(probe.getName()).getDistance(target);
 
                 if (distance < minDistance) {
                     minDistance = distance;

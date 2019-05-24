@@ -11,6 +11,7 @@ import Utilities.Metadata;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -155,8 +156,12 @@ public class Simulation {
         return metadata;
     }
 
-    public void save(String resource) {
-        FileSystem.write(resource, serialize());
+    public void save(String location) {
+        FileSystem.write(Paths.get(location), serialize());
+    }
+
+    public void save(String location, String filename) {
+        FileSystem.write(Paths.get(location, filename), serialize());
     }
 
     public static Simulation load(String resource) {

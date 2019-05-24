@@ -1,5 +1,3 @@
-import ODESolvers.EulerODE;
-import ODESolvers.LeapfrogODE;
 import ODESolvers.ODESolver;
 import ODESolvers.ODESolvers;
 import Simulation.Bodies;
@@ -76,14 +74,14 @@ public class ODESolverTest extends SimpleUnitTest {
         for (int i = 0; i < stepsA; i++) {
             solver.iterate(bodiesA, timeStepA);
         }
-        double errorA = satellite.computeDistance(bodiesA.getBody("Satellite"));
+        double errorA = satellite.getDistance(bodiesA.getBody("Satellite"));
 
         Bodies bodiesB = bodies.copy();
         double timeStepB = orbitalPeriod / stepsB;
         for (int i = 0; i < stepsB; i++) {
             solver.iterate(bodiesB, timeStepB);
         }
-        double errorB = satellite.computeDistance(bodiesB.getBody("Satellite"));
+        double errorB = satellite.getDistance(bodiesB.getBody("Satellite"));
 
         System.out.println("Satellite distance from the expected position after a full revolution with: ");
         System.out.println(" - " + stepsA + " steps: " + errorA);

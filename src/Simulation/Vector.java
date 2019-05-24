@@ -178,6 +178,10 @@ public class Vector {
         );
     }
 
+    public boolean isRealValued() {
+        return Utils.isRealNumber(x) && Utils.isRealNumber(y) && Utils.isRealNumber(z);
+    }
+
     public String toString() {
         return "(x:" + Utils.round(x) + " y:" + Utils.round(y) + " z:" + Utils.round(z) + ")";
     }

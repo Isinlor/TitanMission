@@ -2,6 +2,7 @@ package ControlSystem.Controllers;
 
 import ControlSystem.Command;
 import ControlSystem.Controller;
+import ControlSystem.NullCommand;
 import Simulation.Body;
 import Simulation.Spacecraft;
 import Simulation.Vector;
@@ -23,13 +24,16 @@ public class RotationController implements Controller {
 
     Function<Spacecraft, Double> targetAngleFunction;
 
-    private RotationController(Function<Spacecraft, Double> targetAngleFunction) {
+    public RotationController(Function<Spacecraft, Double> targetAngleFunction) {
         this.targetAngleFunction = targetAngleFunction;
     }
 
     public Command getCommand(Spacecraft spacecraft, double timeStep) {
 
         double targetAngle = targetAngleFunction.apply(spacecraft);
+
+        if(!Utils.isRealNumber(targetAngle)) return new NullCommand();
+
         double spacecraftAngle = spacecraft.getAngularDisplacement().z;
         double spacecraftAngularSpeed = spacecraft.getAngularVelocity().z;
 
@@ -67,27 +71,22 @@ public class RotationController implements Controller {
     /**
      * Creates controller that allows spacecraft to maintain constant angle towards the surface of another body.
      *
-     * @param body The body with a surface.
      * @param angle The angle relative to the surface.
      *
      * @return The controller.
      */
-    public static RotationController createMaintainAngleToSurfaceController(Body body, double angle) {
+    public static RotationController createMaintainAngleToSurfaceController(double angle) {
         return new RotationController((Spacecraft spacecraft) -> {
-            Vector targetPosition = body.getPosition();
-            Vector spacecraftPosition = spacecraft.getPosition();
 
-            // move coordinates, so that in this frame target is at coordinate (0, 0)
-            // the transformation preserves relative position
-            // this will allow to compute clock angle - see below
-            Vector spacecraftPositionWithTargetAtCenter = spacecraftPosition.difference(targetPosition);
+            Vector relativePosition = spacecraft.getRelativePosition(spacecraft.getTarget());
 
             // computes clock angle between the body and a spacecraft
             // see Utils.clockAngle documentation for explanation of "clock angle" concept
             return Utils.clockAngle(
-                spacecraftPositionWithTargetAtCenter.x,
-                -spacecraftPositionWithTargetAtCenter.y // FIXME: y-axis reversed (swing)
+                relativePosition.x,
+                -relativePosition.y // FIXME: y-axis reversed (swing)
             ) + angle;
+
         });
     }
 
@@ -103,6 +102,24 @@ public class RotationController implements Controller {
             Vector velocity = spacecraft.getVelocity();
             double velocityAngle = Utils.clockAngle(velocity.x, -velocity.y); // FIXME: y-axis reversed (swing)
             logger.log("Velocity angle: " + Math.toDegrees(velocityAngle));
+            return  velocityAngle + angle;
+        });
+    }
+
+    /**
+     * Creates controller that allows spacecraft to maintain constant angle with regard to the relative velocity.
+     *
+     * The relative velocity is computed as the velocity of a target as seen from the spacecraft.
+     *
+     * @param angle The angle with regard to the relative velocity of a target as seen from the spacecraft.
+     *
+     * @return The controller.
+     */
+    public static RotationController createMaintainAngleToRelativeVelocityController(double angle) {
+        return new RotationController((Spacecraft spacecraft) -> {
+            Vector velocity = spacecraft.getRelativeVelocity(spacecraft.getTarget());
+            double velocityAngle = Utils.clockAngle(velocity.x, -velocity.y); // FIXME: y-axis reversed (swing)
+            logger.log("Relative Velocity angle: " + Math.toDegrees(velocityAngle));
             return  velocityAngle + angle;
         });
     }

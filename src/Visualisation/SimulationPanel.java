@@ -3,6 +3,7 @@ package Visualisation;
 import Simulation.Bodies;
 import Simulation.Body;
 import Simulation.Vector;
+import Utilities.Units;
 import Utilities.Utils;
 
 import javax.swing.*;
@@ -176,11 +177,7 @@ public class SimulationPanel extends JPanel implements SimulationCanvas {
 //        cube.draw(g);
 
         g.drawString(
-            "Day: " + (int)Math.floor(bodies.getTime() / (60 * 60 * 24)),
-            getWidth() - 110, getHeight() - 60
-        );
-        g.drawString(
-            "Hour: " + (int)Math.floor((bodies.getTime() % (60 * 60 * 24)) / (60 * 60)),
+            "Time: " + Units.time(bodies.getTime()),
             getWidth() - 110, getHeight() - 40
         );
         g.drawString("Scale: " + Utils.round(scale), getWidth() - 110, getHeight() - 20);

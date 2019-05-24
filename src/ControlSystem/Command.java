@@ -1,5 +1,11 @@
 package ControlSystem;
 
+import Utilities.Serializable;
+import Utilities.Utils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Represents a command to be executed.
  *
@@ -12,7 +18,7 @@ package ControlSystem;
  *     ;    <--- thrust
  *
  */
-public class Command {
+public class Command implements Serializable {
 
     /**
      * Magnitude of a force created by the main spaceship engine.
@@ -36,6 +42,8 @@ public class Command {
 
     public Command(double thrust, double torque) {
         if(thrust < 0) throw new RuntimeException("Thrust must not be negative! Thrust given: " + thrust);
+        if(!Utils.isRealNumber(thrust)) throw new RuntimeException("Wrong thrust: " + thrust);
+        if(!Utils.isRealNumber(torque)) throw new RuntimeException("Wrong torque: " + torque);
         this.thrust = thrust;
         this.torque = torque;
     }
@@ -60,6 +68,28 @@ public class Command {
             thrust * thrustWeight,
             torque * torqueWeight
         );
+    }
+
+    public String serialize() {
+        return thrust + ", " + torque;
+    }
+
+    /**
+     * Unserialize saved command.
+     */
+    public static Command unserialize(String string) {
+
+        Pattern pattern = Pattern.compile("" +
+            "(?<thrust>[^,]+),\\s+(?<torque>[^,]+)"
+        );
+        Matcher matcher = pattern.matcher(string);
+        matcher.matches();
+
+        return new Command(
+            Double.parseDouble(matcher.group("thrust")),
+            Double.parseDouble(matcher.group("torque"))
+        );
+
     }
 
 }
