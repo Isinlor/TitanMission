@@ -48,4 +48,14 @@ public class WeightedController implements Controller {
         return new WeightedController(controller, (s) -> { return thrustWeight; }, torqueWeightFunction);
     }
 
+    public static WeightedController createStartAtAltitudeController(
+        Controller controller,
+        double altitude
+    ) {
+        Function<Spacecraft, Double> function = (Spacecraft spacecraft) -> {
+            return spacecraft.getSurfaceToSurfaceDistance(spacecraft.getTarget()) < altitude ? 1. : 0.;
+        };
+        return new WeightedController(controller, function, function);
+    }
+
 }
