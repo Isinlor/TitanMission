@@ -113,7 +113,7 @@ public class Simulation {
             new SpinnerNumberModel(
                 stepsPerFrame, //initial value
                 1, //minimum value
-                stepsPerFrame * 10, //maximum value
+                stepsPerFrame * 100, //maximum value
                 1 // step
             ),
             (Integer newStepsPerFrame) -> { stepsPerFrame = newStepsPerFrame;}
@@ -123,7 +123,7 @@ public class Simulation {
             new SpinnerNumberModel(
                 timeStep, //initial value
                 -timeStep, //minimum value
-                timeStep * 10, //maximum value
+                timeStep * 100, //maximum value
                 timeStep / 10 // step
             ),
             (Double newTimeStep) -> { timeStep = newTimeStep;}
