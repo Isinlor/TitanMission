@@ -13,6 +13,8 @@ import Utilities.Logger.NullLogger;
 import Utilities.Units;
 import Utilities.Utils;
 
+import java.util.function.Function;
+
 public class DestinationController implements Controller {
 
     /**
@@ -26,17 +28,21 @@ public class DestinationController implements Controller {
 
     private RotationController verticalLandingController = RotationController.createMaintainAngleToSurfaceController(Math.PI);
 
+    private Function<Spacecraft, Body> targetFunction = Spacecraft::getTarget;
+
     public DestinationController(double maxThrust) {
         this.maxThrust = maxThrust;
         rotationController = new RotationController((Spacecraft spacecraft) -> {
 
-            double approachSpeed = spacecraft.getApproachSpeed(spacecraft.getTarget());
-            double distance = spacecraft.getSurfaceToSurfaceDistance(spacecraft.getTarget());
-            double sumOfRadii = spacecraft.getRadius() + spacecraft.getTarget().getRadius();
+            Body target = getTarget(spacecraft);
 
-            Vector attraction = spacecraft.computeAttraction(spacecraft.getTarget());
-            Vector relativeVelocity = spacecraft.getRelativeVelocity(spacecraft.getTarget());
-            Vector relativePosition = spacecraft.getRelativePosition(spacecraft.getTarget());
+            double approachSpeed = spacecraft.getApproachSpeed(target);
+            double distance = spacecraft.getSurfaceToSurfaceDistance(target);
+            double sumOfRadii = spacecraft.getRadius() + target.getRadius();
+
+            Vector attraction = spacecraft.computeAttraction(target);
+            Vector relativeVelocity = spacecraft.getRelativeVelocity(target);
+            Vector relativePosition = spacecraft.getRelativePosition(target);
             Vector relativeDirection = relativePosition.unitVector();
 
             // whether a target is being approached:
@@ -104,7 +110,19 @@ public class DestinationController implements Controller {
 
         double torque = rotationController.getCommand(spacecraft, timeStep).getTorque();
 
-        Body target = spacecraft.getTarget();
+        // takes control over spacecraft orientation in last phase of approach
+        double realApproachSpeed = spacecraft.getApproachSpeed(spacecraft.getTarget());
+        double realAltitude = spacecraft.getSurfaceToSurfaceDistance(spacecraft.getTarget());
+        if(realAltitude < 6) {
+            targetFunction = Spacecraft::getTarget;
+            torque = verticalLandingController.getCommand(spacecraft, timeStep).getTorque();
+        }
+
+        if(realAltitude < 1 || (realAltitude < 10 && realApproachSpeed < 1)) {
+            return new Command(0.0, torque);
+        }
+
+        Body target = getTarget(spacecraft);
 
         double thrust;
 
@@ -119,17 +137,18 @@ public class DestinationController implements Controller {
             thrust = maxThrust;
         }
 
-        // takes control over spacecraft orientation in last phase of approach
-        if(approachSpeed * timeStep * 3 > altitude || altitude < 0.1) {
-            torque = verticalLandingController.getCommand(spacecraft, timeStep).getTorque();
-        }
-
-        if(altitude < 0.1) {
-            return new Command(0.0, torque);
-        }
-
         return new Command(thrust, torque);
 
+    }
+
+    Body getTarget(Spacecraft spacecraft) {
+        return targetFunction.apply(spacecraft);
+    }
+
+    public static DestinationController createWithStaticTarget(Body target, double maxThrust) {
+        DestinationController controller = new DestinationController(maxThrust);
+        controller.targetFunction = (s) -> { return target; };
+        return controller;
     }
 
 }
