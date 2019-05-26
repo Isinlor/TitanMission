@@ -17,7 +17,14 @@ public class CollisionEffectSystem implements EffectSystem {
                 if(bodyA.getDistance(bodyB) < bodyA.getRadius() + bodyB.getRadius()) {
                     Body crashedBody = bodyA.getMass() < bodyB.getMass() ? bodyA : bodyB;
                     Body crashedIntoBody = bodyA.getMass() < bodyB.getMass() ? bodyB : bodyA;
-                    String details =
+                    String details = "";
+
+                    if(crashedBody.getMeta().has("x")) {
+                        details += "\tAway from target x : " + Units.distance(Math.abs(crashedBody.getPosition().x - Double.parseDouble(crashedBody.getMeta().get("x"))));
+                        details += " y : " + Units.distance(Math.abs(crashedBody.getPosition().y - Double.parseDouble(crashedBody.getMeta().get("y"))));
+                    }
+
+                    details +=
                         "\tApproach speed: " + Units.speed(crashedBody.getApproachSpeed(crashedIntoBody)) +
                         "\tTime: " + Units.time(bodies.getTime());
                     if(crashedBody instanceof RotatingBody) {
