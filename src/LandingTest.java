@@ -18,12 +18,61 @@ public class LandingTest {
 
     public static void main(String[] args) {
 
+//        complexStaticTargetDestinationTest();
 //        simpleDestinationTest();
         titanDestinationStressTest();
 //        subOrbitalSuicideBurnControllerTest();
 //        subOrbitalDestinationControllerTest();
 //        inOrbitDestinationControllerTest();
 //        inOrbitReplayControllerTest();
+
+    }
+
+    static void staticTargetDestinationTest() {
+
+        Bodies bodies = new Bodies();
+
+        Body b = new Body("Target", new Vector(), new Vector(), 2, 10000);
+
+        Body pointTarget = new Body("", b.getPosition().sum(new Vector(b.getRadius(), 0).rotateAroundAxisZ(new Vector(), -Math.PI/4)), new Vector(), 1, 0.0000001);
+
+        DestinationController controller = DestinationController.createWithStaticTarget(pointTarget, 2);
+
+        Spacecraft a = new Spacecraft("A", "Target", controller);
+        a.addPosition(new Vector(20000, -15000));
+        a.addVelocity(new Vector(000, -100));
+
+        bodies.addBody(a);
+        bodies.addBody(b);
+
+        simulation = new Simulation(bodies, steps, 0.01, 30, 100);
+
+    }
+
+    static void complexStaticTargetDestinationTest() {
+
+        Bodies bodies = new Bodies();
+
+        Body b = new Body("Target", new Vector(), new Vector(), 2, 10000);
+        bodies.addBody(b);
+
+        for (int i = 0; i < 10; i++) {
+            double theta = (-Math.PI/2 / 10) * i;
+            Body pointTarget = new Body("", new Vector(b.getRadius(), 0).rotateAroundAxisZ(new Vector(), theta), new Vector(), 1, 0.0000001);
+            DestinationController controller = DestinationController.createWithStaticTarget(pointTarget, 2);
+
+
+            Spacecraft a = new Spacecraft("" + i, "Target", controller);
+            a.addPosition(new Vector(20000 + i * 2, -15000 + i * 2));
+            a.addVelocity(new Vector(i*10, -100));
+
+            a.getMeta().set("x", "" + pointTarget.getPosition().x);
+            a.getMeta().set("y", "" + pointTarget.getPosition().y);
+
+            bodies.addBody(a);
+        }
+
+        simulation = new Simulation(bodies, steps, 0.01, 30, 100);
 
     }
 
