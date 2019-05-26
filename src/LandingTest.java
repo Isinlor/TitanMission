@@ -18,8 +18,8 @@ public class LandingTest {
 
     public static void main(String[] args) {
 
-        simpleDestinationTest();
-//        simpleLandingTest();
+//        simpleDestinationTest();
+        simpleLandingTest();
 //        replayControllerLandingTest();
 
     }
@@ -46,6 +46,9 @@ public class LandingTest {
             new SuicideBurnController(701000)
         ));
 
+        for (Body a:actual.getBodies()){
+            System.out.println(a.toString());
+        }
         simulation = new Simulation(actual, steps, timeStep, stepsPerFrame, 1e4);
     }
 
