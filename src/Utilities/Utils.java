@@ -76,6 +76,18 @@ public class Utils {
     }
 
     /**
+     * See: https://stackoverflow.com/questions/1878907/the-smallest-difference-between-2-angles
+     *
+     * @param from The staring angle.
+     * @param to The end angle.
+     *
+     * @return The signed distance from the starting angle to the end angle.
+     */
+    public static double getSignedDistanceBetweenAngles(double from, double to) {
+        return Utils.mod(to - from + Math.PI, Utils.TAU) - Math.PI;
+    }
+
+    /**
      * Checks whether the given value is a real number.
      *
      * @param value The value to check.

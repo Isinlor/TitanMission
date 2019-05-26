@@ -3,6 +3,7 @@ package EffectSystem.Types;
 import EffectSystem.*;
 import Simulation.*;
 import Utilities.Units;
+import Utilities.Utils;
 import Visualisation.Simulation;
 
 public class CollisionEffectSystem implements EffectSystem {
@@ -16,8 +17,27 @@ public class CollisionEffectSystem implements EffectSystem {
                 if(bodyA.getDistance(bodyB) < bodyA.getRadius() + bodyB.getRadius()) {
                     Body crashedBody = bodyA.getMass() < bodyB.getMass() ? bodyA : bodyB;
                     Body crashedIntoBody = bodyA.getMass() < bodyB.getMass() ? bodyB : bodyA;
-                    String details = "Approach speed: " + Units.speed(crashedIntoBody.getApproachSpeed(crashedBody));
-                    Simulation.logger.log(crashedBody.getName() + " crashed into " + crashedIntoBody.getName() + "! \t\t" + details);
+                    String details =
+                        "\tApproach speed: " + Units.speed(crashedBody.getApproachSpeed(crashedIntoBody)) +
+                        "\tTime: " + Units.time(bodies.getTime());
+                    if(crashedBody instanceof RotatingBody) {
+                        RotatingBody crashedRotatingBody = (RotatingBody)crashedBody;
+
+                        Vector relativePosition = crashedIntoBody.getRelativePosition(crashedBody);
+
+                        double verticalAngle = Utils.clockAngle(
+                            relativePosition.x,
+                            -relativePosition.y // FIXME: y-axis reversed (swing)
+                        );
+
+                        double crashingBodyAngle = crashedRotatingBody.getAngularDisplacement().z;
+
+                        double angle = Utils.getSignedDistanceBetweenAngles(verticalAngle, crashingBodyAngle);
+
+                        details += "\tAngle: " + Math.round(Math.toDegrees(angle) * 1000) / 1000.;
+                    }
+
+                    Simulation.logger.log(crashedBody.getName() + " crashed into " + crashedIntoBody.getName() + "! \t" + details);
                     bodies.removeBody(crashedBody);
                 }
 
