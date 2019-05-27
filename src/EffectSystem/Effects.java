@@ -22,6 +22,7 @@ public class Effects {
     }
 
     public void addEffect(Body body, Effect effect) {
+        if(body.getMeta().has("noEffects")) return;
         effects.put(body.getName(), effect.addEffect(effects.get(body.getName())));
     }
 
