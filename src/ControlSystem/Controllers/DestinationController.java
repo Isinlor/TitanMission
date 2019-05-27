@@ -40,7 +40,7 @@ public class DestinationController implements Controller {
             double distance = spacecraft.getSurfaceToSurfaceDistance(target);
             double sumOfRadii = spacecraft.getRadius() + target.getRadius();
 
-            Vector attraction = spacecraft.computeAttraction(target);
+            Vector attraction = spacecraft.computeAttraction(spacecraft.getTarget());
             Vector relativeVelocity = spacecraft.getRelativeVelocity(target);
             Vector relativePosition = spacecraft.getRelativePosition(target);
             Vector relativeDirection = relativePosition.unitVector();
@@ -68,16 +68,16 @@ public class DestinationController implements Controller {
 
             // this part allows to start breaking
             // the breaking should start when spacecraft is reaching maximum speed that still allows to decelerate to 0
-            if(approachSpeed > 0 && decelerationToStop >= maxThrust) {
+            if(approachSpeed > 0 && decelerationToStop >= (maxThrust / spacecraft.getMass())) {
                 // decelerationToStop sometimes is bigger than x + y decelerations to stop (?)
                 if(xApproach > 0) xApproach = -xApproach;
                 if(yApproach > 0) yApproach = -yApproach;
             } else {
-                if(xApproach > 0 && xDecelerationToStop >= maxThrust) {
+                if(xApproach > 0 && xDecelerationToStop >= (maxThrust / spacecraft.getMass())) {
                     xApproach = -xApproach;
                 }
 
-                if(yApproach > 0 && yDecelerationToStop >= maxThrust) {
+                if(yApproach > 0 && yDecelerationToStop >= (maxThrust / spacecraft.getMass())) {
                     yApproach = -yApproach;
                 }
             }
@@ -118,7 +118,7 @@ public class DestinationController implements Controller {
             torque = verticalLandingController.getCommand(spacecraft, timeStep).getTorque();
         }
 
-        if(realAltitude < 1 || (realAltitude < 10 && realApproachSpeed < 1)) {
+        if((realAltitude < 1 && realApproachSpeed < 1) || (realAltitude < 10 && realApproachSpeed < 1)) {
             return new Command(0.0, torque);
         }
 
@@ -126,13 +126,13 @@ public class DestinationController implements Controller {
 
         double thrust;
 
-        double gravity = target.computeAttraction(spacecraft).getLength();
+        double gravity = target.computeAttraction(spacecraft).getLength() / spacecraft.getMass();
         double altitude = target.getSurfaceToSurfaceDistance(spacecraft);
         double approachSpeed = target.getApproachSpeed(spacecraft);
         double decelerationToStop = gravity + (approachSpeed * approachSpeed) / (2 * altitude);
 
-        if(approachSpeed > 0 && decelerationToStop > maxThrust) {
-            thrust = decelerationToStop; // a cheat to allow safe landing
+        if(approachSpeed > 0 && decelerationToStop > (maxThrust / spacecraft.getMass())) {
+            thrust = decelerationToStop * spacecraft.getMass(); // a cheat to allow safe landing
         } else {
             thrust = maxThrust;
         }

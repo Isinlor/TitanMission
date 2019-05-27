@@ -18,13 +18,50 @@ public class LandingTest {
 
     public static void main(String[] args) {
 
+        complexStaticTargetOnTitanDestinationTest();
 //        complexStaticTargetDestinationTest();
 //        simpleDestinationTest();
-        titanDestinationStressTest();
+//        titanDestinationStressTest();
+//        destinationStressTest();
 //        subOrbitalSuicideBurnControllerTest();
 //        subOrbitalDestinationControllerTest();
 //        inOrbitDestinationControllerTest();
 //        inOrbitReplayControllerTest();
+
+    }
+
+    static void complexStaticTargetOnTitanDestinationTest() {
+
+        Bodies bodies = Bodies.unserialize(FileSystem.tryLoadResource("titan.txt"));
+        Body titan = bodies.getBody("Titan");
+
+        // Titan atmosphere: https://solarsystem.nasa.gov/moons/saturn-moons/titan/in-depth/#atmosphere_otp
+        double probeAltitude = 700 * 1000; // 100km above atmosphere, in order to avoid atmosphere influence
+        double probeOrbitalSpeed = titan.computeOrbitalSpeed(probeAltitude);
+
+        double spacecrafts = 4;
+        double spacing = -Math.PI / 2 / (spacecrafts - 1);
+        for (int i = 0; i < spacecrafts; i++) {
+            double theta = spacing * i;
+            Body pointTarget = new Body("t"+i, new Vector(titan.getRadius(), 0).rotateAroundAxisZ(new Vector(), theta), new Vector(), 1, 0.0000001);
+            pointTarget.getMeta().set("noEffects", "true");
+            Controller controller = DestinationController.createWithStaticTarget(pointTarget, 1);
+
+            bodies.addBody(pointTarget);
+
+//            controller = new DestinationController(10000);
+
+            Spacecraft a = new Spacecraft("" + i, "Titan", controller, 1, 1.5);
+            a.addPosition(new Vector(titan.getRadius() + probeAltitude,0).rotateAroundAxisZ(new Vector(), theta + spacing + 0.0307));
+            a.addVelocity(new Vector(0, probeOrbitalSpeed).rotateAroundAxisZ(new Vector(), theta + spacing + 0.0307));
+
+            a.getMeta().set("x", "" + pointTarget.getPosition().x);
+            a.getMeta().set("y", "" + pointTarget.getPosition().y);
+
+            bodies.addBody(a);
+        }
+
+        simulation = new Simulation(bodies, steps, 0.01, 300, 1e4);
 
     }
 
@@ -83,7 +120,7 @@ public class LandingTest {
         Body b = new Body("Target", new Vector(), new Vector(), 2, 1);
 //        b.addVelocity(new Vector(-10, -10));
 
-        Spacecraft a = new Spacecraft("A", "Target", new DestinationController(5));
+        Spacecraft a = new Spacecraft("A", "Target", new DestinationController(10000), 10000, 1);
         a.addPosition(new Vector(10000, -10000));
         a.addVelocity(new Vector(000, -100));
 
@@ -146,7 +183,7 @@ public class LandingTest {
 
                 double rotationVelocity = (Utils.TAU / 10) * j;
 
-                for (int k = 1; k <= 3; k++) {
+                for (int k = 1; k <= 2; k++) {
 
                     for (int l = 1; l <= 2; l++) {
 
@@ -197,9 +234,20 @@ public class LandingTest {
 
     static void inOrbitDestinationControllerTest() {
 
-        Bodies actual = createInOrbitSimulation(new DestinationController(2));
+        DestinationController destinationController = new DestinationController(10000);
+        RecordController<Command> controller = RecordController.createCommandRecordController(destinationController);
+
+        Bodies actual = createInOrbitSimulation(controller);
+
+//        while(actual.hasBody("Spacecraft")) {
+//            new LeapfrogODE().iterate(actual, 1.5);
+//        }
+
+        controller.getRecording().save("/home/isinlor/Projects/TitanMission/resources/recording.txt");
 
         simulation = new Simulation(actual, steps, timeStep, stepsPerFrame, 1e4);
+
+
 
     }
 
@@ -237,7 +285,7 @@ public class LandingTest {
             controller,
             new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, 0),
             new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
-            1, 1, new Metadata()
+            10000, 1, new Metadata()
         ));
 
         return bodies;
