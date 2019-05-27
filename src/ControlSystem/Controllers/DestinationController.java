@@ -126,13 +126,13 @@ public class DestinationController implements Controller {
 
         double thrust;
 
-        double gravity = target.computeAttraction(spacecraft).getLength();
+        double gravity = target.computeAttraction(spacecraft).getLength() / spacecraft.getMass();
         double altitude = target.getSurfaceToSurfaceDistance(spacecraft);
         double approachSpeed = target.getApproachSpeed(spacecraft);
         double decelerationToStop = gravity + (approachSpeed * approachSpeed) / (2 * altitude);
 
-        if(approachSpeed > 0 && decelerationToStop > maxThrust) {
-            thrust = decelerationToStop; // a cheat to allow safe landing
+        if(approachSpeed > 0 && decelerationToStop > (maxThrust / spacecraft.getMass())) {
+            thrust = decelerationToStop * spacecraft.getMass(); // a cheat to allow safe landing
         } else {
             thrust = maxThrust;
         }
