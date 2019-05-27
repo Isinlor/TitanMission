@@ -19,12 +19,14 @@ public class Vector {
     public Vector(double x, double y) {
         this.x = x;
         this.y = y;
+        if(!isRealValued()) throw new RuntimeException("The vector is not real valued: " + this);
     }
 
     public Vector(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
+        if(!isRealValued()) throw new RuntimeException("The vector is not real valued: " + this);
     }
 
     public boolean isEqualTo(Vector vector, double tolerance) {
@@ -90,6 +92,7 @@ public class Vector {
 
     public Vector unitVector() {
         double length = getLength();
+        if(length == 0) return new Vector();
         return new Vector(
             x / length,
             y / length,

@@ -28,7 +28,16 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
             name,
             targetName,
             controller,
-            new Vector(), new Vector(), new Vector(), new Vector(), 1, 0.001,
+            1, 1
+        );
+    }
+
+    public Spacecraft(String name, String targetName, Controller controller, double mass, double radius) {
+        this(
+            name,
+            targetName,
+            controller,
+            new Vector(), new Vector(), new Vector(), new Vector(), mass, radius,
             new Metadata()
         );
     }
@@ -91,6 +100,7 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
         g.drawImage(ImageHelper.rotate(image, getAngularDisplacement().z), x, y, displaySize, displaySize, null);
 
         g.drawString(getName(), x + 15, y + 7);
+
         g.drawString("Altitude: " + Units.distance(getSurfaceToSurfaceDistance(getTarget())), x + 15, y + 7 + 20);
         g.drawString("Approach speed: " + Units.speed(getApproachSpeed(getTarget())), x + 15, y + 7 + 40);
 
