@@ -17,12 +17,12 @@ public class AtmosphereEffectSystem implements EffectSystem {
 
             double angle = Math.random() * Utils.TAU;
 
-            double intensity = 10;
-            if(body.getSurfaceToSurfaceDistance(bodies.getHeaviestBody()) < 1000) intensity = 1;
+            double intensity = 1200;
+            if(body.getSurfaceToSurfaceDistance(bodies.getHeaviestBody()) < 1000) intensity = 10;
             if(body.getSurfaceToSurfaceDistance(bodies.getHeaviestBody()) < 100) intensity = 0.1;
             if(body.getSurfaceToSurfaceDistance(bodies.getHeaviestBody()) < 10) continue;
 
-            Vector wind = new Vector(Math.random(), Math.random()).rotateAroundAxisZ(new Vector(), angle).product(intensity * Math.random());
+            Vector wind = new Vector(Math.random() - 5, Math.random()).rotateAroundAxisZ(new Vector(), angle).product(intensity * Math.random());
             effects.addEffect(body, new Effect(wind, new Vector(0, 0, Math.random() / (6000 / intensity))));
 
         }

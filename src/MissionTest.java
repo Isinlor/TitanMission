@@ -1,3 +1,6 @@
+import ControlSystem.Controller;
+import ControlSystem.Controllers.DestinationController;
+import ControlSystem.Controllers.WeightedController;
 import ODESolvers.LeapfrogODE;
 import Simulation.*;
 import Utilities.*;
@@ -8,7 +11,7 @@ public class MissionTest {
 
     private static Simulation simulation;
 
-    private static final double timeStep = 200*60.0; // in s
+    private static final double timeStep = 10*60.0; // in s
     private static final long steps = (long)(600*24*60*60 / timeStep);
     private static final long stepsPerFrame = (long)(24*60*60 / timeStep); // around 1 day
 
@@ -44,7 +47,7 @@ public class MissionTest {
 //        }
 
         Double distanceFromCenter = sourceRadius + 100.0 * 1000.0;
-        Body probePrototype = getProbeInOrbit(source, distanceFromCenter);
+        Body probePrototype = getProbeInOrbit(source, target, distanceFromCenter);
         Body minProbe = probePrototype;
 
         int noProgress = 0;
@@ -72,12 +75,14 @@ public class MissionTest {
             // if we flyby closer than mars radius, then we have a direct hit
             if (minDistance < targetRadius) {
                 System.out.println("Hit!");
+                simulation.setBodies(saveBodies);
                 simulation.getBodies().getBody(minProbe.getName()).rename(probePrototype.getName() + " HIT!");
                 try {
                     simulation.save(resourcesPath, "simulation-" + targetName + ".txt");
                 } catch (Exception e) {
                     System.out.println(simulation.serialize());
                 }
+                Thread.sleep(1000000);
                 System.exit(1);
             }
 
@@ -126,6 +131,7 @@ public class MissionTest {
                     );
 
                     probe.addVelocity(stepUpdate);
+                    probe.addPosition(new Vector(i, j, k).product(100));
 
                     // avoid crazy high probe velocities in relation to source
                     if(probe.getRelativeVelocity(source).getLength() > source.computeSecondEscapeVelocity(probe) * 2) {
@@ -140,16 +146,23 @@ public class MissionTest {
         return probes;
     }
 
-    private static Body getProbeInOrbit(Body body, Double distance) {
-        Double orbitalSpeed = Math.sqrt(Constants.G * body.getMass() / distance);
-        Vector position = body.getPosition().sum(new Vector(1.0, 0.0, 0.0).product(distance));
-        Vector velocity = new Vector(0.0, 1.0, 0.0).product(orbitalSpeed).sum(body.getVelocity());
+    private static Body getProbeInOrbit(Body source, Body target, Double distance) {
+        Double orbitalSpeed = Math.sqrt(Constants.G * source.getMass() / distance);
+        Vector position = source.getPosition().sum(new Vector(1.0, 0.0, 0.0).product(distance));
+        Vector velocity = new Vector(0.0, -1.0, 0.0).product(orbitalSpeed).sum(source.getVelocity());
 
-        return new Body(
+        Controller controller = new DestinationController(2);
+        controller = WeightedController.createStartAtAltitudeController(controller, 4*Units.AU);
+
+        return new Spacecraft(
             "probe",
+            target.getName(),
+            controller,
             position,
+            new Vector(),
             velocity,
-            1//, new Metadata(Color.gray)
+            new Vector(),
+            1, 1, new Metadata()
         );
     }
 

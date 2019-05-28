@@ -18,6 +18,7 @@ public class LandingTest {
 
     public static void main(String[] args) {
 
+//        inGravityDestinationTest();
         complexStaticTargetOnTitanDestinationTest();
 //        complexStaticTargetDestinationTest();
 //        simpleDestinationTest();
@@ -30,6 +31,28 @@ public class LandingTest {
 
     }
 
+    static void inGravityDestinationTest() {
+
+        Bodies bodies = new Bodies();
+
+        Body target = new Body("Target", new Vector(), new Vector(), 1, 0.5);
+        target.getMeta().set("noEffects", "true");
+        bodies.addBody(target);
+
+        Body gravitySource = new Body("Gravity Source", new Vector(-1000*2500, 1000*2500), new Vector(), 1e23, 0.0000001);
+        bodies.addBody(gravitySource);
+
+        DestinationController controller = new DestinationController(40000);
+
+        Spacecraft a = new Spacecraft("A", "Target", controller, 10000, 2);
+        a.addPosition(new Vector(20000, -15000));
+        a.addVelocity(new Vector(1000, -100));
+        bodies.addBody(a);
+
+        simulation = new Simulation(bodies, steps, 0.01, 30, 100);
+
+    }
+
     static void complexStaticTargetOnTitanDestinationTest() {
 
         Bodies bodies = Bodies.unserialize(FileSystem.tryLoadResource("titan.txt"));
@@ -39,21 +62,22 @@ public class LandingTest {
         double probeAltitude = 700 * 1000; // 100km above atmosphere, in order to avoid atmosphere influence
         double probeOrbitalSpeed = titan.computeOrbitalSpeed(probeAltitude);
 
-        double spacecrafts = 4;
+        double spacecrafts = 30;
         double spacing = -Math.PI / 2 / (spacecrafts - 1);
         for (int i = 0; i < spacecrafts; i++) {
+            if(12 != i) continue;
             double theta = spacing * i;
             Body pointTarget = new Body("t"+i, new Vector(titan.getRadius(), 0).rotateAroundAxisZ(new Vector(), theta), new Vector(), 1, 0.0000001);
             pointTarget.getMeta().set("noEffects", "true");
-            Controller controller = DestinationController.createWithStaticTarget(pointTarget, 1);
+            Controller controller = DestinationController.createWithStaticTarget(pointTarget, 150000);
 
             bodies.addBody(pointTarget);
 
 //            controller = new DestinationController(10000);
 
-            Spacecraft a = new Spacecraft("" + i, "Titan", controller, 1, 1.5);
-            a.addPosition(new Vector(titan.getRadius() + probeAltitude,0).rotateAroundAxisZ(new Vector(), theta + spacing + 0.0307));
-            a.addVelocity(new Vector(0, probeOrbitalSpeed).rotateAroundAxisZ(new Vector(), theta + spacing + 0.0307));
+            Spacecraft a = new Spacecraft("" + i, "Titan", controller, 10000, 1.5);
+            a.addPosition(new Vector(titan.getRadius() + probeAltitude,0).rotateAroundAxisZ(new Vector(), theta + 4 * spacing));
+            a.addVelocity(new Vector(0, probeOrbitalSpeed).rotateAroundAxisZ(new Vector(), theta + 4 * spacing));
 
             a.getMeta().set("x", "" + pointTarget.getPosition().x);
             a.getMeta().set("y", "" + pointTarget.getPosition().y);
@@ -61,7 +85,11 @@ public class LandingTest {
             bodies.addBody(a);
         }
 
-        simulation = new Simulation(bodies, steps, 0.01, 300, 1e4);
+//        while (bodies.getBodiesCount() > 31) {
+//            new LeapfrogODE().iterate(bodies, 0.01);
+//        }
+
+        simulation = new Simulation(bodies, steps, 0.01, 100, 1e4);
 
     }
 
@@ -170,25 +198,25 @@ public class LandingTest {
 
         Bodies bodies = new Bodies();
 
-        Body b = new Body("Target", new Vector(), new Vector(), 2, 1);
+        Body b = new Body("Target", new Vector(), new Vector(), 200000, 10);
         bodies.addBody(b);
 
         int x = 0;
         Vector standardVector = new Vector(1, 1);
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 8; i++) {
 
-            double rotationPosition = (Utils.TAU / 10) * i;
+            double rotationPosition = (Utils.TAU / 8) * i + 0.01;
 
-            for (int j = 1; j <= 10; j++) {
+            for (int j = 1; j <= 8; j++) {
 
-                double rotationVelocity = (Utils.TAU / 10) * j;
+                double rotationVelocity = (Utils.TAU / 8) * j + 0.01;
 
-                for (int k = 1; k <= 2; k++) {
+                for (int k = 1; k <= 1; k++) {
 
-                    for (int l = 1; l <= 2; l++) {
+                    for (int l = 1; l <= 1; l++) {
 
-                        Spacecraft a = new Spacecraft("" + k + i + j + x, "Target", new DestinationController( Math.pow(1000 + Math.random(), k - 0.8) ), 1, 0.001);
-                        a.addPosition(standardVector.rotateAroundAxisZ(new Vector(), rotationPosition).product(Math.pow(100, k) - 10 + i + j + l + Math.random() * 100));
+                        Spacecraft a = new Spacecraft("" + x, "Target", new DestinationController( Math.pow(1000 + Math.random(), k - 0.8) ), 1, 0.0001);
+                        a.addPosition(standardVector.rotateAroundAxisZ(new Vector(), rotationPosition).product(Math.pow(100, k)));
                         a.addVelocity(standardVector.rotateAroundAxisZ(new Vector(), rotationVelocity).product(Math.pow(10, l)));
 
                         bodies.addBody(a);
@@ -205,7 +233,7 @@ public class LandingTest {
 
         }
 
-        simulation = new Simulation(bodies, steps, 0.01, 1, 100);
+        simulation = new Simulation(bodies, steps, 0.01, 1, 0.45);
 
     }
 

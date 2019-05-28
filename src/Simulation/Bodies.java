@@ -96,6 +96,10 @@ public class Bodies {
         return heaviestBody;
     }
 
+    public double getBodiesCount() {
+        return bodies.size();
+    }
+
     /**
      * Returns set of bodies.
      *

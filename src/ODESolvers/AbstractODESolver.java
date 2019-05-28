@@ -1,10 +1,7 @@
 package ODESolvers;
 
 import EffectSystem.*;
-import EffectSystem.Types.CollisionEffectSystem;
-import EffectSystem.Types.CompositeEffectSystem;
-import EffectSystem.Types.ControllerEffectSystem;
-import EffectSystem.Types.GravitationalEffectSystem;
+import EffectSystem.Types.*;
 import Simulation.Bodies;
 
 public class AbstractODESolver {
@@ -13,12 +10,13 @@ public class AbstractODESolver {
         new CollisionEffectSystem(),
         new GravitationalEffectSystem(),
         new ControllerEffectSystem()
+//        ,new AtmosphereEffectSystem()
     );
 
     AbstractODESolver() {
     }
 
-    AbstractODESolver(EffectSystem effectSystem) {
+    public AbstractODESolver(EffectSystem effectSystem) {
         this.effectSystem = effectSystem;
     }
 

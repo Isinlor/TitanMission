@@ -23,6 +23,8 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
 
     private BufferedImage image = ImageHelper.getImageResource("spaceships/15px.png");
 
+    private boolean info = false;
+
     public Spacecraft(String name, String targetName, Controller controller) {
         this(
             name,
@@ -76,6 +78,10 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
         this.bodies = bodies;
     }
 
+    public void setInfo(boolean info) {
+        this.info = info;
+    }
+
     public void display(SimulationCanvas canvas, Graphics2D g) {
 
         g.setColor(Color.BLACK);
@@ -101,13 +107,15 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
 
         g.drawString(getName(), x + 15, y + 7);
 
-        g.drawString("Altitude: " + Units.distance(getSurfaceToSurfaceDistance(getTarget())), x + 15, y + 7 + 20);
-        g.drawString("Approach speed: " + Units.speed(getApproachSpeed(getTarget())), x + 15, y + 7 + 40);
+        if(info) {
+            g.drawString("Altitude: " + Units.distance(getSurfaceToSurfaceDistance(getTarget())), x + 15, y + 7 + 20);
+            g.drawString("Approach speed: " + Units.speed(getApproachSpeed(getTarget())), x + 15, y + 7 + 40);
+        }
 
     }
 
     public Spacecraft copy() {
-        return new Spacecraft(
+        Spacecraft spacecraft = new Spacecraft(
             getName(),
             targetName,
             controller,
@@ -119,6 +127,18 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
             getRadius(),
             getMeta()
         );
+        if(info) spacecraft.info = true;
+        return spacecraft;
+    }
+
+    public Vector getExternalForces() {
+        Force force = new Force();
+        for (Body bodyB: bodies.getBodies()) {
+            if(this == bodyB) continue; // a body does not attract itself
+            if(bodyB.getMass() < 2) continue; // negligible
+            force = force.sum(computeAttraction(bodyB));
+        }
+        return force;
     }
 
 }

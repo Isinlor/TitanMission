@@ -21,14 +21,21 @@ public class CollisionEffectSystem implements EffectSystem {
 
                     Body crashedIntoBody = bodyA.getMass() < bodyB.getMass() ? bodyB : bodyA;
                     String details = "";
+
                     if(crashedBody.getMeta().has("x")) {
-                        details += "\tAway from target x : " + Units.distance(Math.abs(crashedBody.getPosition().x - Double.parseDouble(crashedBody.getMeta().get("x"))));
-                        details += " y : " + Units.distance(Math.abs(crashedBody.getPosition().y - Double.parseDouble(crashedBody.getMeta().get("y"))));
+                        double xError = crashedBody.getPosition().x - Double.parseDouble(crashedBody.getMeta().get("x"));
+                        double yError = crashedBody.getPosition().y - Double.parseDouble(crashedBody.getMeta().get("y"));
+
+                        details = xError + "\t" + yError;
+
+                        //                        details += "\tAway from target x : " + );
+//                        details += " y : " + Units.distance(Math.abs(crashedBody.getPosition().y - Double.parseDouble(crashedBody.getMeta().get("y"))));
                     }
 
-                    details +=
-                        "\tApproach speed: " + Units.speed(crashedBody.getApproachSpeed(crashedIntoBody)) +
-                        "\tTime: " + Units.time(bodies.getTime());
+                    details += "\t" + crashedBody.getApproachSpeed(crashedIntoBody);
+//                    details +=
+//                        "\tApproach speed: " + Units.speed(crashedBody.getApproachSpeed(crashedIntoBody)) +
+//                        "\tTime: " + Units.time(bodies.getTime());
                     if(crashedBody instanceof RotatingBody) {
                         RotatingBody crashedRotatingBody = (RotatingBody)crashedBody;
 
@@ -43,10 +50,10 @@ public class CollisionEffectSystem implements EffectSystem {
 
                         double angle = Utils.getSignedDistanceBetweenAngles(verticalAngle, crashingBodyAngle);
 
-                        details += "\tAngle: " + Math.round(Math.toDegrees(angle) * 1000) / 1000.;
+//                        details += "\tAngle: " + Math.round(Math.toDegrees(angle) * 1000) / 1000.;
                     }
 
-                    Simulation.logger.log(crashedBody.getName() + " crashed into " + crashedIntoBody.getName() + "! \t" + details);
+                    Simulation.logger.log(details);
                     bodies.removeBody(crashedBody);
                 }
 

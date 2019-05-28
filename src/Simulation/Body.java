@@ -33,6 +33,7 @@ public class Body {
 
     public Body(String name, Vector position, Vector velocity, double mass, double radius) {
         this(name, position, velocity, mass);
+        if(radius <= 0) throw new RuntimeException("Radius must be positive! Radius given:" + radius);
         this.radius = radius;
     }
 
