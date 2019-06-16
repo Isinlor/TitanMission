@@ -26,7 +26,7 @@ public class SuicideBurnController implements Controller {
     public Command getCommand(Spacecraft spacecraft, double timeStep) {
 
         Body target = spacecraft.getTarget();
-        double altitude = target.getDistance(spacecraft) - target.getRadius();
+        double altitude = spacecraft.getSurfaceToSurfaceDistance(target);
         if(altitude > startAltitude) return new NullCommand();
 
         // the spacecraft needs to overcome gravity in order to decelerate
@@ -35,7 +35,7 @@ public class SuicideBurnController implements Controller {
 
         // Thrust must be setup so that final velocity is 0; see below for derivation:
         // https://www.reddit.com/r/KerbalAcademy/comments/4c42rz/maths_help_calculating_when_to_suicide_burn/d1f6xed/
-        double thrust = gravity + (initialSpeed * initialSpeed) / (2 * altitude);
+        double thrust = gravity + ((initialSpeed * initialSpeed) / (2 * altitude) * spacecraft.getMass());
 
         if(thrust < 0) return new NullCommand();
 
