@@ -29,6 +29,8 @@ public class DragEffectSystem implements EffectSystem {
 
             for (Body bodyB: bodies.getBodies()) {
 
+                if(bodyA == bodyB) continue;
+
                 double altitude = bodyA.getSurfaceToSurfaceDistance(bodyB);
                 if(altitude > atmosphere.getHeight()) continue;
 
@@ -42,7 +44,7 @@ public class DragEffectSystem implements EffectSystem {
 
                 // See: https://en.wikipedia.org/wiki/Drag_equation
                 Vector drag = flowDirection.product(coefficient * Math.pow(flowSpeed, 2) * atmosphereDensity * area);
-                effects.addEffect(bodyA, new Effect(drag, new Vector()));
+                effects.addEffect(bodyB, new Effect(drag, new Vector()));
 
             }
 

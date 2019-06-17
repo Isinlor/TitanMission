@@ -12,7 +12,7 @@ public class SimpleAtmosphereModel implements AtmosphereModel {
     private final double intercept;
     private final double height;
 
-    SimpleAtmosphereModel(double slope, double intercept) {
+    public SimpleAtmosphereModel(double slope, double intercept) {
         this.slope = slope;
         this.intercept = intercept;
 
