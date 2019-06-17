@@ -26,16 +26,21 @@ public class SuicideBurnController implements Controller {
     public Command getCommand(Spacecraft spacecraft, double timeStep) {
 
         Body target = spacecraft.getTarget();
-        double altitude = target.getDistance(spacecraft) - target.getRadius();
+        double altitude = spacecraft.getSurfaceToSurfaceDistance(target);
         if(altitude > startAltitude) return new NullCommand();
 
         // the spacecraft needs to overcome gravity in order to decelerate
         double gravity = target.computeAttraction(spacecraft).getLength();
-        double initialSpeed = target.getApproachSpeed(spacecraft);
+        double approachSpeed = target.getApproachSpeed(spacecraft);
+        double relativeSpeed = spacecraft.getRelativeVelocity(target).getLength();
+
+        // landing with vertical speed less than 1 cm/s is ok!
+        // relative speed is controlled so that suicide burn still works on very stable circular orbit
+        if(approachSpeed < 0.01 && relativeSpeed < 0.1) return new NullCommand();
 
         // Thrust must be setup so that final velocity is 0; see below for derivation:
         // https://www.reddit.com/r/KerbalAcademy/comments/4c42rz/maths_help_calculating_when_to_suicide_burn/d1f6xed/
-        double thrust = gravity + (initialSpeed * initialSpeed) / (2 * altitude);
+        double thrust = gravity + ((approachSpeed * approachSpeed) / (2 * altitude) * spacecraft.getMass());
 
         if(thrust < 0) return new NullCommand();
 

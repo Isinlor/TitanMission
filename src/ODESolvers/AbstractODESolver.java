@@ -10,7 +10,7 @@ public class AbstractODESolver {
         new CollisionEffectSystem(),
         new GravitationalEffectSystem(),
         new ControllerEffectSystem(),
-            new WindEffectSystem()
+        new DragEffectSystem()
     );
 
     AbstractODESolver() {
