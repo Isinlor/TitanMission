@@ -120,6 +120,10 @@ public class Body {
         return mass;
     }
 
+    public void setMass(double mass) {
+        this.mass = mass;
+    }
+
     public double getRadius() {
         return radius;
     }

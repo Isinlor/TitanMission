@@ -36,8 +36,10 @@ public class Units {
             return Utils.round(seconds / 60) + " min";
         } else if(seconds < 24 * 60 * 60) {
             return Utils.round(seconds / (60 * 60)) + " h";
-        } else {
+        } else if(seconds < 24 * 60 * 60 * 365) {
             return Utils.round(seconds / (24 * 60 * 60)) + " d";
+        } else {
+            return Utils.round(seconds / (24 * 60 * 60 * 365)) + " y";
         }
     }
 }

@@ -37,6 +37,10 @@ public class Wind extends Force{
             y = generator.nextInt(72);
         }
 
+        if (Math.random()<0.5)
+            x=x*-1;
+        if( Math.random()<0.5)
+            y=y*-1;
         Force wind = new Force(x,y);
         return wind;
     }
@@ -45,6 +49,10 @@ public class Wind extends Force{
         Random generator=new Random();
         x = generator.nextInt(75);
         y = generator.nextInt(75);
+        if (Math.random()<0.5)
+            x=x*-1;
+        if( Math.random()<0.5)
+            y=y*-1;
         Force wind = new Force(x,y);
         setWind(wind);
     }
