@@ -16,7 +16,7 @@ public class AbstractODESolver {
     AbstractODESolver() {
     }
 
-    AbstractODESolver(EffectSystem effectSystem) {
+    public AbstractODESolver(EffectSystem effectSystem) {
         this.effectSystem = effectSystem;
     }
 

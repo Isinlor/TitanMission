@@ -18,6 +18,7 @@ public class LandingTest {
 
     public static void main(String[] args) {
 
+//        inGravityDestinationTest();
         complexStaticTargetOnTitanDestinationTest();
 //        complexStaticTargetDestinationTest();
 //        simpleDestinationTest();
@@ -27,6 +28,28 @@ public class LandingTest {
 //        subOrbitalDestinationControllerTest();
 //        inOrbitDestinationControllerTest();
 //        inOrbitReplayControllerTest();
+
+    }
+
+    static void inGravityDestinationTest() {
+
+        Bodies bodies = new Bodies();
+
+        Body target = new Body("Target", new Vector(), new Vector(), 1, 0.5);
+        target.getMeta().set("noEffects", "true");
+        bodies.addBody(target);
+
+        Body gravitySource = new Body("Gravity Source", new Vector(-1000*2500, 1000*2500), new Vector(), 1e23, 0.0000001);
+        bodies.addBody(gravitySource);
+
+        DestinationController controller = new DestinationController(40000);
+
+        Spacecraft a = new Spacecraft("A", "Target", controller, 10000, 2);
+        a.addPosition(new Vector(20000, -15000));
+        a.addVelocity(new Vector(1000, -100));
+        bodies.addBody(a);
+
+        simulation = new Simulation(bodies, steps, 0.01, 30, 100);
 
     }
 
@@ -205,7 +228,7 @@ public class LandingTest {
 
         }
 
-        simulation = new Simulation(bodies, steps, 0.01, 1, 100);
+        simulation = new Simulation(bodies, steps, 0.01, 1, 0.45);
 
     }
 

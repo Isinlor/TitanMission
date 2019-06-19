@@ -13,6 +13,7 @@ import Utilities.Logger.NullLogger;
 import Utilities.Units;
 import Utilities.Utils;
 
+import java.util.Map;
 import java.util.function.Function;
 
 public class DestinationController implements Controller {
@@ -40,7 +41,7 @@ public class DestinationController implements Controller {
             double distance = spacecraft.getSurfaceToSurfaceDistance(target);
             double sumOfRadii = spacecraft.getRadius() + target.getRadius();
 
-            Vector attraction = spacecraft.computeAttraction(spacecraft.getTarget());
+            Vector attraction = spacecraft.getExternalForces();
             Vector relativeVelocity = spacecraft.getRelativeVelocity(target);
             Vector relativePosition = spacecraft.getRelativePosition(target);
             Vector relativeDirection = relativePosition.unitVector();
@@ -56,15 +57,15 @@ public class DestinationController implements Controller {
 
             // deceleration needed to stop in x and y coordinate combined
             // not totally sure: combined deceleration can be sometimes bigger than sum of x and y decelerations
-            double decelerationToStop = attraction.getLength() + (approachSpeed * approachSpeed) / (2 * distance);
+            double decelerationToStop = (attraction.getLength() / spacecraft.getMass()) + (approachSpeed * approachSpeed) / (2 * distance);
 
             // deceleration to stop in one of the coordinates
             double xDecelerationToStop = (relativeVelocity.x * relativeVelocity.x) / (2 * xDistance);
             double yDecelerationToStop = (relativeVelocity.y * relativeVelocity.y) / (2 * yDistance);
 
             // take into account gravity
-            xDecelerationToStop += attraction.getLength();
-            yDecelerationToStop += attraction.getLength();
+            xDecelerationToStop += (attraction.getLength() / spacecraft.getMass());
+            yDecelerationToStop += (attraction.getLength() / spacecraft.getMass());
 
             // this part allows to start breaking
             // the breaking should start when spacecraft is reaching maximum speed that still allows to decelerate to 0
@@ -113,12 +114,13 @@ public class DestinationController implements Controller {
         // takes control over spacecraft orientation in last phase of approach
         double realApproachSpeed = spacecraft.getApproachSpeed(spacecraft.getTarget());
         double realAltitude = spacecraft.getSurfaceToSurfaceDistance(spacecraft.getTarget());
-        if(realAltitude < 6) {
+
+        if(realAltitude < 10 && realApproachSpeed > 1) {
             targetFunction = Spacecraft::getTarget;
-            torque = verticalLandingController.getCommand(spacecraft, timeStep).getTorque();
         }
 
-        if((realAltitude < 1 && realApproachSpeed < 1) || (realAltitude < 10 && realApproachSpeed < 1)) {
+        if((realAltitude < 1 && realApproachSpeed < 1) || (realAltitude < 3 && realAltitude > 1 && realApproachSpeed < 3)) {
+            torque = verticalLandingController.getCommand(spacecraft, timeStep).getTorque();
             return new Command(0.0, torque);
         }
 
@@ -126,7 +128,7 @@ public class DestinationController implements Controller {
 
         double thrust;
 
-        double gravity = target.computeAttraction(spacecraft).getLength() / spacecraft.getMass();
+        double gravity = spacecraft.getExternalForces().getLength() / spacecraft.getMass();
         double altitude = target.getSurfaceToSurfaceDistance(spacecraft);
         double approachSpeed = target.getApproachSpeed(spacecraft);
         double decelerationToStop = gravity + (approachSpeed * approachSpeed) / (2 * altitude);

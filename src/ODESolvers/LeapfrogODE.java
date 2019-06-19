@@ -24,6 +24,13 @@ import Simulation.*;
  */
 public class LeapfrogODE extends AbstractODESolver implements ODESolver {
 
+    public LeapfrogODE() {
+    }
+
+    public LeapfrogODE(EffectSystem effectSystem) {
+        super(effectSystem);
+    }
+
     public void iterate(Bodies bodies, double time) {
 
         for (Body body: bodies.getBodies()) {
