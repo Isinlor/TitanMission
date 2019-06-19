@@ -69,6 +69,10 @@ public class Bodies {
         bodies.remove(body.getName());
     }
 
+    public void removeBody(String name) {
+        bodies.remove(name);
+    }
+
     /**
      * Returns body by a unique name.
      */
