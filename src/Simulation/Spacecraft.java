@@ -23,7 +23,7 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
 
     private BufferedImage image = ImageHelper.getImageResource("spaceships/15px.png");
 
-    private boolean info = false;
+    private boolean info = true;
 
     public Spacecraft(String name, String targetName, Controller controller) {
         this(
