@@ -5,6 +5,9 @@ import Simulation.Planet;
 import Simulation.Vector;
 import Utilities.Metadata;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Titan extends Planet {
 
     public Titan() {
@@ -16,6 +19,7 @@ public class Titan extends Planet {
             new Metadata(),
             new SimpleAtmosphereModel(-9.72259e-6, 0.483279)
         );
+        getMeta().set("color", "#ffc800");
     }
 
 }
