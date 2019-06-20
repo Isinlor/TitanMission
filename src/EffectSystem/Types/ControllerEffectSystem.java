@@ -3,10 +3,7 @@ package EffectSystem.Types;
 import ControlSystem.Command;
 import ControlSystem.Controllable;
 import EffectSystem.*;
-import Simulation.Bodies;
-import Simulation.Body;
-import Simulation.RotatingBody;
-import Simulation.Vector;
+import Simulation.*;
 
 public class ControllerEffectSystem implements EffectSystem {
     public void collectEffects(Bodies bodies, Effects effects, double timeStep) {
@@ -18,6 +15,15 @@ public class ControllerEffectSystem implements EffectSystem {
                 .rotateAroundAxisZ(new Vector(), ((RotatingBody)body).getAngularDisplacement().z);
             Vector torque = new Vector(0, 0, command.getTorque());
             effects.addEffect(body, new Effect(thrust, torque));
+            // add fuel here
+            if (body instanceof Spacecraft) {
+                double fuelMassRate = thrust.getLength()/( ((Spacecraft) body).getSpecificImpulse() * Constants.G0);
+                double changeOfMass=fuelMassRate*timeStep;
+                ((Spacecraft) body).setFuelMass(((Spacecraft) body).getFuelMass()-Math.abs(changeOfMass));
+                if (((Spacecraft) body).getFuelMass()<0)
+                    System.out.println("No fuel left!");
+
+            }
         }
     }
 }

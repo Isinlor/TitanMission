@@ -22,8 +22,6 @@ public class Wind extends Force{
         double x=0;
         double y=0;
 
-        System.out.println(random);
-
         if (random<5){
             x = generator.nextInt(30);
             y = generator.nextInt(30);
@@ -47,8 +45,12 @@ public class Wind extends Force{
 
     public void getStrongWInd(){
         Random generator=new Random();
-        x = generator.nextInt(75);
-        y = generator.nextInt(75);
+        x=0;
+        y=0;
+        while (x<50||y<50) {
+            x = generator.nextInt(80);
+            y = generator.nextInt(80);
+        }
         if (Math.random()<0.5)
             x=x*-1;
         if( Math.random()<0.5)
