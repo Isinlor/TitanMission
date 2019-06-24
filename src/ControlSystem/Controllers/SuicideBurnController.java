@@ -34,6 +34,9 @@ public class SuicideBurnController implements Controller {
         double approachSpeed = target.getApproachSpeed(spacecraft);
         double relativeSpeed = spacecraft.getRelativeVelocity(target).getLength();
 
+        // allows to avoid bouncing from surface at very low altitudes
+        if(approachSpeed < 0 && altitude < 0.1) return new NullCommand();
+
         // landing with vertical speed less than 1 cm/s is ok!
         // relative speed is controlled so that suicide burn still works on very stable circular orbit
         if(approachSpeed < 0.01 && relativeSpeed < 0.1) return new NullCommand();
