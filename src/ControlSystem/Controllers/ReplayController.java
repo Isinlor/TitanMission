@@ -2,6 +2,7 @@ package ControlSystem.Controllers;
 
 import ControlSystem.Command;
 import ControlSystem.Controller;
+import ControlSystem.NullCommand;
 import Utilities.Recording;
 import Simulation.Spacecraft;
 
@@ -18,6 +19,7 @@ public class ReplayController implements Controller {
     }
 
     public Command getCommand(Spacecraft spacecraft, double timeStep) {
+        if(recording.getRecording().size() <= commandIndex) return new NullCommand();
         Command command = recording.getRecording().get(commandIndex);
         commandIndex++;
         return command;
