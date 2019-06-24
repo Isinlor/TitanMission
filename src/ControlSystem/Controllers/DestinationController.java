@@ -67,25 +67,25 @@ public class DestinationController implements Controller {
             xDecelerationToStop += (attraction.getLength() / spacecraft.getMass());
             yDecelerationToStop += (attraction.getLength() / spacecraft.getMass());
 
+
             // this part allows to start breaking
             // the breaking should start when spacecraft is reaching maximum speed that still allows to decelerate to 0
-            if(approachSpeed > 0 && decelerationToStop >= (maxThrust / spacecraft.getMass())) {
+            double maxAcceleration = maxThrust / spacecraft.getMass();
+            if(approachSpeed > 0 && decelerationToStop >= maxAcceleration) {
                 // decelerationToStop sometimes is bigger than x + y decelerations to stop (?)
                 if(xApproach > 0) xApproach = -xApproach;
                 if(yApproach > 0) yApproach = -yApproach;
             } else {
-                if(xApproach > 0 && xDecelerationToStop >= (maxThrust / spacecraft.getMass())) {
+                if(xApproach > 0 && xDecelerationToStop >= maxAcceleration) {
                     xApproach = -xApproach;
                 }
 
-                if(yApproach > 0 && yDecelerationToStop >= (maxThrust / spacecraft.getMass())) {
+                if(yApproach > 0 && yDecelerationToStop >= maxAcceleration) {
                     yApproach = -yApproach;
                 }
             }
 
-
             // select angles of thrust based on x and y approach variables
-
             if(yApproach < 0 && xApproach >= 0) {
                 return Utils.clockAngle(0, -relativeVelocity.y);
             }
@@ -98,11 +98,22 @@ public class DestinationController implements Controller {
                 return Utils.clockAngle(relativeVelocity.x, -relativeVelocity.y);
             }
 
-            if(yApproach >= 0 && xApproach >= 0) {
-                return Utils.clockAngle(relativePosition.x, -relativePosition.y);
+            if(yApproach >= 0 && xApproach >= 0 && decelerationToStop < maxAcceleration) {
+
+                // simply accelerating directly towards target may not work if acceleration is small
+                // in relation to the velocity; this piece of code is adjusting thrust
+                // so that overtime it aligns velocity towards target
+                double positionAngle = Utils.clockAngle(relativePosition.x, -relativePosition.y);
+                double velocityAngle = Utils.clockAngle(relativeVelocity.x, -relativeVelocity.y);
+
+                // the alignment is done by accelerating little bit away
+                // from the component of relative velocity that is not pointing towards the target
+                double signedDistance = Utils.mod(positionAngle - velocityAngle + Math.PI, Utils.TAU) - Math.PI;
+                return Utils.clockAngle(relativePosition.x, -relativePosition.y) + 2 * signedDistance;
+
             }
 
-            return 0.0;
+            return Double.NaN;
 
         });
     }
