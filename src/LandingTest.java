@@ -18,14 +18,15 @@ public class LandingTest {
 
     public static void main(String[] args) {
 
-       // complexStaticTargetOnTitanDestinationTest();
-//complexStaticTargetDestinationTest();
-//   simpleDestinationTest();
- //       titanDestinationStressTest();
-    //    destinationStressTest();
-        //subOrbitalSuicideBurnControllerTest();
+//        inGravityDestinationTest();
+//        complexStaticTargetOnTitanDestinationTest();
+//        complexStaticTargetDestinationTest();
+//        simpleDestinationTest();
+//        titanDestinationStressTest();
+//        destinationStressTest();
+//        subOrbitalSuicideBurnControllerTest();
 //        subOrbitalDestinationControllerTest();
-  //      inOrbitDestinationControllerTest();
+        inOrbitDestinationControllerTest();
 //        inOrbitReplayControllerTest();
 
     }
@@ -223,7 +224,7 @@ public class LandingTest {
 
         Controller controller = new CompositeController(
             RotationController.createMaintainAngleToRelativeVelocityController(0),
-            new SuicideBurnController(701000)
+            new SuicideBurnController(1000)
         );
 
         Bodies bodies = createSubOrbitalSimulation(controller);

@@ -58,4 +58,16 @@ public class WeightedController implements Controller {
         return new WeightedController(controller, function, function);
     }
 
+    public static WeightedController createBetweenAltitudesController(
+        Controller controller,
+        double startAltitude,
+        double endAltitude
+    ) {
+        Function<Spacecraft, Double> function = (Spacecraft spacecraft) -> {
+            double altitude = spacecraft.getSurfaceToSurfaceDistance(spacecraft.getTarget());
+            return  altitude > endAltitude && altitude < startAltitude ? 1. : 0.;
+        };
+        return new WeightedController(controller, function, function);
+    }
+
 }
