@@ -100,7 +100,7 @@ public class Bodies {
         return heaviestBody;
     }
 
-    public double getBodiesCount() {
+    public int getBodiesCount() {
         return bodies.size();
     }
 
