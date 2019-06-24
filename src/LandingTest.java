@@ -260,7 +260,7 @@ public class LandingTest {
         ));
 
         Bodies predictions = createInOrbitSimulation(controller);
-        while(predictions.getBody("Spacecraft") != null) {
+        while(predictions.hasBody("Spacecraft")) {
             new LeapfrogODE().iterate(predictions, timeStep);
         }
 //        controller.getRecording().save("/home/isinlor/Projects/TitanMission/resources/recording.txt");
