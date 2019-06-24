@@ -286,7 +286,8 @@ public class LandingTest {
             controller,
             new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, 0),
             new Vector(0, probeOrbitalSpeed, 0), new Vector(0, 0, 0.00),
-            10000, 1, new Metadata()
+            10000, 1, 100000, 330,
+            new Metadata()
         ));
 
         return bodies;
@@ -308,7 +309,7 @@ public class LandingTest {
             controller,
             new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, 0),
             new Vector(0, 0, 0), new Vector(0, 0, 0.00),
-            1, 1, new Metadata()
+            1, 1, 100000000, 300, new Metadata()
         ));
 
         return bodies;
