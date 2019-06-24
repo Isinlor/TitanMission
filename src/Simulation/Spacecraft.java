@@ -43,9 +43,21 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
             name,
             targetName,
             controller,
-            new Vector(), new Vector(), new Vector(), new Vector(), mass, radius,
+            new Vector(), new Vector(), new Vector(), new Vector(), mass, radius, 0,0,
             new Metadata()
         );
+    }
+
+    public Spacecraft(String name, String targetName, Controller controller, double mass, double radius, double fuelMass, double specificImpulse) {
+        this(
+                name,
+                targetName,
+                controller,
+                new Vector(), new Vector(), new Vector(), new Vector(), mass, radius,0,0,
+                new Metadata()
+        );
+        this.fuelMass=fuelMass;
+        this.specificImpulse=specificImpulse;
     }
 
     public Spacecraft(
@@ -58,15 +70,24 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
         Vector angularVelocity,
         double mass,
         double radius,
+        double fuelMass,
+        double specificImpulse,
         Metadata meta
     ) {
         super(name, position, angularDisplacement, velocity, angularVelocity, mass, radius, meta);
         this.controller = controller;
         this.targetName = targetName;
+        this.fuelMass=fuelMass;
+        this.specificImpulse=specificImpulse;
     }
 
     public Command getCommand(double timeStep) {
         return controller.getCommand(this, timeStep);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString()+" Fuel mass "+fuelMass+" Specific impulse "+specificImpulse;
     }
 
     public Body getTarget() {
@@ -137,6 +158,8 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
             getAngularVelocity(),
             getMass(),
             getRadius(),
+            fuelMass,
+            specificImpulse,
             getMeta()
         );
         if(info) spacecraft.info = true;

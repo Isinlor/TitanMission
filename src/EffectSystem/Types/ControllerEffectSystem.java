@@ -15,7 +15,6 @@ public class ControllerEffectSystem implements EffectSystem {
                 .rotateAroundAxisZ(new Vector(), ((RotatingBody)body).getAngularDisplacement().z);
             Vector torque = new Vector(0, 0, command.getTorque());
             effects.addEffect(body, new Effect(thrust, torque));
-            // add fuel here
             if (body instanceof Spacecraft) {
                 double fuelMassRate = thrust.getLength()/( ((Spacecraft) body).getSpecificImpulse() * Constants.G0);
                 double changeOfMass=fuelMassRate*timeStep;
