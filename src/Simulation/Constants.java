@@ -8,4 +8,6 @@ public class Constants {
      */
     public static final double G = 6.67408e-11;
 
+    public static final double G0=9.80665; //STANDARD gravitational ACCELERATION
+
 }

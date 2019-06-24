@@ -21,6 +21,10 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
 
     private String targetName;
 
+    private double fuelMass;
+
+    private double specificImpulse;
+
     private BufferedImage image = ImageHelper.getImageResource("spaceships/15px.png");
 
     private boolean info = true;
@@ -39,9 +43,21 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
             name,
             targetName,
             controller,
-            new Vector(), new Vector(), new Vector(), new Vector(), mass, radius,
+            new Vector(), new Vector(), new Vector(), new Vector(), mass, radius, 0,0,
             new Metadata()
         );
+    }
+
+    public Spacecraft(String name, String targetName, Controller controller, double mass, double radius, double fuelMass, double specificImpulse) {
+        this(
+                name,
+                targetName,
+                controller,
+                new Vector(), new Vector(), new Vector(), new Vector(), mass, radius,0,0,
+                new Metadata()
+        );
+        this.fuelMass=fuelMass;
+        this.specificImpulse=specificImpulse;
     }
 
     public Spacecraft(
@@ -54,15 +70,24 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
         Vector angularVelocity,
         double mass,
         double radius,
+        double fuelMass,
+        double specificImpulse,
         Metadata meta
     ) {
         super(name, position, angularDisplacement, velocity, angularVelocity, mass, radius, meta);
         this.controller = controller;
         this.targetName = targetName;
+        this.fuelMass=fuelMass;
+        this.specificImpulse=specificImpulse;
     }
 
     public Command getCommand(double timeStep) {
         return controller.getCommand(this, timeStep);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString()+" Fuel mass "+fuelMass+" Specific impulse "+specificImpulse;
     }
 
     public Body getTarget() {
@@ -72,6 +97,14 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
     private Bodies getBodies() {
         return bodies;
     }
+
+    public double getFuelMass() { return fuelMass; }
+
+    public void setFuelMass(double fuelMass) { this.fuelMass = fuelMass; }
+
+    public void setSpecificImpulse(double specificImpulse) { this.specificImpulse = specificImpulse; }
+
+    public double getSpecificImpulse() { return specificImpulse; }
 
     public void setBodies(Bodies bodies) {
         if(this.bodies != null) throw new RuntimeException("A body can belong only to one set of bodies!");
@@ -125,6 +158,8 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
             getAngularVelocity(),
             getMass(),
             getRadius(),
+            fuelMass,
+            specificImpulse,
             getMeta()
         );
         if(info) spacecraft.info = true;

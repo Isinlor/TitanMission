@@ -25,7 +25,7 @@ public class WindEffectSystem implements EffectSystem {
                                 wind.getStrongWInd();
                                 winds.put((Spacecraft) bodyA, wind);
                             }
-                            System.out.println("Strong" + wind.getWind().toString() + " length " + wind.getWind().getLength() + " altitide " + getALtitude((Spacecraft) bodyA, bodyB));
+                            //System.out.println("Strong" + wind.getWind().toString() + " length " + wind.getWind().getLength() + " altitide " + getALtitude((Spacecraft) bodyA, bodyB));
                             effects.addEffect(bodyA, new Effect(wind.getWind().quotient(100), new Vector()));
                         }
                         else{
@@ -37,7 +37,7 @@ public class WindEffectSystem implements EffectSystem {
                                 wind = new Wind();
                                 winds.put((Spacecraft) bodyA, wind);
                             }
-                            System.out.println("Weak" + wind.getWind().toString() + " length " + wind.getWind().getLength() + " altitide " + getALtitude((Spacecraft) bodyA, bodyB));
+                            //System.out.println("Weak" + wind.getWind().toString() + " length " + wind.getWind().getLength() + " altitide " + getALtitude((Spacecraft) bodyA, bodyB));
                             effects.addEffect(bodyA, new Effect(wind.getWind().quotient(100), new Vector()));
                         }
                     }
@@ -56,7 +56,7 @@ public class WindEffectSystem implements EffectSystem {
                                 wind.getStrongWInd(); //CHECK
                                 winds.put((Spacecraft) bodyB, wind);
                             }
-                            System.out.println("Strong" + wind.getWind().toString() + " length " + wind.getWind().getLength() + " altitide " + getALtitude((Spacecraft) bodyB, bodyA));
+                            //System.out.println("Strong" + wind.getWind().toString() + " length " + wind.getWind().getLength() + " altitide " + getALtitude((Spacecraft) bodyB, bodyA));
                             effects.addEffect(bodyB, new Effect(wind.getWind().quotient(100), new Vector()));
                         }
                         else{
@@ -68,7 +68,7 @@ public class WindEffectSystem implements EffectSystem {
                                 wind = new Wind();
                                 winds.put((Spacecraft) bodyB, wind);
                             }
-                            System.out.println("Weak" + wind.getWind().toString() + " length " + wind.getWind().getLength() + " altitide " + getALtitude((Spacecraft) bodyB, bodyA));
+                            //System.out.println("Weak" + wind.getWind().toString() + " length " + wind.getWind().getLength() + " altitide " + getALtitude((Spacecraft) bodyB, bodyA));
                             effects.addEffect(bodyB, new Effect(wind.getWind().quotient(100), new Vector()));
                         }
                     }

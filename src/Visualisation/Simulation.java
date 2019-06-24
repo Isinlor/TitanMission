@@ -86,6 +86,7 @@ public class Simulation {
                 }
 
                 for (int i = 0; i < stepsPerFrame; i++) {
+
                     odeSolver.iterate(bodies, timeStep);
                     replied++;
                 }
