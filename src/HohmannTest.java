@@ -7,11 +7,13 @@ import Simulation.Bodies;
 import Simulation.Body;
 import Simulation.SolarSystem.Titan;
 import Simulation.*;
+import Simulation.Spacecrafts.Starship;
 import Utilities.FileSystem;
 import Utilities.Units;
 import Utilities.Utils;
 import Visualisation.Simulation;
 
+import java.util.Random;
 import java.util.function.Function;
 
 @SuppressWarnings("Duplicates")
@@ -20,7 +22,7 @@ public class HohmannTest {
     private static Simulation simulation;
 
     private static final double timeStep = 2000.0; // in s
-    private static final long steps = (long)(5*365*24*60*60 / timeStep);
+    private static final long steps = (long)(7*365*24*60*60 / timeStep);
     private static final long stepsPerFrame = (long)Math.max(1, 24*60*60 / timeStep);
 
     /**
@@ -28,7 +30,7 @@ public class HohmannTest {
      */
     public static void main(String[] args) throws Exception {
 
-        Bodies bodies = Bodies.unserialize(FileSystem.tryLoadResource("planets-mini.txt"));
+        Bodies bodies = Bodies.unserialize(FileSystem.tryLoadResource("planets-mini-01-May-2024.txt"));
 
         Body sun = bodies.getBody("Sun");
         Body earth = bodies.getBody("Earth");
@@ -40,27 +42,18 @@ public class HohmannTest {
         bodies.getBody("Titan").addVelocity(titan.getVelocity());
 
         System.out.println("Steps:" + steps);
+        System.out.println("Orbital velocity: " + earth.computeOrbitalSpeed(300*1000));
 
-        for (int i = 0; i < 100; i++) {
-            new LeapfrogODE().iterate(bodies, timeStep);
+        while(true) {
+            new LeapfrogODE().iterate(bodies, 10);
             double earthAngle = Utils.clockAngle(earth.getPosition().x, earth.getPosition().y);
             double saturnAngle = Utils.clockAngle(saturn.getPosition().x, saturn.getPosition().y);
 
             double relativeAngle = Math.toDegrees(Utils.getSignedDistanceBetweenAngles(earthAngle, saturnAngle));
             relativeAngle = Math.abs(relativeAngle);
 
-            if(relativeAngle < 106.5) break;
+            if(relativeAngle < 106.85) break; // 106.5 && 15.0 (fuel) || 106.85 && 16.32 -> 2.35 y (speed)
         }
-
-        Controller controller =
-            WeightedController.createStartAtAltitudeController(
-                new CompositeController(
-                    new SuicideBurnController(100000),
-                    RotationController.createMaintainAngleToSurfaceController(Math.PI)
-                )
-              ,
-              1000000
-            );
 
 
         double orbitHeight = 300 * 1000;
@@ -70,8 +63,10 @@ public class HohmannTest {
 
         Bodies startPrototypes = new Bodies();
 
-        Spacecraft startPrototype = new Spacecraft("Spacecraft", "Titan", controller);
-        startPrototype.addVelocity(earth.getVelocity().sum(earthVelocityDirection.product(17 * 1000)));
+        final double earthSpeed = earth.getVelocity().getLength();
+
+        Spacecraft startPrototype = new Starship("Starship", "Titan", new NullController());
+        startPrototype.addVelocity(earth.getVelocity().sum(earthVelocityDirection.product(16.32 * 1000)));
         startPrototype.addPosition(
             earth.getPosition().sum(directionFromEarthToSun.product(earth.getRadius() + orbitHeight))
         );
@@ -83,6 +78,8 @@ public class HohmannTest {
         final Box box2 = new Box();
         box1.v = startPrototype;
         box2.v = startPrototype;
+
+        final Random random = new Random();
 
         HillDescent hillDescent = new HillDescent(
             steps,
@@ -103,9 +100,36 @@ public class HohmannTest {
                 prototype.rename("" + prototypes.getBodiesCount());
                 prototypes.addBody(prototype);
 
+                Vector speedUpdate = box1.v.getVelocity().difference(box2.v.getVelocity());
+
                 Spacecraft currentPrototype = prototype.copy();
-                currentPrototype.addVelocity(box1.v.getVelocity().difference(box2.v.getVelocity()));
+                currentPrototype.addVelocity(speedUpdate);
                 currentPrototype.rename("" + prototypes.getBodiesCount());
+                currentPrototype.addPosition(new Vector(prototypes.getBodiesCount() * (prototype.getRadius() + 100), 0));
+                if(currentPrototype.getVelocity().getLength() <= startPrototype.getVelocity().getLength()) {
+                    prototypes.addBody(currentPrototype);
+                }
+
+                currentPrototype = prototype.copy();
+                currentPrototype.addVelocity(speedUpdate.product(1/2));
+                currentPrototype.rename("" + prototypes.getBodiesCount());
+                currentPrototype.addPosition(new Vector(prototypes.getBodiesCount() * (prototype.getRadius() + 100), 0));
+                if(currentPrototype.getVelocity().getLength() <= startPrototype.getVelocity().getLength()) {
+                    prototypes.addBody(currentPrototype);
+                }
+
+                currentPrototype = prototype.copy();
+                currentPrototype.addVelocity(speedUpdate.product(2));
+                currentPrototype.rename("" + prototypes.getBodiesCount());
+                currentPrototype.addPosition(new Vector(prototypes.getBodiesCount() * (prototype.getRadius() + 100), 0));
+                if(currentPrototype.getVelocity().getLength() <= startPrototype.getVelocity().getLength()) {
+                    prototypes.addBody(currentPrototype);
+                }
+
+                currentPrototype = prototype.copy();
+                currentPrototype.addVelocity(speedUpdate.product(4));
+                currentPrototype.rename("" + prototypes.getBodiesCount());
+                currentPrototype.addPosition(new Vector(prototypes.getBodiesCount() * (prototype.getRadius() + 100), 0));
                 if(currentPrototype.getVelocity().getLength() <= startPrototype.getVelocity().getLength()) {
                     prototypes.addBody(currentPrototype);
                 }
@@ -122,7 +146,7 @@ public class HohmannTest {
                     }
 
                     currentPrototype.addPosition(
-                        directionFromEarthToSun.product((Math.random() - 0.5) * 20)
+                        directionFromEarthToSun.product((Math.random() - 0.5) * 100)
                     );
 
                     currentPrototype.rename("" + prototypes.getBodiesCount());
@@ -139,26 +163,33 @@ public class HohmannTest {
             }
         );
 
+        Setup bestSetup = hillDescent.getBestSetup();
+
+        simulation = new Simulation(bestSetup.getAllBodies(), steps, timeStep, stepsPerFrame, 0.4e10);
+
         double bestFitness = hillDescent.getBestFitness();
         while (bestFitness > 0.001) {
 
-            Setup newSetup = hillDescent.optimizationStep();
+            bestSetup = hillDescent.optimizationStep();
 
             if(bestFitness > hillDescent.getBestFitness()) {
 
                 box2.v = box1.v;
-                box1.v = newSetup.getBestPrototype();
+                box1.v = bestSetup.getBestPrototype();
 
                 bestFitness = hillDescent.getBestFitness();
                 System.out.println("New best fitness: " + Units.distance(bestFitness));
-                System.out.println("Speed: " + newSetup.getBestPrototype().getVelocity().getLength());
-                simulation = new Simulation(newSetup.getAllBodies(), steps, timeStep, stepsPerFrame, 0.4e10);
+                System.out.println("Speed: " + (bestSetup.getBestPrototype().getVelocity().getLength() - earthSpeed) + " " + bestSetup.getBestPrototype().getName());
+
+                simulation.setBodies(bestSetup.getAllBodies());
 
             } else {
                 System.out.println(Units.distance(hillDescent.getBestFitness()));
             }
 
         }
+
+        simulation.save("/home/isinlor/Projects/TitanMission/resources", "Earth-Titan.txt");
 
         System.exit(0);
 
