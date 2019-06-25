@@ -9,6 +9,7 @@ public class GravitationalEffectSystem implements EffectSystem {
             Force force = new Force();
             for (Body bodyB: bodies.getBodies()) {
                 if(bodyA == bodyB) continue; // a body does not attract itself
+                if(bodyB instanceof Spacecraft) continue; // spacecraft do not affect planets
                 if(bodyB.getMass() < 2) continue; // negligible
                 force = force.sum(bodyA.computeAttraction(bodyB));
             }

@@ -169,7 +169,7 @@ public class Body {
      */
     public Force computeAttraction(Body body, double distance) {
         // strength of attraction = -(G*m1*m2)/(d^2)
-        double strength = -(Constants.G * mass * body.mass) / (distance * distance);
+        double strength = -(Constants.G * getMass() * body.getMass()) / (distance * distance);
         // we need to go from scalar to vector, therefore we compute direction
         Vector direction = position.difference(body.position).unitVector();
         return new Force(

@@ -216,7 +216,7 @@ public class LandingTest {
 
         Controller controller = new CompositeController(
             RotationController.createMaintainAngleToSurfaceController(Math.PI),
-            new SuicideBurnController(300)
+            new SuicideBurnController(410)
         );
 
         Bodies bodies = createSubOrbitalSimulation(controller);
