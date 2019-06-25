@@ -2,6 +2,8 @@ import ControlSystem.Command;
 import ControlSystem.Controller;
 import ControlSystem.Controllers.*;
 import ODESolvers.LeapfrogODE;
+import Simulation.SolarSystem.Titan;
+import Simulation.Spacecrafts.Starship;
 import Utilities.FileSystem;
 import Visualisation.Simulation;
 
@@ -210,24 +212,16 @@ public class LandingTest {
 
     }
 
-    static void subOrbitalDestinationControllerTest() {
-
-        Controller controller = new DestinationController(1);
-
-        Bodies bodies = createSubOrbitalSimulation(controller);
-
-        simulation = new Simulation(bodies, steps, timeStep, stepsPerFrame, 1e4);
-
-    }
-
     static void subOrbitalSuicideBurnControllerTest() {
 
         Controller controller = new CompositeController(
-            RotationController.createMaintainAngleToRelativeVelocityController(0),
-            new SuicideBurnController(1000)
+            RotationController.createMaintainAngleToSurfaceController(Math.PI),
+            new SuicideBurnController(300)
         );
 
         Bodies bodies = createSubOrbitalSimulation(controller);
+
+        replaceTitanToHaveAtmosphere(bodies);
 
         simulation = new Simulation(bodies, steps, timeStep, stepsPerFrame, 1e4);
 
@@ -303,17 +297,24 @@ public class LandingTest {
         double probeAltitude = 700 * 1000; // 100km above atmosphere, in order to avoid atmosphere influence
         double probeOrbitalSpeed = titan.computeOrbitalSpeed(probeAltitude);
 
-        bodies.addBody(new Spacecraft(
+        bodies.addBody(new Starship(
             "Spacecraft",
             titan.getName(),
-            controller,
-            new Vector(titan.getRadius() + probeAltitude, 0, 0), new Vector(0, 0, 0),
-            new Vector(0, 0, 0), new Vector(0, 0, 0.00),
-            1, 1, 100000000, 300, new Metadata()
+            controller
         ));
+
+        bodies.getBody("Spacecraft").addPosition(new Vector(titan.getRadius() + probeAltitude, 0, 0));
 
         return bodies;
 
+    }
+
+    static void replaceTitanToHaveAtmosphere(Bodies bodies) {
+        Body titan = bodies.getBody("Titan");
+        bodies.removeBody("Titan");
+        bodies.addBody(new Titan());
+        bodies.getBody("Titan").addPosition(titan.getPosition());
+        bodies.getBody("Titan").addVelocity(titan.getVelocity());
     }
 
 }

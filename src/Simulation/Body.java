@@ -129,6 +129,10 @@ public class Body {
         return radius;
     }
 
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
     public double getDiameter() {
         return radius * 2;
     }

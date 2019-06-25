@@ -22,8 +22,8 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
     private String targetName;
 
     private double fuelMass;
-
     private double specificImpulse;
+    private double maxThrust;
 
     private BufferedImage image = ImageHelper.getImageResource("spaceships/15px.png");
 
@@ -100,11 +100,23 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
 
     public double getFuelMass() { return fuelMass; }
 
+    public double getMass() {
+        return super.getMass() + getFuelMass();
+    }
+
     public void setFuelMass(double fuelMass) { this.fuelMass = fuelMass; }
 
     public void setSpecificImpulse(double specificImpulse) { this.specificImpulse = specificImpulse; }
 
     public double getSpecificImpulse() { return specificImpulse; }
+
+    public double getMaxThrust() {
+        return maxThrust;
+    }
+
+    public void setMaxThrust(double maxThrust) {
+        this.maxThrust = maxThrust;
+    }
 
     public void setBodies(Bodies bodies) {
         if(this.bodies != null) throw new RuntimeException("A body can belong only to one set of bodies!");
@@ -162,7 +174,8 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
             specificImpulse,
             getMeta()
         );
-        if(info) spacecraft.info = true;
+        spacecraft.info = info;
+        spacecraft.maxThrust = maxThrust;
         return spacecraft;
     }
 
