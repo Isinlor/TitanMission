@@ -244,7 +244,7 @@ public class LandingTest {
 //            new LeapfrogODE().iterate(actual, 1.5);
 //        }
 
-        controller.getRecording().save("/home/isinlor/Projects/TitanMission/resources/recording.txt");
+        controller.getRecording().save("recording.txt");
 
         simulation = new Simulation(actual, steps, timeStep, stepsPerFrame, 1e4);
 
