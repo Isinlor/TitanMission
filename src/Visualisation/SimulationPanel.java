@@ -156,7 +156,7 @@ public class SimulationPanel extends JPanel implements SimulationCanvas {
 
             g.fillOval(x, y, displaySize, displaySize);
 
-            g.drawString(body.getName(), x + 15, y + 7);
+            g.drawString(body.getName(), x + displaySize + 15, y + displaySize + 7);
 
             if(body.getMeta().has("color")) {
 

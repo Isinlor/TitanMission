@@ -161,7 +161,9 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
 
         g.drawImage(ImageHelper.rotate(image, getAngularDisplacement().z), x, y, displaySize, displaySize, null);
 
-        g.drawString(getName(), x + (15 * 2), y + (7 * 2));
+        if(info) {
+            g.drawString(getName(), x + (15 * 2), y + (7 * 2));
+        }
 
         if(info) {
             g.drawString("Altitude: " + Units.distance(getSurfaceToSurfaceDistance(getTarget())), x + (15 * 2), y + (7*2) + 20);
