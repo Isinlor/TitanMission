@@ -41,6 +41,10 @@ public class HillDescent {
         return bestFitness;
     }
 
+    public Setup getBestSetup() {
+        return bestSetup.copy();
+    }
+
     public Setup optimizationStep() {
 
         // generate new setup - the new setup will be evaluated
