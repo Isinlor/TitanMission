@@ -3,6 +3,7 @@ package Simulation;
 import ControlSystem.*;
 import Utilities.Metadata;
 import Utilities.Units;
+import Utilities.Utils;
 import Visualisation.Displayable;
 import Visualisation.ImageHelper;
 import Visualisation.SimulationCanvas;
@@ -25,7 +26,7 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
     private double specificImpulse;
     private double maxThrust;
 
-    private BufferedImage image = ImageHelper.getImageResource("spaceships/15px.png");
+    private BufferedImage image = ImageHelper.getImageResource("spaceships/30px.png");
 
     private boolean info = true;
 
@@ -43,8 +44,7 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
             name,
             targetName,
             controller,
-            new Vector(), new Vector(), new Vector(), new Vector(), mass, radius, 0,0,
-            new Metadata()
+            mass, radius, 0,1
         );
     }
 
@@ -53,11 +53,10 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
                 name,
                 targetName,
                 controller,
-                new Vector(), new Vector(), new Vector(), new Vector(), mass, radius,0,0,
+                new Vector(), new Vector(), new Vector(), new Vector(),
+                mass, radius, fuelMass, specificImpulse,
                 new Metadata()
         );
-        this.fuelMass=fuelMass;
-        this.specificImpulse=specificImpulse;
     }
 
     public Spacecraft(
@@ -74,11 +73,14 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
         double specificImpulse,
         Metadata meta
     ) {
+
         super(name, position, angularDisplacement, velocity, angularVelocity, mass, radius, meta);
         this.controller = controller;
         this.targetName = targetName;
+
         this.fuelMass=fuelMass;
-        this.specificImpulse=specificImpulse;
+        setSpecificImpulse(specificImpulse);
+
     }
 
     public Command getCommand(double timeStep) {
@@ -104,9 +106,15 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
         return super.getMass() + getFuelMass();
     }
 
-    public void setFuelMass(double fuelMass) { this.fuelMass = fuelMass; }
+    public void setFuelMass(double fuelMass) {
+        this.fuelMass = fuelMass;
+        if(this.fuelMass < 0) this.fuelMass = 0;
+    }
 
-    public void setSpecificImpulse(double specificImpulse) { this.specificImpulse = specificImpulse; }
+    public void setSpecificImpulse(double specificImpulse) {
+        if(specificImpulse == 0) throw new RuntimeException("Specific impulse must not be 0!");
+        this.specificImpulse = specificImpulse;
+    }
 
     public double getSpecificImpulse() { return specificImpulse; }
 
@@ -137,24 +145,27 @@ public class Spacecraft extends RotatingBody implements BodiesAware, Displayable
         int y = (int)Math.round(vector.y) + canvas.getCenterY();
 
         int scaledDiameter = (int)Math.round(getDiameter() / canvas.getScale());
-        int displaySize = Math.max(15, scaledDiameter);
+        int displaySize = Math.max(30, scaledDiameter);
 
         if(x + displaySize < 0 || x - displaySize > canvas.getWidth()) return;
         if(y + displaySize < 0 || y - displaySize > canvas.getHeight()) return;
 
         Vector velocity = getVelocity().unitVector().product(20);
-        g.drawLine(x, y, (int)velocity.x + x, (int)velocity.y + y);
+
+        if(info) {
+            g.drawLine(x, y, (int) velocity.x + x, (int) velocity.y + y);
+        }
 
         x = x - displaySize / 2;
         y = y - displaySize / 2;
 
         g.drawImage(ImageHelper.rotate(image, getAngularDisplacement().z), x, y, displaySize, displaySize, null);
 
-        g.drawString(getName(), x + 15, y + 7);
+        g.drawString(getName(), x + (15 * 2), y + (7 * 2));
 
         if(info) {
-            g.drawString("Altitude: " + Units.distance(getSurfaceToSurfaceDistance(getTarget())), x + 15, y + 7 + 20);
-            g.drawString("Approach speed: " + Units.speed(getApproachSpeed(getTarget())), x + 15, y + 7 + 40);
+            g.drawString("Altitude: " + Units.distance(getSurfaceToSurfaceDistance(getTarget())), x + (15 * 2), y + (7*2) + 20);
+            g.drawString("Approach speed: " + Units.speed(getApproachSpeed(getTarget())), x + (15 * 2), y + (7*2) + 40);
         }
 
     }

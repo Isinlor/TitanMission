@@ -53,6 +53,7 @@ public class PresentationTest {
                         Spacecraft a = new Spacecraft("" + x, "Target", new DestinationController( Math.pow(1000 + Math.random(), k - 0.8) ), 1, 0.0001);
                         a.addPosition(standardVector.rotateAroundAxisZ(new Vector(), rotationPosition).product(Math.pow(100, k)));
                         a.addVelocity(standardVector.rotateAroundAxisZ(new Vector(), rotationVelocity).product(Math.pow(10, l)));
+                        a.setInfo(false);
 
                         bodies.addBody(a);
 

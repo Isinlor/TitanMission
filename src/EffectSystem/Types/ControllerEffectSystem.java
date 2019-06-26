@@ -26,7 +26,7 @@ public class ControllerEffectSystem implements EffectSystem {
 
                 spacecraft.setFuelMass(spacecraft.getFuelMass()-Math.abs(changeOfMass));
 
-                if (spacecraft.getFuelMass() < 0) {
+                if (spacecraft.getFuelMass() <= 0) {
                     System.out.println("No fuel left!");
                 }
 
